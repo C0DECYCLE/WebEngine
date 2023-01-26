@@ -4,4 +4,4 @@
     2022
 */
 
-type Nullable< T > = T | null;
+type Nullable<T> = T | null;

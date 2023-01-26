@@ -4,4 +4,4 @@
     2022
 */
 
-type float = number & { __type?: "float" };
+type float = number & { __type?: "float"; };

@@ -6,4 +6,7 @@
 
 const renderer: Renderer = new Renderer();
 
-window.addEventListener("compile", (_event: Event): void => console.log("Hello World"));
+window.addEventListener("compile", (_event: Event): void => {
+
+    renderer.initialize();
+});

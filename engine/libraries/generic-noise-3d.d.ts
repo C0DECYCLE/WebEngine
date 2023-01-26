@@ -1,1 +1,0 @@
-declare function genericNoise3d( x: number, y: number, z: number ): number;

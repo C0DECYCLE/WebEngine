@@ -4,4 +4,4 @@
     2022
 */
 
-type int = number & { __type?: "int" };
+type int = number & { __type?: "int"; };
