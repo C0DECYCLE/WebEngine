@@ -4,9 +4,10 @@
     2023
 */
 
-const renderer: Renderer = new Renderer();
-
 window.addEventListener("compile", (_event: Event): void => {
 
+    const renderer: Renderer = new Renderer();
+
     renderer.initialize();
+
 });
