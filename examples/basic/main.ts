@@ -11,3 +11,6 @@ window.addEventListener("compile", (_event: Event): void => {
     renderer.initialize();
 
 });
+
+//https://austin-eng.com/webgpu-samples/samples/rotatingCube
+//https://carmencincotti.com/2022-04-18/drawing-a-webgpu-triangle/
