@@ -6,9 +6,12 @@
     2023
 */
 
-const load = sourceUrl => {
-
-    const xhr = XMLHttpRequest ? new XMLHttpRequest() : ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : null;
+const load = (sourceUrl) => {
+    const xhr = XMLHttpRequest
+        ? new XMLHttpRequest()
+        : ActiveXObject
+        ? new ActiveXObject("Microsoft.XMLHTTP")
+        : null;
 
     if (!xhr) return "";
 
@@ -20,10 +23,12 @@ const load = sourceUrl => {
 };
 
 onmessage = ({ data: [sourceUrl, sourceCode, tsconfig, tspath] }) => {
-
     importScripts(tspath);
 
     const raw = sourceCode ? sourceCode : load(sourceUrl);
 
-    postMessage([ts.transpile(raw, tsconfig.compilerOptions), raw.split("\n").length]);
+    postMessage([
+        ts.transpile(raw, tsconfig.compilerOptions),
+        raw.split("\n").length,
+    ]);
 };

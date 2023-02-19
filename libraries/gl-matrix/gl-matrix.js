@@ -1,4 +1,3 @@
-
 /*!
 @fileoverview gl-matrix - High performance matrix and vector operations
 @author Brandon Jones
@@ -27,11 +26,15 @@ THE SOFTWARE.
 
 */
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-        typeof define === 'function' && define.amd ? define(['exports'], factory) :
-            (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.glMatrix = {}));
-})(this, (function (exports) {
-    'use strict';
+    typeof exports === "object" && typeof module !== "undefined"
+        ? factory(exports)
+        : typeof define === "function" && define.amd
+        ? define(["exports"], factory)
+        : ((global =
+              typeof globalThis !== "undefined" ? globalThis : global || self),
+          factory((global.glMatrix = {})));
+})(this, function (exports) {
+    "use strict";
 
     /**
      * Common utilities
@@ -72,28 +75,33 @@ THE SOFTWARE.
      */
 
     function equals$9(a, b) {
-        return Math.abs(a - b) <= EPSILON * Math.max(1.0, Math.abs(a), Math.abs(b));
+        return (
+            Math.abs(a - b) <= EPSILON * Math.max(1.0, Math.abs(a), Math.abs(b))
+        );
     }
-    if (!Math.hypot) Math.hypot = function () {
-        var y = 0,
-            i = arguments.length;
+    if (!Math.hypot)
+        Math.hypot = function () {
+            var y = 0,
+                i = arguments.length;
 
-        while (i--) {
-            y += arguments[i] * arguments[i];
-        }
+            while (i--) {
+                y += arguments[i] * arguments[i];
+            }
 
-        return Math.sqrt(y);
-    };
+            return Math.sqrt(y);
+        };
 
-    var common = /*#__PURE__*/Object.freeze({
+    var common = /*#__PURE__*/ Object.freeze({
         __proto__: null,
         EPSILON: EPSILON,
-        get ARRAY_TYPE() { return ARRAY_TYPE; },
+        get ARRAY_TYPE() {
+            return ARRAY_TYPE;
+        },
         RANDOM: RANDOM,
         ANGLE_ORDER: ANGLE_ORDER,
         setMatrixArrayType: setMatrixArrayType,
         toRadian: toRadian,
-        equals: equals$9
+        equals: equals$9,
     });
 
     /**
@@ -480,7 +488,16 @@ THE SOFTWARE.
             b1 = b[1],
             b2 = b[2],
             b3 = b[3];
-        return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3));
+        return (
+            Math.abs(a0 - b0) <=
+                EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+            Math.abs(a1 - b1) <=
+                EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+            Math.abs(a2 - b2) <=
+                EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+            Math.abs(a3 - b3) <=
+                EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3))
+        );
     }
     /**
      * Multiply each element of the matrix by a scalar.
@@ -528,7 +545,7 @@ THE SOFTWARE.
 
     var sub$6 = subtract$6;
 
-    var mat2 = /*#__PURE__*/Object.freeze({
+    var mat2 = /*#__PURE__*/ Object.freeze({
         __proto__: null,
         create: create$8,
         clone: clone$8,
@@ -555,7 +572,7 @@ THE SOFTWARE.
         multiplyScalar: multiplyScalar$3,
         multiplyScalarAndAdd: multiplyScalarAndAdd$3,
         mul: mul$8,
-        sub: sub$6
+        sub: sub$6,
     });
 
     /**
@@ -912,7 +929,21 @@ THE SOFTWARE.
      */
 
     function str$7(a) {
-        return "mat2d(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ", " + a[4] + ", " + a[5] + ")";
+        return (
+            "mat2d(" +
+            a[0] +
+            ", " +
+            a[1] +
+            ", " +
+            a[2] +
+            ", " +
+            a[3] +
+            ", " +
+            a[4] +
+            ", " +
+            a[5] +
+            ")"
+        );
     }
     /**
      * Returns Frobenius norm of a mat2d
@@ -1006,7 +1037,14 @@ THE SOFTWARE.
      */
 
     function exactEquals$7(a, b) {
-        return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5];
+        return (
+            a[0] === b[0] &&
+            a[1] === b[1] &&
+            a[2] === b[2] &&
+            a[3] === b[3] &&
+            a[4] === b[4] &&
+            a[5] === b[5]
+        );
     }
     /**
      * Returns whether or not the matrices have approximately the same elements in the same position.
@@ -1029,7 +1067,20 @@ THE SOFTWARE.
             b3 = b[3],
             b4 = b[4],
             b5 = b[5];
-        return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5));
+        return (
+            Math.abs(a0 - b0) <=
+                EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+            Math.abs(a1 - b1) <=
+                EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+            Math.abs(a2 - b2) <=
+                EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+            Math.abs(a3 - b3) <=
+                EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+            Math.abs(a4 - b4) <=
+                EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+            Math.abs(a5 - b5) <=
+                EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5))
+        );
     }
     /**
      * Alias for {@link mat2d.multiply}
@@ -1044,7 +1095,7 @@ THE SOFTWARE.
 
     var sub$5 = subtract$5;
 
-    var mat2d = /*#__PURE__*/Object.freeze({
+    var mat2d = /*#__PURE__*/ Object.freeze({
         __proto__: null,
         create: create$7,
         clone: clone$7,
@@ -1070,7 +1121,7 @@ THE SOFTWARE.
         exactEquals: exactEquals$7,
         equals: equals$7,
         mul: mul$7,
-        sub: sub$5
+        sub: sub$5,
     });
 
     /**
@@ -1356,7 +1407,11 @@ THE SOFTWARE.
         var a20 = a[6],
             a21 = a[7],
             a22 = a[8];
-        return a00 * (a22 * a11 - a12 * a21) + a01 * (-a22 * a10 + a12 * a20) + a02 * (a21 * a10 - a11 * a20);
+        return (
+            a00 * (a22 * a11 - a12 * a21) +
+            a01 * (-a22 * a10 + a12 * a20) +
+            a02 * (a21 * a10 - a11 * a20)
+        );
     }
     /**
      * Multiplies two mat3's
@@ -1654,7 +1709,13 @@ THE SOFTWARE.
         var b10 = a21 * a33 - a23 * a31;
         var b11 = a22 * a33 - a23 * a32; // Calculate the determinant
 
-        var det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+        var det =
+            b00 * b11 -
+            b01 * b10 +
+            b02 * b09 +
+            b03 * b08 -
+            b04 * b07 +
+            b05 * b06;
 
         if (!det) {
             return null;
@@ -1701,7 +1762,27 @@ THE SOFTWARE.
      */
 
     function str$6(a) {
-        return "mat3(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ", " + a[4] + ", " + a[5] + ", " + a[6] + ", " + a[7] + ", " + a[8] + ")";
+        return (
+            "mat3(" +
+            a[0] +
+            ", " +
+            a[1] +
+            ", " +
+            a[2] +
+            ", " +
+            a[3] +
+            ", " +
+            a[4] +
+            ", " +
+            a[5] +
+            ", " +
+            a[6] +
+            ", " +
+            a[7] +
+            ", " +
+            a[8] +
+            ")"
+        );
     }
     /**
      * Returns Frobenius norm of a mat3
@@ -1807,7 +1888,17 @@ THE SOFTWARE.
      */
 
     function exactEquals$6(a, b) {
-        return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7] && a[8] === b[8];
+        return (
+            a[0] === b[0] &&
+            a[1] === b[1] &&
+            a[2] === b[2] &&
+            a[3] === b[3] &&
+            a[4] === b[4] &&
+            a[5] === b[5] &&
+            a[6] === b[6] &&
+            a[7] === b[7] &&
+            a[8] === b[8]
+        );
     }
     /**
      * Returns whether or not the matrices have approximately the same elements in the same position.
@@ -1836,7 +1927,26 @@ THE SOFTWARE.
             b6 = b[6],
             b7 = b[7],
             b8 = b[8];
-        return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8));
+        return (
+            Math.abs(a0 - b0) <=
+                EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+            Math.abs(a1 - b1) <=
+                EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+            Math.abs(a2 - b2) <=
+                EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+            Math.abs(a3 - b3) <=
+                EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+            Math.abs(a4 - b4) <=
+                EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+            Math.abs(a5 - b5) <=
+                EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
+            Math.abs(a6 - b6) <=
+                EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
+            Math.abs(a7 - b7) <=
+                EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) &&
+            Math.abs(a8 - b8) <=
+                EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8))
+        );
     }
     /**
      * Alias for {@link mat3.multiply}
@@ -1851,7 +1961,7 @@ THE SOFTWARE.
 
     var sub$4 = subtract$4;
 
-    var mat3 = /*#__PURE__*/Object.freeze({
+    var mat3 = /*#__PURE__*/ Object.freeze({
         __proto__: null,
         create: create$6,
         fromMat4: fromMat4$1,
@@ -1884,7 +1994,7 @@ THE SOFTWARE.
         exactEquals: exactEquals$6,
         equals: equals$6,
         mul: mul$6,
-        sub: sub$4
+        sub: sub$4,
     });
 
     /**
@@ -1998,7 +2108,24 @@ THE SOFTWARE.
      * @returns {mat4} A new mat4
      */
 
-    function fromValues$5(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
+    function fromValues$5(
+        m00,
+        m01,
+        m02,
+        m03,
+        m10,
+        m11,
+        m12,
+        m13,
+        m20,
+        m21,
+        m22,
+        m23,
+        m30,
+        m31,
+        m32,
+        m33
+    ) {
         var out = new ARRAY_TYPE(16);
         out[0] = m00;
         out[1] = m01;
@@ -2041,7 +2168,25 @@ THE SOFTWARE.
      * @returns {mat4} out
      */
 
-    function set$5(out, m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {
+    function set$5(
+        out,
+        m00,
+        m01,
+        m02,
+        m03,
+        m10,
+        m11,
+        m12,
+        m13,
+        m20,
+        m21,
+        m22,
+        m23,
+        m30,
+        m31,
+        m32,
+        m33
+    ) {
         out[0] = m00;
         out[1] = m01;
         out[2] = m02;
@@ -2174,7 +2319,13 @@ THE SOFTWARE.
         var b10 = a21 * a33 - a23 * a31;
         var b11 = a22 * a33 - a23 * a32; // Calculate the determinant
 
-        var det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+        var det =
+            b00 * b11 -
+            b01 * b10 +
+            b02 * b09 +
+            b03 * b08 -
+            b04 * b07 +
+            b05 * b06;
 
         if (!det) {
             return null;
@@ -2551,7 +2702,6 @@ THE SOFTWARE.
             out[15] = a[15];
         } // Perform axis-specific matrix multiplication
 
-
         out[4] = a10 * c + a20 * s;
         out[5] = a11 * c + a21 * s;
         out[6] = a12 * c + a22 * s;
@@ -2595,7 +2745,6 @@ THE SOFTWARE.
             out[15] = a[15];
         } // Perform axis-specific matrix multiplication
 
-
         out[0] = a00 * c - a20 * s;
         out[1] = a01 * c - a21 * s;
         out[2] = a02 * c - a22 * s;
@@ -2638,7 +2787,6 @@ THE SOFTWARE.
             out[14] = a[14];
             out[15] = a[15];
         } // Perform axis-specific matrix multiplication
-
 
         out[0] = a00 * c + a10 * s;
         out[1] = a01 * c + a11 * s;
@@ -2937,9 +3085,12 @@ THE SOFTWARE.
         var magnitude = bx * bx + by * by + bz * bz + bw * bw; //Only scale if it makes sense
 
         if (magnitude > 0) {
-            translation[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2 / magnitude;
-            translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2 / magnitude;
-            translation[2] = (az * bw + aw * bz + ax * by - ay * bx) * 2 / magnitude;
+            translation[0] =
+                ((ax * bw + aw * bx + ay * bz - az * by) * 2) / magnitude;
+            translation[1] =
+                ((ay * bw + aw * by + az * bx - ax * bz) * 2) / magnitude;
+            translation[2] =
+                ((az * bw + aw * bz + ax * by - ay * bx) * 2) / magnitude;
         } else {
             translation[0] = (ax * bw + aw * bx + ay * bz - az * by) * 2;
             translation[1] = (ay * bw + aw * by + az * bx - ax * bz) * 2;
@@ -3427,10 +3578,10 @@ THE SOFTWARE.
      */
 
     function perspectiveFromFieldOfView(out, fov, near, far) {
-        var upTan = Math.tan(fov.upDegrees * Math.PI / 180.0);
-        var downTan = Math.tan(fov.downDegrees * Math.PI / 180.0);
-        var leftTan = Math.tan(fov.leftDegrees * Math.PI / 180.0);
-        var rightTan = Math.tan(fov.rightDegrees * Math.PI / 180.0);
+        var upTan = Math.tan((fov.upDegrees * Math.PI) / 180.0);
+        var downTan = Math.tan((fov.downDegrees * Math.PI) / 180.0);
+        var leftTan = Math.tan((fov.leftDegrees * Math.PI) / 180.0);
+        var rightTan = Math.tan((fov.rightDegrees * Math.PI) / 180.0);
         var xScale = 2.0 / (leftTan + rightTan);
         var yScale = 2.0 / (upTan + downTan);
         out[0] = xScale;
@@ -3447,7 +3598,7 @@ THE SOFTWARE.
         out[11] = -1.0;
         out[12] = 0.0;
         out[13] = 0.0;
-        out[14] = far * near / (near - far);
+        out[14] = (far * near) / (near - far);
         out[15] = 0.0;
         return out;
     }
@@ -3554,7 +3705,11 @@ THE SOFTWARE.
         var centery = center[1];
         var centerz = center[2];
 
-        if (Math.abs(eyex - centerx) < EPSILON && Math.abs(eyey - centery) < EPSILON && Math.abs(eyez - centerz) < EPSILON) {
+        if (
+            Math.abs(eyex - centerx) < EPSILON &&
+            Math.abs(eyey - centery) < EPSILON &&
+            Math.abs(eyez - centerz) < EPSILON
+        ) {
             return identity$2(out);
         }
 
@@ -3682,7 +3837,41 @@ THE SOFTWARE.
      */
 
     function str$5(a) {
-        return "mat4(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ", " + a[4] + ", " + a[5] + ", " + a[6] + ", " + a[7] + ", " + a[8] + ", " + a[9] + ", " + a[10] + ", " + a[11] + ", " + a[12] + ", " + a[13] + ", " + a[14] + ", " + a[15] + ")";
+        return (
+            "mat4(" +
+            a[0] +
+            ", " +
+            a[1] +
+            ", " +
+            a[2] +
+            ", " +
+            a[3] +
+            ", " +
+            a[4] +
+            ", " +
+            a[5] +
+            ", " +
+            a[6] +
+            ", " +
+            a[7] +
+            ", " +
+            a[8] +
+            ", " +
+            a[9] +
+            ", " +
+            a[10] +
+            ", " +
+            a[11] +
+            ", " +
+            a[12] +
+            ", " +
+            a[13] +
+            ", " +
+            a[14] +
+            ", " +
+            a[15] +
+            ")"
+        );
     }
     /**
      * Returns Frobenius norm of a mat4
@@ -3692,7 +3881,24 @@ THE SOFTWARE.
      */
 
     function frob(a) {
-        return Math.hypot(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]);
+        return Math.hypot(
+            a[0],
+            a[1],
+            a[2],
+            a[3],
+            a[4],
+            a[5],
+            a[6],
+            a[7],
+            a[8],
+            a[9],
+            a[10],
+            a[11],
+            a[12],
+            a[13],
+            a[14],
+            a[15]
+        );
     }
     /**
      * Adds two mat4's
@@ -3816,7 +4022,24 @@ THE SOFTWARE.
      */
 
     function exactEquals$5(a, b) {
-        return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7] && a[8] === b[8] && a[9] === b[9] && a[10] === b[10] && a[11] === b[11] && a[12] === b[12] && a[13] === b[13] && a[14] === b[14] && a[15] === b[15];
+        return (
+            a[0] === b[0] &&
+            a[1] === b[1] &&
+            a[2] === b[2] &&
+            a[3] === b[3] &&
+            a[4] === b[4] &&
+            a[5] === b[5] &&
+            a[6] === b[6] &&
+            a[7] === b[7] &&
+            a[8] === b[8] &&
+            a[9] === b[9] &&
+            a[10] === b[10] &&
+            a[11] === b[11] &&
+            a[12] === b[12] &&
+            a[13] === b[13] &&
+            a[14] === b[14] &&
+            a[15] === b[15]
+        );
     }
     /**
      * Returns whether or not the matrices have approximately the same elements in the same position.
@@ -3859,7 +4082,40 @@ THE SOFTWARE.
             b13 = b[13],
             b14 = b[14],
             b15 = b[15];
-        return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) && Math.abs(a8 - b8) <= EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8)) && Math.abs(a9 - b9) <= EPSILON * Math.max(1.0, Math.abs(a9), Math.abs(b9)) && Math.abs(a10 - b10) <= EPSILON * Math.max(1.0, Math.abs(a10), Math.abs(b10)) && Math.abs(a11 - b11) <= EPSILON * Math.max(1.0, Math.abs(a11), Math.abs(b11)) && Math.abs(a12 - b12) <= EPSILON * Math.max(1.0, Math.abs(a12), Math.abs(b12)) && Math.abs(a13 - b13) <= EPSILON * Math.max(1.0, Math.abs(a13), Math.abs(b13)) && Math.abs(a14 - b14) <= EPSILON * Math.max(1.0, Math.abs(a14), Math.abs(b14)) && Math.abs(a15 - b15) <= EPSILON * Math.max(1.0, Math.abs(a15), Math.abs(b15));
+        return (
+            Math.abs(a0 - b0) <=
+                EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+            Math.abs(a1 - b1) <=
+                EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+            Math.abs(a2 - b2) <=
+                EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+            Math.abs(a3 - b3) <=
+                EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+            Math.abs(a4 - b4) <=
+                EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+            Math.abs(a5 - b5) <=
+                EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
+            Math.abs(a6 - b6) <=
+                EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
+            Math.abs(a7 - b7) <=
+                EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7)) &&
+            Math.abs(a8 - b8) <=
+                EPSILON * Math.max(1.0, Math.abs(a8), Math.abs(b8)) &&
+            Math.abs(a9 - b9) <=
+                EPSILON * Math.max(1.0, Math.abs(a9), Math.abs(b9)) &&
+            Math.abs(a10 - b10) <=
+                EPSILON * Math.max(1.0, Math.abs(a10), Math.abs(b10)) &&
+            Math.abs(a11 - b11) <=
+                EPSILON * Math.max(1.0, Math.abs(a11), Math.abs(b11)) &&
+            Math.abs(a12 - b12) <=
+                EPSILON * Math.max(1.0, Math.abs(a12), Math.abs(b12)) &&
+            Math.abs(a13 - b13) <=
+                EPSILON * Math.max(1.0, Math.abs(a13), Math.abs(b13)) &&
+            Math.abs(a14 - b14) <=
+                EPSILON * Math.max(1.0, Math.abs(a14), Math.abs(b14)) &&
+            Math.abs(a15 - b15) <=
+                EPSILON * Math.max(1.0, Math.abs(a15), Math.abs(b15))
+        );
     }
     /**
      * Alias for {@link mat4.multiply}
@@ -3874,7 +4130,7 @@ THE SOFTWARE.
 
     var sub$3 = subtract$3;
 
-    var mat4 = /*#__PURE__*/Object.freeze({
+    var mat4 = /*#__PURE__*/ Object.freeze({
         __proto__: null,
         create: create$5,
         clone: clone$5,
@@ -3927,7 +4183,7 @@ THE SOFTWARE.
         exactEquals: exactEquals$5,
         equals: equals$5,
         mul: mul$5,
-        sub: sub$3
+        sub: sub$3,
     });
 
     /**
@@ -4370,9 +4626,12 @@ THE SOFTWARE.
         var factor2 = factorTimes2 * (t - 2) + t;
         var factor3 = factorTimes2 * (t - 1);
         var factor4 = factorTimes2 * (3 - 2 * t);
-        out[0] = a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
-        out[1] = a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
-        out[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
+        out[0] =
+            a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
+        out[1] =
+            a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
+        out[2] =
+            a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
         return out;
     }
     /**
@@ -4395,9 +4654,12 @@ THE SOFTWARE.
         var factor2 = 3 * t * inverseFactorTimesTwo;
         var factor3 = 3 * factorTimes2 * inverseFactor;
         var factor4 = factorTimes2 * t;
-        out[0] = a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
-        out[1] = a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
-        out[2] = a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
+        out[0] =
+            a[0] * factor1 + b[0] * factor2 + c[0] * factor3 + d[0] * factor4;
+        out[1] =
+            a[1] * factor1 + b[1] * factor2 + c[1] * factor3 + d[1] * factor4;
+        out[2] =
+            a[2] * factor1 + b[2] * factor2 + c[2] * factor3 + d[2] * factor4;
         return out;
     }
     /**
@@ -4592,7 +4854,9 @@ THE SOFTWARE.
             bx = b[0],
             by = b[1],
             bz = b[2],
-            mag = Math.sqrt((ax * ax + ay * ay + az * az) * (bx * bx + by * by + bz * bz)),
+            mag = Math.sqrt(
+                (ax * ax + ay * ay + az * az) * (bx * bx + by * by + bz * bz)
+            ),
             cosine = mag && dot$4(a, b) / mag;
         return Math.acos(Math.min(Math.max(cosine, -1), 1));
     }
@@ -4645,7 +4909,14 @@ THE SOFTWARE.
         var b0 = b[0],
             b1 = b[1],
             b2 = b[2];
-        return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2));
+        return (
+            Math.abs(a0 - b0) <=
+                EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+            Math.abs(a1 - b1) <=
+                EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+            Math.abs(a2 - b2) <=
+                EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2))
+        );
     }
     /**
      * Alias for {@link vec3.subtract}
@@ -4702,7 +4973,7 @@ THE SOFTWARE.
      * @function
      */
 
-    var forEach$2 = function () {
+    var forEach$2 = (function () {
         var vec = create$4();
         return function (a, stride, offset, count, fn, arg) {
             var i, l;
@@ -4733,9 +5004,9 @@ THE SOFTWARE.
 
             return a;
         };
-    }();
+    })();
 
-    var vec3 = /*#__PURE__*/Object.freeze({
+    var vec3 = /*#__PURE__*/ Object.freeze({
         __proto__: null,
         create: create$4,
         clone: clone$4,
@@ -4785,7 +5056,7 @@ THE SOFTWARE.
         sqrDist: sqrDist$2,
         len: len$4,
         sqrLen: sqrLen$4,
-        forEach: forEach$2
+        forEach: forEach$2,
     });
 
     /**
@@ -5359,7 +5630,16 @@ THE SOFTWARE.
             b1 = b[1],
             b2 = b[2],
             b3 = b[3];
-        return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3));
+        return (
+            Math.abs(a0 - b0) <=
+                EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+            Math.abs(a1 - b1) <=
+                EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+            Math.abs(a2 - b2) <=
+                EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+            Math.abs(a3 - b3) <=
+                EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3))
+        );
     }
     /**
      * Alias for {@link vec4.subtract}
@@ -5416,7 +5696,7 @@ THE SOFTWARE.
      * @function
      */
 
-    var forEach$1 = function () {
+    var forEach$1 = (function () {
         var vec = create$3();
         return function (a, stride, offset, count, fn, arg) {
             var i, l;
@@ -5449,9 +5729,9 @@ THE SOFTWARE.
 
             return a;
         };
-    }();
+    })();
 
-    var vec4 = /*#__PURE__*/Object.freeze({
+    var vec4 = /*#__PURE__*/ Object.freeze({
         __proto__: null,
         create: create$3,
         clone: clone$3,
@@ -5493,7 +5773,7 @@ THE SOFTWARE.
         sqrDist: sqrDist$1,
         len: len$3,
         sqrLen: sqrLen$3,
-        forEach: forEach$1
+        forEach: forEach$1,
     });
 
     /**
@@ -5723,7 +6003,7 @@ THE SOFTWARE.
             w = a[3];
         var r = Math.sqrt(x * x + y * y + z * z);
         var et = Math.exp(w);
-        var s = r > 0 ? et * Math.sin(r) / r : 0;
+        var s = r > 0 ? (et * Math.sin(r)) / r : 0;
         out[0] = x * s;
         out[1] = y * s;
         out[2] = z * s;
@@ -5799,7 +6079,6 @@ THE SOFTWARE.
             bw = -bw;
         } // calculate coefficients
 
-
         if (1.0 - cosom > EPSILON) {
             // standard case (slerp)
             omega = Math.acos(cosom);
@@ -5812,7 +6091,6 @@ THE SOFTWARE.
             scale0 = 1.0 - t;
             scale1 = t;
         } // calculate final values
-
 
         out[0] = scale0 * ax + scale1 * bx;
         out[1] = scale0 * ay + scale1 * by;
@@ -5937,7 +6215,10 @@ THE SOFTWARE.
      */
 
     function fromEuler(out, x, y, z) {
-        var order = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : ANGLE_ORDER;
+        var order =
+            arguments.length > 4 && arguments[4] !== undefined
+                ? arguments[4]
+                : ANGLE_ORDER;
         var halfToRad = Math.PI / 360;
         x *= halfToRad;
         z *= halfToRad;
@@ -5993,7 +6274,7 @@ THE SOFTWARE.
                 break;
 
             default:
-                throw new Error('Unknown angle order ' + order);
+                throw new Error("Unknown angle order " + order);
         }
 
         return out;
@@ -6175,7 +6456,7 @@ THE SOFTWARE.
      * @returns {quat} out
      */
 
-    var rotationTo = function () {
+    var rotationTo = (function () {
         var tmpvec3 = create$4();
         var xUnitVec3 = fromValues$4(1, 0, 0);
         var yUnitVec3 = fromValues$4(0, 1, 0);
@@ -6203,7 +6484,7 @@ THE SOFTWARE.
                 return normalize$2(out, out);
             }
         };
-    }();
+    })();
     /**
      * Performs a spherical linear interpolation with two control points
      *
@@ -6216,7 +6497,7 @@ THE SOFTWARE.
      * @returns {quat} out
      */
 
-    var sqlerp = function () {
+    var sqlerp = (function () {
         var temp1 = create$2();
         var temp2 = create$2();
         return function (out, a, b, c, d, t) {
@@ -6225,7 +6506,7 @@ THE SOFTWARE.
             slerp(out, temp1, temp2, 2 * t * (1 - t));
             return out;
         };
-    }();
+    })();
     /**
      * Sets the specified quaternion with values corresponding to the given
      * axes. Each axis is a vec3 and is expected to be unit length and
@@ -6237,7 +6518,7 @@ THE SOFTWARE.
      * @returns {quat} out
      */
 
-    var setAxes = function () {
+    var setAxes = (function () {
         var matr = create$6();
         return function (out, view, right, up) {
             matr[0] = right[0];
@@ -6251,9 +6532,9 @@ THE SOFTWARE.
             matr[8] = -view[2];
             return normalize$2(out, fromMat3(out, matr));
         };
-    }();
+    })();
 
-    var quat = /*#__PURE__*/Object.freeze({
+    var quat = /*#__PURE__*/ Object.freeze({
         __proto__: null,
         create: create$2,
         identity: identity$1,
@@ -6293,7 +6574,7 @@ THE SOFTWARE.
         equals: equals$2,
         rotationTo: rotationTo,
         sqlerp: sqlerp,
-        setAxes: setAxes
+        setAxes: setAxes,
     });
 
     /**
@@ -6835,9 +7116,9 @@ THE SOFTWARE.
         var axisLength = Math.hypot(axis[0], axis[1], axis[2]);
         rad = rad * 0.5;
         var s = Math.sin(rad);
-        var bx = s * axis[0] / axisLength;
-        var by = s * axis[1] / axisLength;
-        var bz = s * axis[2] / axisLength;
+        var bx = (s * axis[0]) / axisLength;
+        var by = (s * axis[1]) / axisLength;
+        var bz = (s * axis[2]) / axisLength;
         var bw = Math.cos(rad);
         var ax1 = a[0],
             ay1 = a[1],
@@ -6908,10 +7189,42 @@ THE SOFTWARE.
         out[1] = ay0 * bw0 + aw0 * by0 + az0 * bx0 - ax0 * bz0;
         out[2] = az0 * bw0 + aw0 * bz0 + ax0 * by0 - ay0 * bx0;
         out[3] = aw0 * bw0 - ax0 * bx0 - ay0 * by0 - az0 * bz0;
-        out[4] = ax0 * bw1 + aw0 * bx1 + ay0 * bz1 - az0 * by1 + ax1 * bw0 + aw1 * bx0 + ay1 * bz0 - az1 * by0;
-        out[5] = ay0 * bw1 + aw0 * by1 + az0 * bx1 - ax0 * bz1 + ay1 * bw0 + aw1 * by0 + az1 * bx0 - ax1 * bz0;
-        out[6] = az0 * bw1 + aw0 * bz1 + ax0 * by1 - ay0 * bx1 + az1 * bw0 + aw1 * bz0 + ax1 * by0 - ay1 * bx0;
-        out[7] = aw0 * bw1 - ax0 * bx1 - ay0 * by1 - az0 * bz1 + aw1 * bw0 - ax1 * bx0 - ay1 * by0 - az1 * bz0;
+        out[4] =
+            ax0 * bw1 +
+            aw0 * bx1 +
+            ay0 * bz1 -
+            az0 * by1 +
+            ax1 * bw0 +
+            aw1 * bx0 +
+            ay1 * bz0 -
+            az1 * by0;
+        out[5] =
+            ay0 * bw1 +
+            aw0 * by1 +
+            az0 * bx1 -
+            ax0 * bz1 +
+            ay1 * bw0 +
+            aw1 * by0 +
+            az1 * bx0 -
+            ax1 * bz0;
+        out[6] =
+            az0 * bw1 +
+            aw0 * bz1 +
+            ax0 * by1 -
+            ay0 * bx1 +
+            az1 * bw0 +
+            aw1 * bz0 +
+            ax1 * by0 -
+            ay1 * bx0;
+        out[7] =
+            aw0 * bw1 -
+            ax0 * bx1 -
+            ay0 * by1 -
+            az0 * bz1 +
+            aw1 * bw0 -
+            ax1 * bx0 -
+            ay1 * by0 -
+            az1 * bz0;
         return out;
     }
     /**
@@ -7088,7 +7401,25 @@ THE SOFTWARE.
      */
 
     function str$1(a) {
-        return "quat2(" + a[0] + ", " + a[1] + ", " + a[2] + ", " + a[3] + ", " + a[4] + ", " + a[5] + ", " + a[6] + ", " + a[7] + ")";
+        return (
+            "quat2(" +
+            a[0] +
+            ", " +
+            a[1] +
+            ", " +
+            a[2] +
+            ", " +
+            a[3] +
+            ", " +
+            a[4] +
+            ", " +
+            a[5] +
+            ", " +
+            a[6] +
+            ", " +
+            a[7] +
+            ")"
+        );
     }
     /**
      * Returns whether or not the dual quaternions have exactly the same elements in the same position (when compared with ===)
@@ -7099,7 +7430,16 @@ THE SOFTWARE.
      */
 
     function exactEquals$1(a, b) {
-        return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3] && a[4] === b[4] && a[5] === b[5] && a[6] === b[6] && a[7] === b[7];
+        return (
+            a[0] === b[0] &&
+            a[1] === b[1] &&
+            a[2] === b[2] &&
+            a[3] === b[3] &&
+            a[4] === b[4] &&
+            a[5] === b[5] &&
+            a[6] === b[6] &&
+            a[7] === b[7]
+        );
     }
     /**
      * Returns whether or not the dual quaternions have approximately the same elements in the same position.
@@ -7126,10 +7466,27 @@ THE SOFTWARE.
             b5 = b[5],
             b6 = b[6],
             b7 = b[7];
-        return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) && Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) && Math.abs(a3 - b3) <= EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) && Math.abs(a4 - b4) <= EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) && Math.abs(a5 - b5) <= EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) && Math.abs(a6 - b6) <= EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) && Math.abs(a7 - b7) <= EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7));
+        return (
+            Math.abs(a0 - b0) <=
+                EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+            Math.abs(a1 - b1) <=
+                EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
+            Math.abs(a2 - b2) <=
+                EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)) &&
+            Math.abs(a3 - b3) <=
+                EPSILON * Math.max(1.0, Math.abs(a3), Math.abs(b3)) &&
+            Math.abs(a4 - b4) <=
+                EPSILON * Math.max(1.0, Math.abs(a4), Math.abs(b4)) &&
+            Math.abs(a5 - b5) <=
+                EPSILON * Math.max(1.0, Math.abs(a5), Math.abs(b5)) &&
+            Math.abs(a6 - b6) <=
+                EPSILON * Math.max(1.0, Math.abs(a6), Math.abs(b6)) &&
+            Math.abs(a7 - b7) <=
+                EPSILON * Math.max(1.0, Math.abs(a7), Math.abs(b7))
+        );
     }
 
-    var quat2 = /*#__PURE__*/Object.freeze({
+    var quat2 = /*#__PURE__*/ Object.freeze({
         __proto__: null,
         create: create$1,
         clone: clone$1,
@@ -7169,7 +7526,7 @@ THE SOFTWARE.
         normalize: normalize$1,
         str: str$1,
         exactEquals: exactEquals$1,
-        equals: equals$1
+        equals: equals$1,
     });
 
     /**
@@ -7708,7 +8065,12 @@ THE SOFTWARE.
             a1 = a[1];
         var b0 = b[0],
             b1 = b[1];
-        return Math.abs(a0 - b0) <= EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) && Math.abs(a1 - b1) <= EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1));
+        return (
+            Math.abs(a0 - b0) <=
+                EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
+            Math.abs(a1 - b1) <=
+                EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1))
+        );
     }
     /**
      * Alias for {@link vec2.length}
@@ -7765,7 +8127,7 @@ THE SOFTWARE.
      * @function
      */
 
-    var forEach = function () {
+    var forEach = (function () {
         var vec = create();
         return function (a, stride, offset, count, fn, arg) {
             var i, l;
@@ -7794,9 +8156,9 @@ THE SOFTWARE.
 
             return a;
         };
-    }();
+    })();
 
-    var vec2 = /*#__PURE__*/Object.freeze({
+    var vec2 = /*#__PURE__*/ Object.freeze({
         __proto__: null,
         create: create,
         clone: clone,
@@ -7842,7 +8204,7 @@ THE SOFTWARE.
         dist: dist,
         sqrDist: sqrDist,
         sqrLen: sqrLen,
-        forEach: forEach
+        forEach: forEach,
     });
 
     exports.glMatrix = common;
@@ -7856,6 +8218,5 @@ THE SOFTWARE.
     exports.vec3 = vec3;
     exports.vec4 = vec4;
 
-    Object.defineProperty(exports, '__esModule', { value: true });
-
-}));
+    Object.defineProperty(exports, "__esModule", { value: true });
+});
