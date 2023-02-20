@@ -10,19 +10,18 @@ class Renderer {
 
     public constructor() {
         this.createCanvas();
-        this.initialize();
+        this.createContext();
     }
 
     private createCanvas() {
         this.canvas = document.createElement("canvas");
         this.canvas.style.width = "100%";
         this.canvas.style.height = "100%";
-        //this.canvas.style.imageRendering = "pixelated";
 
         document.body.appendChild(this.canvas);
     }
 
-    private initialize() {
+    private createContext() {
         const context: Nullable<WebGL2RenderingContext> =
             this.canvas.getContext("webgl2");
 
@@ -32,8 +31,5 @@ class Renderer {
         }
 
         this.context = context;
-        this.configureContext();
     }
-
-    private configureContext() {}
 }

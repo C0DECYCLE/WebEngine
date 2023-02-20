@@ -32,7 +32,7 @@ THE SOFTWARE.
         ? define(["exports"], factory)
         : ((global =
               typeof globalThis !== "undefined" ? globalThis : global || self),
-          factory((global.glMatrix = {})));
+          factory((global.glMatrix = window)));
 })(this, function (exports) {
     "use strict";
 
