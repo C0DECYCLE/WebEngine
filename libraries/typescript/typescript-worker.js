@@ -6,7 +6,9 @@
     2023
 */
 
-const load = (sourceUrl) => {
+let tsconfig;
+
+function load(sourceUrl) {
     const xhr = XMLHttpRequest
         ? new XMLHttpRequest()
         : ActiveXObject
@@ -20,15 +22,32 @@ const load = (sourceUrl) => {
     xhr.send(null);
 
     return xhr.status == 200 ? xhr.responseText : "";
-};
+}
 
-onmessage = ({ data: [sourceUrl, sourceCode, tsconfig, tspath] }) => {
-    importScripts(tspath);
+function init(data) {
+    importScripts(data.compilerURL);
+    tsconfig = data.tsconfig;
 
-    const raw = sourceCode ? sourceCode : load(sourceUrl);
+    postMessage({ key: "init" });
+}
 
-    postMessage([
-        ts.transpile(raw, tsconfig.compilerOptions),
-        raw.split("\n").length,
-    ]);
+function compile(data) {
+    const raw = data.innerHTML ? data.innerHTML : load(data.src);
+
+    postMessage({
+        key: "compile",
+        transpiled: ts.transpile(raw, tsconfig.compilerOptions),
+        linesCount: raw.split("\n").length,
+    });
+}
+
+onmessage = ({ data }) => {
+    switch (data.key) {
+        case "init":
+            init(data);
+            break;
+        case "compile":
+            compile(data);
+            break;
+    }
 };
