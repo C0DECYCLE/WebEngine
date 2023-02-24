@@ -54,25 +54,27 @@
         };
 
         workers.processRequestQueue = () => {
-            if (workers.requests.length > 0 && workers.free.length > 0) {
-                const request = workers.requests.pop();
-                workers.processRequest(request.instructions, request.callback);
+            if (workers.requests.length == 0 || workers.free.length == 0) {
+                return;
             }
+            const request = workers.requests.pop();
+            workers.processRequest(request.instructions, request.callback);
         };
 
         workers.processRequest = (instructions, callback) => {
-            if (workers.free.length > 0) {
-                const worker = workers.free.pop();
-                /*workers.working[worker.index] = worker;*/
-
-                worker.postMessage(instructions);
-                worker.onmessage = ({ data }) => {
-                    /*workers.working[worker.index] = undefined;*/
-                    workers.free.push(worker);
-                    callback(data.transpiled, data.linesCount);
-                    workers.processRequestQueue();
-                };
+            if (workers.free.length == 0) {
+                return;
             }
+            const worker = workers.free.pop();
+            /*workers.working[worker.index] = worker;*/
+
+            worker.postMessage(instructions);
+            worker.onmessage = ({ data }) => {
+                /*workers.working[worker.index] = undefined;*/
+                workers.free.push(worker);
+                callback(data.transpiled, data.linesCount);
+                workers.processRequestQueue();
+            };
         };
 
         return workers;
@@ -102,21 +104,20 @@
         let linesSum = 0;
 
         for (let i = 0; i < scripts.length; i++) {
-            if (scripts[i].type === "text/typescript") {
-                const { src } = scripts[i];
-                const innerHTML = src ? null : scripts[i].innerHTML;
-                const index = j++;
-                const callback = (resolve, transpiled, linesCount) => {
-                    transpilations[index] = [
-                        transpiled,
-                        scripts[i],
-                        linesCount,
-                    ];
-                    linesSum += linesCount;
-                    resolve();
-                };
-                pending.push(compilePromise(workers, src, innerHTML, callback));
+            if (scripts[i].type !== "text/typescript") {
+                continue;
             }
+
+            const { src } = scripts[i];
+            const innerHTML = src ? null : scripts[i].innerHTML;
+            const index = j++;
+            const callback = (resolve, transpiled, linesCount) => {
+                transpilations[index] = [transpiled, scripts[i], linesCount];
+                linesSum += linesCount;
+                resolve();
+            };
+
+            pending.push(compilePromise(workers, src, innerHTML, callback));
         }
 
         await Promise.all(pending);
