@@ -1,11 +1,5 @@
 "use strict";
 
-/*
-    Palto Studio
-    Developed by Noah Bussinger
-    2023
-*/
-
 let tsconfig;
 
 function load(sourceUrl) {

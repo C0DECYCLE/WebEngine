@@ -8,7 +8,7 @@
 
 precision highp float;
  
-in vec4 vertex_position;
+layout(location = 0) in vec4 vertex_position;
  
 void main() {
 

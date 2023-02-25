@@ -10,6 +10,8 @@ class Renderer {
 
     private shaderManager: ShaderManager;
 
+    private clearColor: Vec3;
+
     public constructor() {
         this.createCanvas();
         this.createContext();
@@ -17,40 +19,41 @@ class Renderer {
     }
 
     public async initialize(clearColor: Vec3): Promise<void> {
-        this.initializeContext(clearColor);
+        this.clearColor = clearColor;
         await this.shaderManager.initialize();
 
+        //vertecies
+        const positions: Float32Array = new Float32Array([
+            -0.5, -0.5, 0, 0.5, 0.5, -0.5,
+        ]);
+
+        //make shaders
         const program: WebGLProgram = this.shaderManager.programs.get("basic")!;
 
+        //lookup uniform location
         const colorUniformLocation: Nullable<WebGLUniformLocation> =
             this.gl.getUniformLocation(program, "object_color");
-
+        //lookup attribute location
         const positionAttributeLocation: int = this.gl.getAttribLocation(
             program,
             "vertex_position"
         );
 
+        //create vertex array object
+        const vao: Nullable<WebGLVertexArrayObject> =
+            this.gl.createVertexArray();
+        //enable putting stuff into vao
+        this.gl.bindVertexArray(vao);
+        //tell how to map the vertecies and the program
+        this.gl.enableVertexAttribArray(positionAttributeLocation);
+        //put vertecies into gpu buffer
         const positionBuffer: Nullable<WebGLBuffer> = this.gl.createBuffer();
-
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-
-        const positions: Float32Array = new Float32Array([
-            -0.5, -0.5, 0, 0.5, 0.5, -0.5,
-        ]);
-
         this.gl.bufferData(
             this.gl.ARRAY_BUFFER,
             positions,
             this.gl.STATIC_DRAW
         );
-
-        const vao: Nullable<WebGLVertexArrayObject> =
-            this.gl.createVertexArray();
-
-        this.gl.bindVertexArray(vao);
-
-        this.gl.enableVertexAttribArray(positionAttributeLocation);
-
         this.gl.vertexAttribPointer(
             positionAttributeLocation,
             2,
@@ -59,18 +62,32 @@ class Renderer {
             0,
             0
         );
+        //finish with setting up this vao
+        this.gl.bindVertexArray(null);
 
+        //set render dimensions
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        //set background color and clear
+        this.gl.clearColor(
+            this.clearColor.x,
+            this.clearColor.y,
+            this.clearColor.z,
+            1.0
+        );
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
+        //set current program
         this.gl.useProgram(program);
-
+        //set vertex array object to use
         this.gl.bindVertexArray(vao);
-
+        //set unifrom for object
         this.gl.uniform3f(
             colorUniformLocation,
             Math.random(),
             Math.random(),
             Math.random()
         );
-
+        //draw call
         this.gl.drawArrays(this.gl.TRIANGLES, 0, 3);
     }
 
@@ -97,11 +114,5 @@ class Renderer {
 
     private createShaderManager(): void {
         this.shaderManager = new ShaderManager(this.gl);
-    }
-
-    private initializeContext(clearColor: Vec3): void {
-        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-        this.gl.clearColor(clearColor.x, clearColor.y, clearColor.z, 1.0);
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     }
 }
