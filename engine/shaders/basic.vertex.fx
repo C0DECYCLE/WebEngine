@@ -8,13 +8,15 @@
 
 precision highp float;
  
-uniform mat4 object_matrix;
+uniform mat4 objectMatrix;
 
-layout(location = 0) in vec3 vertex_position;
+layout(location = 0) in vec3 vertexPosition;
  
+out vec3 finalVertexPosition;
+
 void main() {
 
-    vec3 position = (object_matrix * vec4(vertex_position, 1.0)).xyz;
+    finalVertexPosition = (objectMatrix * vec4(vertexPosition, 1.0)).xyz;
 
-    gl_Position = vec4(position, 1.0);
+    gl_Position = vec4(finalVertexPosition, 1.0);
 }

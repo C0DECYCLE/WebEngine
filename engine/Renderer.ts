@@ -23,37 +23,40 @@ class Renderer {
         await this.shaderManager.initialize();
 
         //projection
-        const projectionMatrix: Mat4 = Mat4.projection(
+        const projectionMatrix: Mat4 = Mat4.orthographic(
+            0,
             document.body.clientWidth,
+            0,
             document.body.clientHeight,
-            400
+            400,
+            -400
         );
         //matrix
         const matrix: Mat4 = new Mat4(true);
         matrix.multiply(projectionMatrix);
-        matrix.translate(500, 250, 0);
-        matrix.rotate(-45 * toRadian, -45 * toRadian, -45 * toRadian);
-        matrix.scale(2, 2, 1);
+        matrix.translate(450, 250, 0);
+        matrix.rotate(-45 * toRadian, -25 * toRadian, -35 * toRadian);
+        matrix.scale(2, 2, 2);
         //vertecies
         const stride: int = 3;
         const positions: Float32Array = new Float32Array([
-            0, 0, 0, 30, 0, 0, 0, 150, 0, 0, 150, 0, 30, 0, 0, 30, 150, 0, 30,
-            0, 0, 100, 0, 0, 30, 30, 0, 30, 30, 0, 100, 0, 0, 100, 30, 0, 30,
-            60, 0, 67, 60, 0, 30, 90, 0, 30, 90, 0, 67, 60, 0, 67, 90, 0, 0, 0,
+            0, 0, 0, 0, 150, 0, 30, 0, 0, 0, 150, 0, 30, 150, 0, 30, 0, 0, 30,
+            0, 0, 30, 30, 0, 100, 0, 0, 30, 30, 0, 100, 30, 0, 100, 0, 0, 30,
+            60, 0, 30, 90, 0, 67, 60, 0, 30, 90, 0, 67, 90, 0, 67, 60, 0, 0, 0,
             30, 30, 0, 30, 0, 150, 30, 0, 150, 30, 30, 0, 30, 30, 150, 30, 30,
             0, 30, 100, 0, 30, 30, 30, 30, 30, 30, 30, 100, 0, 30, 100, 30, 30,
             30, 60, 30, 67, 60, 30, 30, 90, 30, 30, 90, 30, 67, 60, 30, 67, 90,
             30, 0, 0, 0, 100, 0, 0, 100, 0, 30, 0, 0, 0, 100, 0, 30, 0, 0, 30,
             100, 0, 0, 100, 30, 0, 100, 30, 30, 100, 0, 0, 100, 30, 30, 100, 0,
             30, 30, 30, 0, 30, 30, 30, 100, 30, 30, 30, 30, 0, 100, 30, 30, 100,
-            30, 0, 30, 30, 0, 30, 30, 30, 30, 60, 30, 30, 30, 0, 30, 60, 30, 30,
-            60, 0, 30, 60, 0, 30, 60, 30, 67, 60, 30, 30, 60, 0, 67, 60, 30, 67,
-            60, 0, 67, 60, 0, 67, 60, 30, 67, 90, 30, 67, 60, 0, 67, 90, 30, 67,
-            90, 0, 30, 90, 0, 30, 90, 30, 67, 90, 30, 30, 90, 0, 67, 90, 30, 67,
-            90, 0, 30, 90, 0, 30, 90, 30, 30, 150, 30, 30, 90, 0, 30, 150, 30,
-            30, 150, 0, 0, 150, 0, 0, 150, 30, 30, 150, 30, 0, 150, 0, 30, 150,
-            30, 30, 150, 0, 0, 0, 0, 0, 0, 30, 0, 150, 30, 0, 0, 0, 0, 150, 30,
-            0, 150, 0,
+            30, 0, 30, 30, 0, 30, 60, 30, 30, 30, 30, 30, 30, 0, 30, 60, 0, 30,
+            60, 30, 30, 60, 0, 67, 60, 30, 30, 60, 30, 30, 60, 0, 67, 60, 0, 67,
+            60, 30, 67, 60, 0, 67, 90, 30, 67, 60, 30, 67, 60, 0, 67, 90, 0, 67,
+            90, 30, 30, 90, 0, 30, 90, 30, 67, 90, 30, 30, 90, 0, 67, 90, 30,
+            67, 90, 0, 30, 90, 0, 30, 150, 30, 30, 90, 30, 30, 90, 0, 30, 150,
+            0, 30, 150, 30, 0, 150, 0, 0, 150, 30, 30, 150, 30, 0, 150, 0, 30,
+            150, 30, 30, 150, 0, 0, 0, 0, 0, 0, 30, 0, 150, 30, 0, 0, 0, 0, 150,
+            30, 0, 150, 0,
         ]);
 
         //make shaders
@@ -61,13 +64,11 @@ class Renderer {
 
         //lookup uniform location
         const matrixUniformLocation: Nullable<WebGLUniformLocation> =
-            this.gl.getUniformLocation(program, "object_matrix");
-        const colorUniformLocation: Nullable<WebGLUniformLocation> =
-            this.gl.getUniformLocation(program, "object_color");
+            this.gl.getUniformLocation(program, "objectMatrix");
         //lookup attribute location
         const positionAttributeLocation: int = this.gl.getAttribLocation(
             program,
-            "vertex_position"
+            "vertexPosition"
         );
 
         //create vertex array object
@@ -106,18 +107,16 @@ class Renderer {
             1.0
         );
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        //enable backface culling
+        this.gl.enable(this.gl.CULL_FACE);
+        //enable depth buffer
+        this.gl.enable(this.gl.DEPTH_TEST);
 
         //set current program
         this.gl.useProgram(program);
         //set vertex array object to use
         this.gl.bindVertexArray(vao);
         //set unifrom for object
-        this.gl.uniform3f(
-            colorUniformLocation,
-            Math.random(),
-            Math.random(),
-            Math.random()
-        );
         this.gl.uniformMatrix4fv(matrixUniformLocation, false, matrix.values);
         //draw call
         this.gl.drawArrays(this.gl.TRIANGLES, 0, positions.length / stride);

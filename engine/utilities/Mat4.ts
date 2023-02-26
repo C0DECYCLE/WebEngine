@@ -154,28 +154,31 @@ class Mat4 {
 
     private static cache: Mat4 = new Mat4();
 
-    public static projection(
-        w: float,
-        h: float,
-        d: float,
+    public static orthographic(
+        left: float,
+        right: float,
+        top: float,
+        bottom: float,
+        near: float,
+        far: float,
         float32?: boolean
     ): Mat4 {
         return new Mat4(float32).set(
-            2 / w,
+            2 / (right - left),
             0,
             0,
             0,
             0,
-            -2 / h,
+            2 / (top - bottom),
             0,
             0,
             0,
             0,
-            2 / d,
+            2 / (near - far),
             0,
-            -1,
-            1,
-            0,
+            (left + right) / (left - right),
+            (bottom + top) / (bottom - top),
+            (near + far) / (near - far),
             1
         );
     }

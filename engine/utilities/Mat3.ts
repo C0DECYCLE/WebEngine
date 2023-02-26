@@ -95,7 +95,21 @@ class Mat3 {
 
     private static cache: Mat3 = new Mat3();
 
-    public static projection(w: float, h: float, float32?: boolean): Mat3 {
-        return new Mat3(float32).set(2 / w, 0, 0, 0, -2 / h, 0, -1, 1, 1);
+    public static projection(
+        width: float,
+        height: float,
+        float32?: boolean
+    ): Mat3 {
+        return new Mat3(float32).set(
+            2 / width,
+            0,
+            0,
+            0,
+            -2 / height,
+            0,
+            -1,
+            1,
+            1
+        );
     }
 }
