@@ -8,9 +8,9 @@ class Mat3 {
     public readonly values: Float32Array | Float64Array;
     public readonly isFloat32: boolean;
 
-    public constructor(float32: boolean = false) {
-        this.values = float32 ? new Float32Array(9) : new Float64Array(9);
-        this.isFloat32 = float32;
+    public constructor(isFloat32: boolean = false) {
+        this.values = isFloat32 ? new Float32Array(9) : new Float64Array(9);
+        this.isFloat32 = isFloat32;
         this.reset();
     }
 
@@ -98,9 +98,9 @@ class Mat3 {
     public static projection(
         width: float,
         height: float,
-        float32?: boolean
+        isFloat32?: boolean
     ): Mat3 {
-        return new Mat3(float32).set(
+        return new Mat3(isFloat32).set(
             2 / width,
             0,
             0,

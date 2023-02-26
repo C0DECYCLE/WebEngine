@@ -8,9 +8,9 @@ class Mat4 {
     public readonly values: Float32Array | Float64Array;
     public readonly isFloat32: boolean;
 
-    public constructor(float32: boolean = false) {
-        this.values = float32 ? new Float32Array(16) : new Float64Array(16);
-        this.isFloat32 = float32;
+    public constructor(isFloat32: boolean = false) {
+        this.values = isFloat32 ? new Float32Array(16) : new Float64Array(16);
+        this.isFloat32 = isFloat32;
         this.reset();
     }
 
@@ -77,7 +77,7 @@ class Mat4 {
     }
 
     public scale(x: Vec3 | float, y: float, z: float): Mat4 {
-        if (x instanceof Vec2) {
+        if (x instanceof Vec3) {
             z = x.z;
             y = x.y;
             x = x.x;
@@ -161,9 +161,9 @@ class Mat4 {
         bottom: float,
         near: float,
         far: float,
-        float32?: boolean
+        isFloat32?: boolean
     ): Mat4 {
-        return new Mat4(float32).set(
+        return new Mat4(isFloat32).set(
             2 / (right - left),
             0,
             0,
