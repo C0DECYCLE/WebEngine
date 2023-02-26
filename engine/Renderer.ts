@@ -22,31 +22,38 @@ class Renderer {
         this.clearColor = clearColor;
         await this.shaderManager.initialize();
 
-        //https://webgl2fundamentals.org/webgl/lessons/webgl-2d-matrices.html
-        //https://github.com/BabylonJS/Babylon.js/blob/master/packages/dev/core/src/Maths/math.vector.ts
-        //https://github.com/mrdoob/three.js/blob/dev/src/math/Matrix3.js
-
         //projection
-        const projectionMatrix: Mat3 = Mat3.projection(
-            this.canvas.width,
-            this.canvas.height
+        const projectionMatrix: Mat4 = Mat4.projection(
+            document.body.clientWidth,
+            document.body.clientHeight,
+            400
         );
         //matrix
-        const matrix: Mat3 = new Mat3(true);
-        matrix.multiply(undefined, projectionMatrix);
-        matrix.translate(150, -131);
-        //matrix.rotate(22 * toRadian);
-        //matrix.scale(0.65, 1);
+        const matrix: Mat4 = new Mat4(true);
+        matrix.multiply(projectionMatrix);
+        matrix.translate(500, 250, 0);
+        matrix.rotate(-45 * toRadian, -45 * toRadian, -45 * toRadian);
+        matrix.scale(2, 2, 1);
         //vertecies
+        const stride: int = 3;
         const positions: Float32Array = new Float32Array([
-            // left column
-            0, 0, 30, 0, 0, 150, 0, 150, 30, 0, 30, 150,
-
-            // top rung
-            30, 0, 100, 0, 30, 30, 30, 30, 100, 0, 100, 30,
-
-            // middle rung
-            30, 60, 67, 60, 30, 90, 30, 90, 67, 60, 67, 90,
+            0, 0, 0, 30, 0, 0, 0, 150, 0, 0, 150, 0, 30, 0, 0, 30, 150, 0, 30,
+            0, 0, 100, 0, 0, 30, 30, 0, 30, 30, 0, 100, 0, 0, 100, 30, 0, 30,
+            60, 0, 67, 60, 0, 30, 90, 0, 30, 90, 0, 67, 60, 0, 67, 90, 0, 0, 0,
+            30, 30, 0, 30, 0, 150, 30, 0, 150, 30, 30, 0, 30, 30, 150, 30, 30,
+            0, 30, 100, 0, 30, 30, 30, 30, 30, 30, 30, 100, 0, 30, 100, 30, 30,
+            30, 60, 30, 67, 60, 30, 30, 90, 30, 30, 90, 30, 67, 60, 30, 67, 90,
+            30, 0, 0, 0, 100, 0, 0, 100, 0, 30, 0, 0, 0, 100, 0, 30, 0, 0, 30,
+            100, 0, 0, 100, 30, 0, 100, 30, 30, 100, 0, 0, 100, 30, 30, 100, 0,
+            30, 30, 30, 0, 30, 30, 30, 100, 30, 30, 30, 30, 0, 100, 30, 30, 100,
+            30, 0, 30, 30, 0, 30, 30, 30, 30, 60, 30, 30, 30, 0, 30, 60, 30, 30,
+            60, 0, 30, 60, 0, 30, 60, 30, 67, 60, 30, 30, 60, 0, 67, 60, 30, 67,
+            60, 0, 67, 60, 0, 67, 60, 30, 67, 90, 30, 67, 60, 0, 67, 90, 30, 67,
+            90, 0, 30, 90, 0, 30, 90, 30, 67, 90, 30, 30, 90, 0, 67, 90, 30, 67,
+            90, 0, 30, 90, 0, 30, 90, 30, 30, 150, 30, 30, 90, 0, 30, 150, 30,
+            30, 150, 0, 0, 150, 0, 0, 150, 30, 30, 150, 30, 0, 150, 0, 30, 150,
+            30, 30, 150, 0, 0, 0, 0, 0, 0, 30, 0, 150, 30, 0, 0, 0, 0, 150, 30,
+            0, 150, 0,
         ]);
 
         //make shaders
@@ -80,7 +87,7 @@ class Renderer {
         );
         this.gl.vertexAttribPointer(
             positionAttributeLocation,
-            2,
+            stride,
             this.gl.FLOAT,
             false,
             0,
@@ -111,9 +118,9 @@ class Renderer {
             Math.random(),
             Math.random()
         );
-        this.gl.uniformMatrix3fv(matrixUniformLocation, false, matrix.values);
+        this.gl.uniformMatrix4fv(matrixUniformLocation, false, matrix.values);
         //draw call
-        this.gl.drawArrays(this.gl.TRIANGLES, 0, 3);
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, positions.length / stride);
     }
 
     private createCanvas(): void {

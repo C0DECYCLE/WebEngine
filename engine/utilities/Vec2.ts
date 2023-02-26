@@ -13,7 +13,7 @@ class Vec2 {
         this.y = y;
     }
 
-    public applyMat3(mat: Mat3): Vec2 {
+    public applyMat(mat: Mat3): Vec2 {
         this.x =
             mat.values[0] * this.x + mat.values[3] * this.y + mat.values[6];
         this.y =
