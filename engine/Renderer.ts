@@ -22,6 +22,10 @@ class Renderer {
         this.clearColor = clearColor;
         await this.shaderManager.initialize();
 
+        //https://webgl2fundamentals.org/webgl/lessons/webgl-2d-matrices.html
+        //https://github.com/BabylonJS/Babylon.js/blob/master/packages/dev/core/src/Maths/math.vector.ts
+        //https://github.com/mrdoob/three.js/blob/dev/src/math/Matrix3.js
+
         //projection
         const projectionMatrix: Mat3 = Mat3.projection(
             this.canvas.width,
