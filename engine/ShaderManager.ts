@@ -41,7 +41,7 @@ class ShaderManager {
                 ? this.gl.VERTEX_SHADER
                 : this.gl.FRAGMENT_SHADER
         );
-        if (shader === null) {
+        if (!shader) {
             console.error("Renderer: Shader creation failed.");
             return null;
         }
@@ -68,7 +68,7 @@ class ShaderManager {
         fragmentShader: WebGLShader
     ): Nullable<WebGLProgram> {
         const program: Nullable<WebGLProgram> = this.gl.createProgram();
-        if (program === null) {
+        if (!program) {
             console.error("Renderer: Program creation failed.");
             return null;
         }
@@ -114,7 +114,7 @@ class ShaderManager {
             const shaderSourceInfo: Nullable<ShaderSourceInfo> =
                 this.getShaderSourceInfo(sourceUrl);
 
-            if (shaderSourceInfo === null) {
+            if (!shaderSourceInfo) {
                 console.error("Renderer: Fetching ShaderInfo failed.");
                 return;
             }
@@ -126,7 +126,7 @@ class ShaderManager {
         const fileInfo: Nullable<string[]> =
             sourceUrl.split("/").at(-1)?.split(".") || null;
 
-        if (fileInfo === null) {
+        if (!fileInfo) {
             return null;
         }
         return {

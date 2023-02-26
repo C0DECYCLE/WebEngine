@@ -22,6 +22,11 @@ class Renderer {
         this.clearColor = clearColor;
         await this.shaderManager.initialize();
 
+        //matrix
+        const matrix: Mat3 = new Mat3(true);
+        matrix.rotate(90 * toRadian);
+        matrix.scale(1, 0.5);
+        matrix.translate(0.5, 0);
         //vertecies
         const positions: Float32Array = new Float32Array([
             -0.5, -0.5, 0, 0.5, 0.5, -0.5,
@@ -31,6 +36,8 @@ class Renderer {
         const program: WebGLProgram = this.shaderManager.programs.get("basic")!;
 
         //lookup uniform location
+        const matrixUniformLocation: Nullable<WebGLUniformLocation> =
+            this.gl.getUniformLocation(program, "object_matrix");
         const colorUniformLocation: Nullable<WebGLUniformLocation> =
             this.gl.getUniformLocation(program, "object_color");
         //lookup attribute location
@@ -87,6 +94,7 @@ class Renderer {
             Math.random(),
             Math.random()
         );
+        this.gl.uniformMatrix3fv(matrixUniformLocation, false, matrix.values);
         //draw call
         this.gl.drawArrays(this.gl.TRIANGLES, 0, 3);
     }
