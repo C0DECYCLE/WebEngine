@@ -5,8 +5,6 @@
 */
 
 class Mat3 {
-    private static cache: Mat3 = new Mat3();
-
     public readonly values: Float32Array | Float64Array;
     public readonly isFloat32: boolean;
 
@@ -94,5 +92,11 @@ class Mat3 {
 
     public clone(): Mat3 {
         return new Mat3(this.isFloat32).copy(this);
+    }
+
+    private static cache: Mat3 = new Mat3();
+
+    public static projection(w: float, h: float, float32?: boolean): Mat3 {
+        return new Mat3(float32).set(2 / w, 0, 0, 0, -2 / h, 0, -1, 1, 1);
     }
 }

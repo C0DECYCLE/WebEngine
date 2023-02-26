@@ -22,14 +22,27 @@ class Renderer {
         this.clearColor = clearColor;
         await this.shaderManager.initialize();
 
+        //projection
+        const projectionMatrix: Mat3 = Mat3.projection(
+            this.canvas.width,
+            this.canvas.height
+        );
         //matrix
         const matrix: Mat3 = new Mat3(true);
-        matrix.rotate(90 * toRadian);
-        matrix.scale(1, 0.5);
-        matrix.translate(0.5, 0);
+        matrix.multiply(undefined, projectionMatrix);
+        matrix.translate(150, -131);
+        //matrix.rotate(22 * toRadian);
+        //matrix.scale(0.65, 1);
         //vertecies
         const positions: Float32Array = new Float32Array([
-            -0.5, -0.5, 0, 0.5, 0.5, -0.5,
+            // left column
+            0, 0, 30, 0, 0, 150, 0, 150, 30, 0, 30, 150,
+
+            // top rung
+            30, 0, 100, 0, 30, 30, 30, 30, 100, 0, 100, 30,
+
+            // middle rung
+            30, 60, 67, 60, 30, 90, 30, 90, 67, 60, 67, 90,
         ]);
 
         //make shaders
