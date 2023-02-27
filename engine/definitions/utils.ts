@@ -26,3 +26,5 @@ interface String {
 interface Array<T> {
     clear(): void;
 }
+
+class MapS<T> extends Map<string, T> {}

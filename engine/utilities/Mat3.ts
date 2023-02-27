@@ -108,6 +108,47 @@ class Mat3 {
         return this;
     }
 
+    public invert(): Mat3 {
+        const n11: float = this.values[0];
+        const n21: float = this.values[1];
+        const n31: float = this.values[2];
+        const n12: float = this.values[3];
+        const n22: float = this.values[4];
+        const n32: float = this.values[5];
+        const n13: float = this.values[6];
+        const n23: float = this.values[7];
+        const n33: float = this.values[8];
+
+        const t11: float = n33 * n22 - n32 * n23;
+        const t12: float = n32 * n13 - n33 * n12;
+        const t13: float = n23 * n12 - n22 * n13;
+
+        const det: float = n11 * t11 + n21 * t12 + n31 * t13;
+
+        if (det === 0) {
+            // prettier-ignore
+            return this.set(
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0
+            );
+        }
+
+        const detInv: float = 1 / det;
+
+        this.values[0] = t11 * detInv;
+        this.values[1] = (n31 * n23 - n33 * n21) * detInv;
+        this.values[2] = (n32 * n21 - n31 * n22) * detInv;
+        this.values[3] = t12 * detInv;
+        this.values[4] = (n33 * n11 - n31 * n13) * detInv;
+        this.values[5] = (n31 * n12 - n32 * n11) * detInv;
+        this.values[6] = t13 * detInv;
+        this.values[7] = (n21 * n13 - n23 * n11) * detInv;
+        this.values[8] = (n22 * n11 - n21 * n12) * detInv;
+
+        return this;
+    }
+
     public copy(mat: Mat3): Mat3 {
         this.set(...mat.values);
         return this;

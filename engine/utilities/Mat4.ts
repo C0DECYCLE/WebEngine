@@ -178,6 +178,174 @@ class Mat4 {
         return this;
     }
 
+    public invert(): Mat4 {
+        const n11: float = this.values[0];
+        const n21: float = this.values[1];
+        const n31: float = this.values[2];
+        const n41: float = this.values[3];
+        const n12: float = this.values[4];
+        const n22: float = this.values[5];
+        const n32: float = this.values[6];
+        const n42: float = this.values[7];
+        const n13: float = this.values[8];
+        const n23: float = this.values[9];
+        const n33: float = this.values[10];
+        const n43: float = this.values[11];
+        const n14: float = this.values[12];
+        const n24: float = this.values[13];
+        const n34: float = this.values[14];
+        const n44: float = this.values[15];
+
+        const t11: float =
+            n23 * n34 * n42 -
+            n24 * n33 * n42 +
+            n24 * n32 * n43 -
+            n22 * n34 * n43 -
+            n23 * n32 * n44 +
+            n22 * n33 * n44;
+        const t12: float =
+            n14 * n33 * n42 -
+            n13 * n34 * n42 -
+            n14 * n32 * n43 +
+            n12 * n34 * n43 +
+            n13 * n32 * n44 -
+            n12 * n33 * n44;
+        const t13: float =
+            n13 * n24 * n42 -
+            n14 * n23 * n42 +
+            n14 * n22 * n43 -
+            n12 * n24 * n43 -
+            n13 * n22 * n44 +
+            n12 * n23 * n44;
+        const t14: float =
+            n14 * n23 * n32 -
+            n13 * n24 * n32 -
+            n14 * n22 * n33 +
+            n12 * n24 * n33 +
+            n13 * n22 * n34 -
+            n12 * n23 * n34;
+
+        const det = n11 * t11 + n21 * t12 + n31 * t13 + n41 * t14;
+
+        if (det === 0) {
+            // prettier-ignore
+            return this.set(
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0
+            );
+        }
+
+        const detInv: float = 1 / det;
+
+        this.values[0] = t11 * detInv;
+        this.values[1] =
+            (n24 * n33 * n41 -
+                n23 * n34 * n41 -
+                n24 * n31 * n43 +
+                n21 * n34 * n43 +
+                n23 * n31 * n44 -
+                n21 * n33 * n44) *
+            detInv;
+        this.values[2] =
+            (n22 * n34 * n41 -
+                n24 * n32 * n41 +
+                n24 * n31 * n42 -
+                n21 * n34 * n42 -
+                n22 * n31 * n44 +
+                n21 * n32 * n44) *
+            detInv;
+        this.values[3] =
+            (n23 * n32 * n41 -
+                n22 * n33 * n41 -
+                n23 * n31 * n42 +
+                n21 * n33 * n42 +
+                n22 * n31 * n43 -
+                n21 * n32 * n43) *
+            detInv;
+
+        this.values[4] = t12 * detInv;
+        this.values[5] =
+            (n13 * n34 * n41 -
+                n14 * n33 * n41 +
+                n14 * n31 * n43 -
+                n11 * n34 * n43 -
+                n13 * n31 * n44 +
+                n11 * n33 * n44) *
+            detInv;
+        this.values[6] =
+            (n14 * n32 * n41 -
+                n12 * n34 * n41 -
+                n14 * n31 * n42 +
+                n11 * n34 * n42 +
+                n12 * n31 * n44 -
+                n11 * n32 * n44) *
+            detInv;
+        this.values[7] =
+            (n12 * n33 * n41 -
+                n13 * n32 * n41 +
+                n13 * n31 * n42 -
+                n11 * n33 * n42 -
+                n12 * n31 * n43 +
+                n11 * n32 * n43) *
+            detInv;
+
+        this.values[8] = t13 * detInv;
+        this.values[9] =
+            (n14 * n23 * n41 -
+                n13 * n24 * n41 -
+                n14 * n21 * n43 +
+                n11 * n24 * n43 +
+                n13 * n21 * n44 -
+                n11 * n23 * n44) *
+            detInv;
+        this.values[10] =
+            (n12 * n24 * n41 -
+                n14 * n22 * n41 +
+                n14 * n21 * n42 -
+                n11 * n24 * n42 -
+                n12 * n21 * n44 +
+                n11 * n22 * n44) *
+            detInv;
+        this.values[11] =
+            (n13 * n22 * n41 -
+                n12 * n23 * n41 -
+                n13 * n21 * n42 +
+                n11 * n23 * n42 +
+                n12 * n21 * n43 -
+                n11 * n22 * n43) *
+            detInv;
+
+        this.values[12] = t14 * detInv;
+        this.values[13] =
+            (n13 * n24 * n31 -
+                n14 * n23 * n31 +
+                n14 * n21 * n33 -
+                n11 * n24 * n33 -
+                n13 * n21 * n34 +
+                n11 * n23 * n34) *
+            detInv;
+        this.values[14] =
+            (n14 * n22 * n31 -
+                n12 * n24 * n31 -
+                n14 * n21 * n32 +
+                n11 * n24 * n32 +
+                n12 * n21 * n34 -
+                n11 * n22 * n34) *
+            detInv;
+        this.values[15] =
+            (n12 * n23 * n31 -
+                n13 * n22 * n31 +
+                n13 * n21 * n32 -
+                n11 * n23 * n32 -
+                n12 * n21 * n33 +
+                n11 * n22 * n33) *
+            detInv;
+
+        return this;
+    }
+
     public copy(mat: Mat4): Mat4 {
         this.set(...mat.values);
         return this;

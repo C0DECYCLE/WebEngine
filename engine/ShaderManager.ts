@@ -7,18 +7,11 @@
 class ShaderManager {
     public readonly rootPath: string = "/engine/shaders/";
     public readonly names: string[] = ["basic"];
-    public readonly sources: Map<string, ShaderSourcePair> = new Map<
-        string,
-        ShaderSourcePair
-    >();
-    public readonly list: Map<string, ShaderPair> = new Map<
-        string,
-        ShaderPair
-    >();
-    public readonly programs: Map<string, WebGLProgram> = new Map<
-        string,
-        WebGLProgram
-    >();
+
+    public readonly sources: MapS<ShaderSourcePair> =
+        new MapS<ShaderSourcePair>();
+    public readonly list: MapS<ShaderPair> = new MapS<ShaderPair>();
+    public readonly programs: MapS<WebGLProgram> = new MapS<WebGLProgram>();
 
     private readonly gl: WebGL2RenderingContext;
 
