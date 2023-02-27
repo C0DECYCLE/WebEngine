@@ -22,26 +22,42 @@ class Mat4 {
     }
 
     public reset(): Mat4 {
-        return this.set(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+        // prettier-ignore
+        return this.set(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        );
     }
 
-    public translate(x: Vec3 | float, y: float, z: float): Mat4 {
+    public translate(x: Vec3 | float, y?: float, z?: float): Mat4 {
         if (x instanceof Vec3) {
             z = x.z;
             y = x.y;
             x = x.x;
+        } else if (y === undefined || z === undefined) {
+            z = x;
+            y = x;
         }
-        this.multiply(
-            Mat4.cache.set(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1)
-        );
+        // prettier-ignore
+        this.multiply(Mat4.Cache.set(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            x, y, z, 1
+        ));
         return this;
     }
 
-    public rotate(x: Vec3 | float, y: float, z: float): Mat4 {
+    public rotate(x: Vec3 | float, y?: float, z?: float): Mat4 {
         if (x instanceof Vec3) {
             z = x.z;
             y = x.y;
             x = x.x;
+        } else if (y === undefined || z === undefined) {
+            z = x;
+            y = x;
         }
         this.rotateX(x);
         this.rotateY(y);
@@ -52,39 +68,58 @@ class Mat4 {
     public rotateX(radian: float): Mat4 {
         const c = Math.cos(radian);
         const s = Math.sin(radian);
-        this.multiply(
-            Mat4.cache.set(1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1)
-        );
+        // prettier-ignore
+        this.multiply(Mat4.Cache.set(
+            1, 0, 0, 0,
+            0, c, s, 0,
+            0, -s, c, 0,
+            0, 0, 0, 1
+        ));
         return this;
     }
 
     public rotateY(radian: float): Mat4 {
         const c = Math.cos(radian);
         const s = Math.sin(radian);
-        this.multiply(
-            Mat4.cache.set(c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1)
-        );
+        // prettier-ignore
+        this.multiply(Mat4.Cache.set(
+            c, 0, -s, 0,
+            0, 1, 0, 0,
+            s, 0, c, 0,
+            0, 0, 0, 1
+        ));
         return this;
     }
 
     public rotateZ(radian: float): Mat4 {
         const c = Math.cos(radian);
         const s = Math.sin(radian);
-        this.multiply(
-            Mat4.cache.set(c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
-        );
+        // prettier-ignore
+        this.multiply(Mat4.Cache.set(
+            c, s, 0, 0,
+            -s, c, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        ));
         return this;
     }
 
-    public scale(x: Vec3 | float, y: float, z: float): Mat4 {
+    public scale(x: Vec3 | float, y?: float, z?: float): Mat4 {
         if (x instanceof Vec3) {
             z = x.z;
             y = x.y;
             x = x.x;
+        } else if (y === undefined || z === undefined) {
+            y = x;
+            z = x;
         }
-        this.multiply(
-            Mat4.cache.set(x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1)
-        );
+        // prettier-ignore
+        this.multiply(Mat4.Cache.set(
+            x, 0, 0, 0,
+            0, y, 0, 0,
+            0, 0, z, 0,
+            0, 0, 0, 1
+        ));
         return this;
     }
 
@@ -152,9 +187,9 @@ class Mat4 {
         return new Mat4(this.isFloat32).copy(this);
     }
 
-    private static cache: Mat4 = new Mat4();
+    private static Cache: Mat4 = new Mat4();
 
-    public static orthographic(
+    public static Orthographic(
         left: float,
         right: float,
         top: float,
@@ -165,13 +200,14 @@ class Mat4 {
     ): Mat4 {
         // prettier-ignore
         return new Mat4(isFloat32).set(
-            2 / (right - left), 0, 0, 0, 0, 2 / (top - bottom), 0, 0, 0, 0,
-            2 / (near - far), 0, (left + right) / (left - right),
-            (bottom + top) / (bottom - top), (near + far) / (near - far), 1
+            2 / (right - left), 0, 0, 0,
+            0, 2 / (top - bottom), 0, 0,
+            0, 0, 2 / (near - far), 0,
+            (left + right) / (left - right), (bottom + top) / (bottom - top), (near + far) / (near - far), 1
         );
     }
 
-    public static perspective(
+    public static Perspective(
         fov: float,
         aspect: float,
         near: float,
@@ -182,8 +218,28 @@ class Mat4 {
         const rangeInv: float = 1.0 / (near - far);
         // prettier-ignore
         return new Mat4(isFloat32).set(
-            f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (near + far) * rangeInv, -1,
+            f / aspect, 0, 0, 0,
+            0, f, 0, 0,
+            0, 0, (near + far) * rangeInv, -1,
             0, 0, near * far * rangeInv * 2, 0,
+        );
+    }
+
+    public static LookAt(
+        position: Vec3,
+        target: Vec3,
+        up: Vec3,
+        isFloat32?: boolean
+    ): Mat4 {
+        const zAxis: Vec3 = position.clone().sub(target).normalize();
+        const xAxis: Vec3 = Vec3.Cross(up, zAxis).normalize();
+        const yAxis: Vec3 = Vec3.Cross(zAxis, xAxis).normalize();
+        // prettier-ignore
+        return new Mat4(isFloat32).set(
+            xAxis.x, xAxis.y, xAxis.z, 0,
+            yAxis.x, yAxis.y, yAxis.z, 0,
+            zAxis.x, zAxis.y, zAxis.z, 0,
+            position.x, position.y, position.z, 1
         );
     }
 }

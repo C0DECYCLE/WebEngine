@@ -22,31 +22,55 @@ class Mat3 {
     }
 
     public reset(): Mat3 {
-        return this.set(1, 0, 0, 0, 1, 0, 0, 0, 1);
+        // prettier-ignore
+        return this.set(
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1
+        );
     }
 
-    public translate(x: Vec2 | float, y: float): Mat3 {
+    public translate(x: Vec2 | float, y?: float): Mat3 {
         if (x instanceof Vec2) {
             y = x.y;
             x = x.x;
+        } else if (y === undefined) {
+            y = x;
         }
-        this.multiply(Mat3.cache.set(1, 0, 0, 0, 1, 0, x, y, 1));
+        // prettier-ignore
+        this.multiply(Mat3.Cache.set(
+            1, 0, 0,
+            0, 1, 0,
+            x, y, 1
+        ));
         return this;
     }
 
     public rotate(radian: float): Mat3 {
         const c = Math.cos(radian);
         const s = Math.sin(radian);
-        this.multiply(Mat3.cache.set(c, -s, 0, s, c, 0, 0, 0, 1));
+        // prettier-ignore
+        this.multiply(Mat3.Cache.set(
+            c, -s, 0,
+            s, c, 0,
+            0, 0, 1
+        ));
         return this;
     }
 
-    public scale(x: Vec2 | float, y: float): Mat3 {
+    public scale(x: Vec2 | float, y?: float): Mat3 {
         if (x instanceof Vec2) {
             y = x.y;
             x = x.x;
+        } else if (y === undefined) {
+            y = x;
         }
-        this.multiply(Mat3.cache.set(x, 0, 0, 0, y, 0, 0, 0, 1));
+        // prettier-ignore
+        this.multiply(Mat3.Cache.set(
+            x, 0, 0,
+            0, y, 0,
+            0, 0, 1
+        ));
         return this;
     }
 
@@ -93,16 +117,18 @@ class Mat3 {
         return new Mat3(this.isFloat32).copy(this);
     }
 
-    private static cache: Mat3 = new Mat3();
+    private static Cache: Mat3 = new Mat3();
 
-    public static projection(
+    public static Projection(
         width: float,
         height: float,
         isFloat32?: boolean
     ): Mat3 {
         // prettier-ignore
         return new Mat3(isFloat32).set(
-            2 / width, 0, 0, 0, -2 / height, 0, -1, 1, 1
+            2 / width, 0, 0,
+            0, -2 / height, 0,
+            -1, 1, 1
         );
     }
 }

@@ -5,35 +5,33 @@
 */
 
 class Renderer {
-    private canvas: HTMLCanvasElement;
+    public camera: Camera;
+
     private gl: WebGL2RenderingContext;
 
     private shaderManager: ShaderManager;
 
     private clearColor: Vec3;
 
-    public constructor() {
-        this.createCanvas();
-        this.createContext();
+    public constructor(clearColor: Vec3) {
+        this.createContext(this.createCanvas());
         this.createShaderManager();
+        this.createCamera();
+
+        this.clearColor = clearColor;
     }
 
-    public async initialize(clearColor: Vec3): Promise<void> {
-        this.clearColor = clearColor;
+    public async initialize(): Promise<void> {
         await this.shaderManager.initialize();
+        this.initializeContext();
 
-        //projection
-        const projectionMatrix: Mat4 = Mat4.perspective(
-            60 * toRadian,
-            this.canvas.width / this.canvas.height,
-            1,
-            1000
-        );
+        //////////////////SETUP//////////////////
+
         //matrix
-        const matrix: Mat4 = projectionMatrix.clone();
-        matrix.translate(0, 75, -300);
+        const matrix: Mat4 = this.camera.projection.clone();
+        matrix.translate(0, 125, -300);
         matrix.rotate(135 * toRadian, 0 * toRadian, 22.5 * toRadian);
-        //matrix.scale(2, 2, 2);
+        matrix.scale(1.5, 1.5, 1.5);
         //vertecies
         const stride: int = 3;
         const positions: Float32Array = new Float32Array([
@@ -94,20 +92,9 @@ class Renderer {
         //finish with setting up this vao
         this.gl.bindVertexArray(null);
 
-        //set render dimensions
-        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-        //set background color and clear
-        this.gl.clearColor(
-            this.clearColor.x,
-            this.clearColor.y,
-            this.clearColor.z,
-            1.0
-        );
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-        //enable backface culling
-        this.gl.enable(this.gl.CULL_FACE);
-        //enable depth buffer
-        this.gl.enable(this.gl.DEPTH_TEST);
+        //////////////////LOOP//////////////////
+
+        this.clearContext();
 
         //set current program
         this.gl.useProgram(program);
@@ -119,19 +106,20 @@ class Renderer {
         this.gl.drawArrays(this.gl.TRIANGLES, 0, positions.length / stride);
     }
 
-    private createCanvas(): void {
-        this.canvas = document.createElement("canvas");
-        this.canvas.width = document.body.clientWidth * devicePixelRatio;
-        this.canvas.height = document.body.clientHeight * devicePixelRatio;
-        this.canvas.style.width = "100%";
-        this.canvas.style.height = "100%";
+    private createCanvas(): HTMLCanvasElement {
+        const canvas: HTMLCanvasElement = document.createElement("canvas");
+        canvas.width = document.body.clientWidth * devicePixelRatio;
+        canvas.height = document.body.clientHeight * devicePixelRatio;
+        canvas.style.width = "100%";
+        canvas.style.height = "100%";
 
-        document.body.appendChild(this.canvas);
+        document.body.appendChild(canvas);
+        return canvas;
     }
 
-    private createContext(): void {
+    private createContext(canvas: HTMLCanvasElement): void {
         const context: Nullable<WebGL2RenderingContext> =
-            this.canvas.getContext("webgl2");
+            canvas.getContext("webgl2");
 
         if (!context) {
             console.error("Renderer: Get WebGL2RenderingContext failed.");
@@ -142,5 +130,25 @@ class Renderer {
 
     private createShaderManager(): void {
         this.shaderManager = new ShaderManager(this.gl);
+    }
+
+    private createCamera(): void {
+        this.camera = new Camera(this.gl, 1000);
+    }
+
+    private initializeContext(): void {
+        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+        this.gl.enable(this.gl.CULL_FACE);
+        this.gl.enable(this.gl.DEPTH_TEST);
+    }
+
+    private clearContext(): void {
+        this.gl.clearColor(
+            this.clearColor.x,
+            this.clearColor.y,
+            this.clearColor.z,
+            1.0
+        );
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
 }

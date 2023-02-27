@@ -10,9 +10,83 @@ class Vec3 {
     public z: float;
 
     public constructor(x: float = 0, y: float = 0, z: float = 0) {
+        this.set(x, y, z);
+    }
+
+    public set(x: float, y: float, z: float): Vec3 {
         this.x = x;
         this.y = y;
         this.z = z;
+        return this;
+    }
+
+    public add(x: Vec3 | float, y?: float, z?: float): Vec3 {
+        if (x instanceof Vec3) {
+            z = x.z;
+            y = x.y;
+            x = x.x;
+        } else if (y === undefined || z === undefined) {
+            z = x;
+            y = x;
+        }
+        this.x += x;
+        this.y += y;
+        this.z += z;
+        return this;
+    }
+
+    public sub(x: Vec3 | float, y?: float, z?: float): Vec3 {
+        if (x instanceof Vec3) {
+            z = x.z;
+            y = x.y;
+            x = x.x;
+        } else if (y === undefined || z === undefined) {
+            z = x;
+            y = x;
+        }
+        this.x -= x;
+        this.y -= y;
+        this.z -= z;
+        return this;
+    }
+
+    public scale(x: Vec3 | float, y?: float, z?: float): Vec3 {
+        if (x instanceof Vec3) {
+            z = x.z;
+            y = x.y;
+            x = x.x;
+        } else if (y === undefined || z === undefined) {
+            z = x;
+            y = x;
+        }
+        this.x *= x;
+        this.y *= y;
+        this.z *= z;
+        return this;
+    }
+
+    public divide(x: Vec3 | float, y?: float, z?: float): Vec3 {
+        if (x instanceof Vec3) {
+            z = x.z;
+            y = x.y;
+            x = x.x;
+        } else if (y === undefined || z === undefined) {
+            z = x;
+            y = x;
+        }
+        this.x /= x;
+        this.y /= y;
+        this.z /= z;
+        return this;
+    }
+
+    public length(): float {
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    }
+
+    public normalize(): Vec3 {
+        this.divide(this.length());
+        return this;
     }
 
     public applyMat(mat: Mat4): Vec3 {
@@ -42,5 +116,26 @@ class Vec3 {
                 mat.values[14]) *
             w;
         return this;
+    }
+
+    public copy(v: Vec3): Vec3 {
+        this.set(v.x, v.y, v.z);
+        return this;
+    }
+
+    public clone(): Vec3 {
+        return new Vec3(this.x, this.y, this.z);
+    }
+
+    public static Dot(a: Vec3, b: Vec3): float {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    public static Cross(a: Vec3, b: Vec3): Vec3 {
+        return new Vec3(
+            a.y * b.z - a.z * b.y,
+            a.z * b.x - a.x * b.z,
+            a.x * b.y - a.y * b.x
+        );
     }
 }
