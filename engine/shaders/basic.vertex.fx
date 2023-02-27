@@ -16,7 +16,8 @@ out vec3 finalVertexPosition;
 
 void main() {
 
-    finalVertexPosition = (objectMatrix * vec4(vertexPosition, 1.0)).xyz;
+    vec4 finalClipSpace = objectMatrix * vec4(vertexPosition, 1.0);
+    finalVertexPosition = finalClipSpace.xyz;
 
-    gl_Position = vec4(finalVertexPosition, 1.0);
+    gl_Position = finalClipSpace;
 }
