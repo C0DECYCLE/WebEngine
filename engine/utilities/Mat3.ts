@@ -100,16 +100,9 @@ class Mat3 {
         height: float,
         isFloat32?: boolean
     ): Mat3 {
+        // prettier-ignore
         return new Mat3(isFloat32).set(
-            2 / width,
-            0,
-            0,
-            0,
-            -2 / height,
-            0,
-            -1,
-            1,
-            1
+            2 / width, 0, 0, 0, -2 / height, 0, -1, 1, 1
         );
     }
 }

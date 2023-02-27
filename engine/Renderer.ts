@@ -28,15 +28,24 @@ class Renderer {
             document.body.clientWidth,
             0,
             document.body.clientHeight,
-            400,
-            -400
+            600,
+            -600
         );
+        /*
+        const projectionMatrix: Mat4 = Mat4.perspective(
+            60 * toRadian,
+            this.canvas.width / this.canvas.height,
+            1,
+            1000
+        );
+        */
+        log(projectionMatrix);
         //matrix
-        const matrix: Mat4 = new Mat4(true);
-        matrix.multiply(projectionMatrix);
-        matrix.translate(450, 250, 0);
+        const matrix: Mat4 = projectionMatrix.clone();
+        matrix.translate(0, 0, -400);
         matrix.rotate(-45 * toRadian, -25 * toRadian, -35 * toRadian);
         matrix.scale(2, 2, 2);
+        log(matrix);
         //vertecies
         const stride: int = 3;
         const positions: Float32Array = new Float32Array([

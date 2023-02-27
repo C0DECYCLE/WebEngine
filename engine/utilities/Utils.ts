@@ -6,7 +6,6 @@
 
 const log = console.log;
 
-const PI: float = Math.PI;
 const PHI: float = (1.0 + 5.0 ** 0.5) / 2.0;
 
 const toAngle: float = 180 / Math.PI;

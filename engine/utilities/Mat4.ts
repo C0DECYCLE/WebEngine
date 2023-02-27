@@ -163,23 +163,27 @@ class Mat4 {
         far: float,
         isFloat32?: boolean
     ): Mat4 {
+        // prettier-ignore
         return new Mat4(isFloat32).set(
-            2 / (right - left),
-            0,
-            0,
-            0,
-            0,
-            2 / (top - bottom),
-            0,
-            0,
-            0,
-            0,
-            2 / (near - far),
-            0,
-            (left + right) / (left - right),
-            (bottom + top) / (bottom - top),
-            (near + far) / (near - far),
-            1
+            2 / (right - left), 0, 0, 0, 0, 2 / (top - bottom), 0, 0, 0, 0,
+            2 / (near - far), 0, (left + right) / (left - right),
+            (bottom + top) / (bottom - top), (near + far) / (near - far), 1
+        );
+    }
+
+    public static perspective(
+        fov: float,
+        aspect: float,
+        near: float,
+        far: float,
+        isFloat32?: boolean
+    ): Mat4 {
+        const f: float = Math.tan(Math.PI * 0.5 - 0.5 * fov);
+        const rangeInv: float = 1.0 / (near - far);
+        // prettier-ignore
+        return new Mat4(isFloat32).set(
+            f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (near + far) * rangeInv, -1,
+            0, 0, near * far * rangeInv * 2, 0,
         );
     }
 }
