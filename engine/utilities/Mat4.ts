@@ -123,40 +123,53 @@ class Mat4 {
         return this;
     }
 
-    public multiply(mat: Mat4): Mat4 {
-        const a00 = this.values[0];
-        const a01 = this.values[1];
-        const a02 = this.values[2];
-        const a03 = this.values[3];
-        const a10 = this.values[4];
-        const a11 = this.values[5];
-        const a12 = this.values[6];
-        const a13 = this.values[7];
-        const a20 = this.values[8];
-        const a21 = this.values[9];
-        const a22 = this.values[10];
-        const a23 = this.values[11];
-        const a30 = this.values[12];
-        const a31 = this.values[13];
-        const a32 = this.values[14];
-        const a33 = this.values[15];
+    public lookAt(position: Vec3, target: Vec3, up: Vec3): Mat4 {
+        const zAxis: Vec3 = position.clone().sub(target).normalize();
+        const xAxis: Vec3 = Vec3.Cross(up, zAxis).normalize();
+        const yAxis: Vec3 = Vec3.Cross(zAxis, xAxis).normalize();
+        // prettier-ignore
+        return this.set(
+            xAxis.x, xAxis.y, xAxis.z, 0,
+            yAxis.x, yAxis.y, yAxis.z, 0,
+            zAxis.x, zAxis.y, zAxis.z, 0,
+            position.x, position.y, position.z, 1
+        );
+    }
 
-        const b00 = mat.values[0];
-        const b01 = mat.values[1];
-        const b02 = mat.values[2];
-        const b03 = mat.values[3];
-        const b10 = mat.values[4];
-        const b11 = mat.values[5];
-        const b12 = mat.values[6];
-        const b13 = mat.values[7];
-        const b20 = mat.values[8];
-        const b21 = mat.values[9];
-        const b22 = mat.values[10];
-        const b23 = mat.values[11];
-        const b30 = mat.values[12];
-        const b31 = mat.values[13];
-        const b32 = mat.values[14];
-        const b33 = mat.values[15];
+    public multiply(b: Mat4, a: Mat4 = this): Mat4 {
+        const a00 = a.values[0];
+        const a01 = a.values[1];
+        const a02 = a.values[2];
+        const a03 = a.values[3];
+        const a10 = a.values[4];
+        const a11 = a.values[5];
+        const a12 = a.values[6];
+        const a13 = a.values[7];
+        const a20 = a.values[8];
+        const a21 = a.values[9];
+        const a22 = a.values[10];
+        const a23 = a.values[11];
+        const a30 = a.values[12];
+        const a31 = a.values[13];
+        const a32 = a.values[14];
+        const a33 = a.values[15];
+
+        const b00 = b.values[0];
+        const b01 = b.values[1];
+        const b02 = b.values[2];
+        const b03 = b.values[3];
+        const b10 = b.values[4];
+        const b11 = b.values[5];
+        const b12 = b.values[6];
+        const b13 = b.values[7];
+        const b20 = b.values[8];
+        const b21 = b.values[9];
+        const b22 = b.values[10];
+        const b23 = b.values[11];
+        const b30 = b.values[12];
+        const b31 = b.values[13];
+        const b32 = b.values[14];
+        const b33 = b.values[15];
 
         this.values[0] = b00 * a00 + b01 * a10 + b02 * a20 + b03 * a30;
         this.values[1] = b00 * a01 + b01 * a11 + b02 * a21 + b03 * a31;
@@ -390,24 +403,6 @@ class Mat4 {
             0, f, 0, 0,
             0, 0, (near + far) * rangeInv, -1,
             0, 0, near * far * rangeInv * 2, 0,
-        );
-    }
-
-    public static LookAt(
-        position: Vec3,
-        target: Vec3,
-        up: Vec3,
-        isFloat32?: boolean
-    ): Mat4 {
-        const zAxis: Vec3 = position.clone().sub(target).normalize();
-        const xAxis: Vec3 = Vec3.Cross(up, zAxis).normalize();
-        const yAxis: Vec3 = Vec3.Cross(zAxis, xAxis).normalize();
-        // prettier-ignore
-        return new Mat4(isFloat32).set(
-            xAxis.x, xAxis.y, xAxis.z, 0,
-            yAxis.x, yAxis.y, yAxis.z, 0,
-            zAxis.x, zAxis.y, zAxis.z, 0,
-            position.x, position.y, position.z, 1
         );
     }
 }

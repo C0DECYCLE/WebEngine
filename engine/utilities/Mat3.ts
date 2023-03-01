@@ -74,26 +74,26 @@ class Mat3 {
         return this;
     }
 
-    public multiply(mat: Mat3): Mat3 {
-        const a00 = this.values[0];
-        const a01 = this.values[1];
-        const a02 = this.values[2];
-        const a10 = this.values[3];
-        const a11 = this.values[4];
-        const a12 = this.values[5];
-        const a20 = this.values[6];
-        const a21 = this.values[7];
-        const a22 = this.values[8];
+    public multiply(b: Mat3, a: Mat3 = this): Mat3 {
+        const a00 = a.values[0];
+        const a01 = a.values[1];
+        const a02 = a.values[2];
+        const a10 = a.values[3];
+        const a11 = a.values[4];
+        const a12 = a.values[5];
+        const a20 = a.values[6];
+        const a21 = a.values[7];
+        const a22 = a.values[8];
 
-        const b00 = mat.values[0];
-        const b01 = mat.values[1];
-        const b02 = mat.values[2];
-        const b10 = mat.values[3];
-        const b11 = mat.values[4];
-        const b12 = mat.values[5];
-        const b20 = mat.values[6];
-        const b21 = mat.values[7];
-        const b22 = mat.values[8];
+        const b00 = b.values[0];
+        const b01 = b.values[1];
+        const b02 = b.values[2];
+        const b10 = b.values[3];
+        const b11 = b.values[4];
+        const b12 = b.values[5];
+        const b20 = b.values[6];
+        const b21 = b.values[7];
+        const b22 = b.values[8];
 
         this.values[0] = b00 * a00 + b01 * a10 + b02 * a20;
         this.values[1] = b00 * a01 + b01 * a11 + b02 * a21;

@@ -12,6 +12,8 @@ type Nullable<T> = T | null;
 
 type EmptyCallback = () => void;
 
+class MapS<T> extends Map<string, T> {}
+
 interface Number {
     between(a: int | float, b: int | float): boolean;
     dotit(): string;
@@ -26,5 +28,3 @@ interface String {
 interface Array<T> {
     clear(): void;
 }
-
-class MapS<T> extends Map<string, T> {}
