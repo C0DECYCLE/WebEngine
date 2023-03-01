@@ -28,19 +28,24 @@ class Renderer {
         this.initializeContext();
 
         //////////////////SETUP//////////////////
-        this.camera.position.set(0, 0, 300);
+        this.camera.position.set(100, 150, 250);
+        this.camera.target.set(0, 0, 0);
         this.camera.update();
 
-        let matrix: Mat4 = new Mat4(); //object world transform matrix
-        matrix.translate(0, 125, -300);
-        matrix.rotate(135 * toRadian, 0 * toRadian, 22.5 * toRadian);
-        matrix.scale(1.5, 1.5, 1.5);
-        matrix.multiply(matrix, this.camera.viewProjection);
+        let objectWorld: Mat4 = new Mat4(); //object world transform matrix
+        //objectWorld.translate(0, 125, -300);
+        objectWorld.translate(-40, 0, -40);
+        //objectWorld.rotate(135 * toRadian, 0 * toRadian, 22.5 * toRadian);
+        objectWorld.rotate(90 * toRadian, 0 * toRadian, 0 * toRadian);
+        //objectWorld.scale(1.5, 1.5, 1.5);
 
         const program: WebGLProgram = this.shaderManager.programs.get("basic")!; //make shaders and shader programm
 
-        const matrixUniformLocation: Nullable<WebGLUniformLocation> =
-            this.gl.getUniformLocation(program, "objectMatrix"); //lookup uniform location
+        const objectWorldUniformLocation: Nullable<WebGLUniformLocation> =
+            this.gl.getUniformLocation(program, "objectWorld"); //lookup uniform location
+
+        const viewProjectionUniformLocation: Nullable<WebGLUniformLocation> =
+            this.gl.getUniformLocation(program, "viewProjection"); //lookup uniform location
 
         const positionAttributeLocation: int = this.gl.getAttribLocation(
             program,
@@ -83,7 +88,16 @@ class Renderer {
 
         this.gl.bindVertexArray(vao); //set vertex array object to use
 
-        this.gl.uniformMatrix4fv(matrixUniformLocation, false, matrix.values); //set unifrom for object
+        this.gl.uniformMatrix4fv(
+            objectWorldUniformLocation,
+            false,
+            objectWorld.values
+        ); //set unifrom for object matrix
+        this.gl.uniformMatrix4fv(
+            viewProjectionUniformLocation,
+            false,
+            this.camera.viewProjection.values
+        ); //set unifrom for object
 
         this.gl.drawArrays(this.gl.TRIANGLES, 0, Fpositions.length / 3); //draw call
     }

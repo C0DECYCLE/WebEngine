@@ -8,7 +8,8 @@
 
 precision highp float;
  
-uniform mat4 objectMatrix;
+uniform mat4 objectWorld;
+uniform mat4 viewProjection;
 
 layout(location = 0) in vec3 vertexPosition;
  
@@ -16,8 +17,8 @@ out vec3 finalVertexPosition;
 
 void main() {
 
-    vec4 finalClipSpace = objectMatrix * vec4(vertexPosition, 1.0);
-    finalVertexPosition = finalClipSpace.xyz;
+    vec4 finalWorldPosition = objectWorld * vec4(vertexPosition, 1.0);
+    finalVertexPosition = finalWorldPosition.xyz;
 
-    gl_Position = finalClipSpace;
+    gl_Position = viewProjection * finalWorldPosition;
 }

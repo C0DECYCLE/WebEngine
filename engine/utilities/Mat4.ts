@@ -31,6 +31,19 @@ class Mat4 {
         );
     }
 
+    public lookAt(position: Vec3, target: Vec3, up: Vec3): Mat4 {
+        const zAxis: Vec3 = position.clone().sub(target).normalize();
+        const xAxis: Vec3 = Vec3.Cross(up, zAxis).normalize();
+        const yAxis: Vec3 = Vec3.Cross(zAxis, xAxis).normalize();
+        // prettier-ignore
+        return this.set(
+            xAxis.x, xAxis.y, xAxis.z, 0,
+            yAxis.x, yAxis.y, yAxis.z, 0,
+            zAxis.x, zAxis.y, zAxis.z, 0,
+            position.x, position.y, position.z, 1
+        );
+    }
+
     public translate(x: Vec3 | float, y?: float, z?: float): Mat4 {
         if (x instanceof Vec3) {
             z = x.z;
@@ -121,19 +134,6 @@ class Mat4 {
             0, 0, 0, 1
         ));
         return this;
-    }
-
-    public lookAt(position: Vec3, target: Vec3, up: Vec3): Mat4 {
-        const zAxis: Vec3 = position.clone().sub(target).normalize();
-        const xAxis: Vec3 = Vec3.Cross(up, zAxis).normalize();
-        const yAxis: Vec3 = Vec3.Cross(zAxis, xAxis).normalize();
-        // prettier-ignore
-        return this.set(
-            xAxis.x, xAxis.y, xAxis.z, 0,
-            yAxis.x, yAxis.y, yAxis.z, 0,
-            zAxis.x, zAxis.y, zAxis.z, 0,
-            position.x, position.y, position.z, 1
-        );
     }
 
     public multiply(b: Mat4, a: Mat4 = this): Mat4 {
