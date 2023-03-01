@@ -5,20 +5,22 @@
 */
 
 class Renderer {
+    public delta: float = 0;
+
     public camera: Camera;
 
-    private gl: WebGL2RenderingContext;
+    private readonly clearColor: Vec3;
+    private then: float = -1;
 
+    private gl: WebGL2RenderingContext;
     private shaderManager: ShaderManager;
 
-    private clearColor: Vec3;
-
     public constructor(clearColor: Vec3) {
+        this.clearColor = clearColor;
+
         this.createContext(this.createCanvas());
         this.createShaderManager();
         this.createCamera();
-
-        this.clearColor = clearColor;
     }
 
     public async initialize(): Promise<void> {
@@ -26,32 +28,14 @@ class Renderer {
         this.initializeContext();
 
         //////////////////SETUP//////////////////
+        this.camera.position.set(0, 0, 300);
+        this.camera.update();
 
-        const matrix: Mat4 = this.camera.projection.clone(); //object world transform matrix
+        let matrix: Mat4 = new Mat4(); //object world transform matrix
         matrix.translate(0, 125, -300);
         matrix.rotate(135 * toRadian, 0 * toRadian, 22.5 * toRadian);
         matrix.scale(1.5, 1.5, 1.5);
-
-        const stride: int = 3; //attribute stride
-        const positions: Float32Array = new Float32Array([
-            0, 0, 0, 0, 150, 0, 30, 0, 0, 0, 150, 0, 30, 150, 0, 30, 0, 0, 30,
-            0, 0, 30, 30, 0, 100, 0, 0, 30, 30, 0, 100, 30, 0, 100, 0, 0, 30,
-            60, 0, 30, 90, 0, 67, 60, 0, 30, 90, 0, 67, 90, 0, 67, 60, 0, 0, 0,
-            30, 30, 0, 30, 0, 150, 30, 0, 150, 30, 30, 0, 30, 30, 150, 30, 30,
-            0, 30, 100, 0, 30, 30, 30, 30, 30, 30, 30, 100, 0, 30, 100, 30, 30,
-            30, 60, 30, 67, 60, 30, 30, 90, 30, 30, 90, 30, 67, 60, 30, 67, 90,
-            30, 0, 0, 0, 100, 0, 0, 100, 0, 30, 0, 0, 0, 100, 0, 30, 0, 0, 30,
-            100, 0, 0, 100, 30, 0, 100, 30, 30, 100, 0, 0, 100, 30, 30, 100, 0,
-            30, 30, 30, 0, 30, 30, 30, 100, 30, 30, 30, 30, 0, 100, 30, 30, 100,
-            30, 0, 30, 30, 0, 30, 60, 30, 30, 30, 30, 30, 30, 0, 30, 60, 0, 30,
-            60, 30, 30, 60, 0, 67, 60, 30, 30, 60, 30, 30, 60, 0, 67, 60, 0, 67,
-            60, 30, 67, 60, 0, 67, 90, 30, 67, 60, 30, 67, 60, 0, 67, 90, 0, 67,
-            90, 30, 30, 90, 0, 30, 90, 30, 67, 90, 30, 30, 90, 0, 67, 90, 30,
-            67, 90, 0, 30, 90, 0, 30, 150, 30, 30, 90, 30, 30, 90, 0, 30, 150,
-            0, 30, 150, 30, 0, 150, 0, 0, 150, 30, 30, 150, 30, 0, 150, 0, 30,
-            150, 30, 30, 150, 0, 0, 0, 0, 0, 0, 30, 0, 150, 30, 0, 0, 0, 0, 150,
-            30, 0, 150, 0,
-        ]); //vertecies cpu buffer
+        matrix.multiply(matrix, this.camera.viewProjection);
 
         const program: WebGLProgram = this.shaderManager.programs.get("basic")!; //make shaders and shader programm
 
@@ -76,13 +60,13 @@ class Renderer {
 
         this.gl.bufferData(
             this.gl.ARRAY_BUFFER,
-            positions,
+            Fpositions,
             this.gl.STATIC_DRAW
         ); //transfer cpu to gpu buffer
 
         this.gl.vertexAttribPointer(
             positionAttributeLocation,
-            stride,
+            3, //stride
             this.gl.FLOAT,
             false,
             0,
@@ -101,7 +85,21 @@ class Renderer {
 
         this.gl.uniformMatrix4fv(matrixUniformLocation, false, matrix.values); //set unifrom for object
 
-        this.gl.drawArrays(this.gl.TRIANGLES, 0, positions.length / stride); //draw call
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, Fpositions.length / 3); //draw call
+    }
+
+    public render(now: float): void {
+        if (this.then === -1) {
+            this.then = now;
+        }
+
+        this.delta = now - this.then;
+
+        //////////////////UPDATE//////////////////
+
+        //////////////////DRAW//////////////////
+
+        this.then = now;
     }
 
     private createCanvas(): HTMLCanvasElement {

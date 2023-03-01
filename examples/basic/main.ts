@@ -11,4 +11,11 @@ let renderer: Renderer;
 window.addEventListener("compile", async (_event: Event): Promise<void> => {
     renderer = new Renderer(clearColor);
     await renderer.initialize();
+
+    function render(now: float): void {
+        renderer.render(now);
+
+        requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
 });
