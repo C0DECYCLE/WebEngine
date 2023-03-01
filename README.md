@@ -1,2 +1,3 @@
 # 🪶 WebEngine
-> A lightweight fast graphics engine for the web.
+
+> A lightweight fast low poly graphics engine for the web using WebGL.
