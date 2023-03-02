@@ -7,11 +7,15 @@
 */
 
 precision highp float;
- 
-uniform mat4 objectWorld;
+
+//uniforms
 uniform mat4 viewProjection;
 
-layout(location = 0) in vec3 vertexPosition;
+//instance uniforms
+in mat4 objectWorld;
+
+//attributes
+in vec3 vertexPosition;
  
 out vec3 finalVertexPosition;
 

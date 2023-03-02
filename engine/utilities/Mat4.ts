@@ -379,6 +379,13 @@ class Mat4 {
         return this;
     }
 
+    public store(target: Float32Array | Float64Array, offset: int = 0): Mat4 {
+        for (let i: int = 0; i < this.values.length; i++) {
+            target[offset + i] = this.values[i];
+        }
+        return this;
+    }
+
     public clone(): Mat4 {
         return new Mat4(this.isFloat32).copy(this);
     }

@@ -100,6 +100,12 @@ class Vec2 {
         return this;
     }
 
+    public store(target: Float32Array | Float64Array, offset: int = 0): Vec2 {
+        target[offset + 0] = this.x;
+        target[offset + 1] = this.y;
+        return this;
+    }
+
     public clone(): Vec2 {
         return new Vec2(this.x, this.y);
     }

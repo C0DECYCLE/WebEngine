@@ -53,39 +53,89 @@ class Renderer {
         this.camera.position.set(1, 1.5, 2);
         this.camera.target.set(0, 0, 0);
 
-        let objectWorld: Mat4 = new Mat4();
+        const objectNumInstances: int = 3;
+        const objectWorldInstances: Float32Array = new Float32Array(
+            objectNumInstances * 16 //Mat4 = 16 floats
+        );
+
+        const objectWorld: Mat4 = new Mat4();
         objectWorld.translate(0, 0, -1);
         objectWorld.rotate(90 * toRadian, 0, 0);
 
-        let object2World: Mat4 = new Mat4();
+        const objectWorld2: Mat4 = new Mat4();
+        objectWorld2.translate(-2, 0, 0);
+        objectWorld2.rotate(180 * toRadian, 0, 0);
+
+        const objectWorld3: Mat4 = new Mat4();
+        objectWorld3.translate(-1, 1, -1);
+        objectWorld3.rotate(180 * toRadian, 0, 0);
+
+        objectWorld.store(objectWorldInstances, 0 * 16);
+        objectWorld2.store(objectWorldInstances, 1 * 16);
+        objectWorld3.store(objectWorldInstances, 2 * 16);
+
+        /*
+        const object2World: Mat4 = new Mat4();
         object2World.translate(-1, 0, 0);
+        */
 
-        const program: WebGLProgram = this.shaderManager.programs.get("basic")!;
+        const basicProgram: WebGLProgram =
+            this.shaderManager.programs.get("basic")!;
 
-        const objectWorldUniformLocation: Nullable<WebGLUniformLocation> =
-            this.gl.getUniformLocation(program, "objectWorld");
         const viewProjectionUniformLocation: Nullable<WebGLUniformLocation> =
-            this.gl.getUniformLocation(program, "viewProjection");
+            this.gl.getUniformLocation(basicProgram, "viewProjection");
+        const objectWorldInstanceUniformLocation: int =
+            this.gl.getAttribLocation(basicProgram, "objectWorld");
+        const vertexPositionAttributeLocation: int = this.gl.getAttribLocation(
+            basicProgram,
+            "vertexPosition"
+        );
 
-        const vao: Nullable<WebGLVertexArrayObject> =
+        const objectVAO: Nullable<WebGLVertexArrayObject> =
             this.gl.createVertexArray();
+        this.gl.bindVertexArray(objectVAO);
 
-        this.gl.bindVertexArray(vao);
+        const objectWorldInstancesBuffer: Nullable<WebGLBuffer> =
+            this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, objectWorldInstancesBuffer);
+        this.gl.bufferData(
+            this.gl.ARRAY_BUFFER,
+            objectWorldInstances.byteLength, //2 * 16 * 4
+            this.gl.DYNAMIC_DRAW
+        );
+        this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, objectWorldInstances);
 
-        this.gl.enableVertexAttribArray(0);
+        //Mat4 needs 4 vertex attributes (max 4 floats per attribute)
+        for (let i = 0; i < 4; ++i) {
+            this.gl.enableVertexAttribArray(
+                objectWorldInstanceUniformLocation + i
+            );
+            this.gl.vertexAttribPointer(
+                objectWorldInstanceUniformLocation + i,
+                4,
+                this.gl.FLOAT,
+                false,
+                16 * 4, // bytes per instance matrix stride
+                i * 4 * 4 // offset in buffer, 4 floats per row, 4 bytes per float
+            );
+            this.gl.vertexAttribDivisor(
+                objectWorldInstanceUniformLocation + i,
+                1
+            ); // only change once per instance
+        }
 
-        const positionBuffer: Nullable<WebGLBuffer> = this.gl.createBuffer();
-
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
-
+        const vertexPositionsBuffer: Nullable<WebGLBuffer> =
+            this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexPositionsBuffer);
         this.gl.bufferData(
             this.gl.ARRAY_BUFFER,
             Fpositions,
             this.gl.STATIC_DRAW
         );
 
+        this.gl.enableVertexAttribArray(vertexPositionAttributeLocation);
         this.gl.vertexAttribPointer(
-            0,
+            vertexPositionAttributeLocation,
             3, //stride
             this.gl.FLOAT,
             false,
@@ -93,23 +143,20 @@ class Renderer {
             0
         );
 
+        /*
         const vao2: Nullable<WebGLVertexArrayObject> =
             this.gl.createVertexArray();
-
         this.gl.bindVertexArray(vao2);
 
-        this.gl.enableVertexAttribArray(0);
-
         const position2Buffer: Nullable<WebGLBuffer> = this.gl.createBuffer();
-
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, position2Buffer);
-
         this.gl.bufferData(
             this.gl.ARRAY_BUFFER,
             TORUSpositions,
             this.gl.STATIC_DRAW
         );
 
+        this.gl.enableVertexAttribArray(0);
         this.gl.vertexAttribPointer(
             0,
             3, //stride
@@ -118,6 +165,7 @@ class Renderer {
             0,
             0
         );
+        */
 
         this.gl.bindVertexArray(null);
 
@@ -127,9 +175,9 @@ class Renderer {
 
         this.clearViewport();
 
-        this.gl.useProgram(program);
+        this.gl.useProgram(basicProgram);
 
-        this.gl.bindVertexArray(vao);
+        this.gl.bindVertexArray(objectVAO);
 
         this.gl.uniformMatrix4fv(
             viewProjectionUniformLocation,
@@ -137,14 +185,14 @@ class Renderer {
             this.camera.viewProjection.values
         );
 
-        this.gl.uniformMatrix4fv(
-            objectWorldUniformLocation,
-            false,
-            objectWorld.values
+        this.gl.drawArraysInstanced(
+            this.gl.TRIANGLES,
+            0,
+            Fpositions.length / 3, // num vertices per instance
+            objectNumInstances // num instances
         );
 
-        this.gl.drawArrays(this.gl.TRIANGLES, 0, Fpositions.length / 3);
-
+        /*
         this.gl.bindVertexArray(vao2);
 
         this.gl.uniformMatrix4fv(
@@ -160,6 +208,7 @@ class Renderer {
         );
 
         this.gl.drawArrays(this.gl.TRIANGLES, 0, TORUSpositions.length / 3);
+        */
     }
 
     public render(now: float): void {

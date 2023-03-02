@@ -163,6 +163,13 @@ class Mat3 {
         return this;
     }
 
+    public store(target: Float32Array | Float64Array, offset: int = 0): Mat3 {
+        for (let i: int = 0; i < this.values.length; i++) {
+            target[offset + i] = this.values[i];
+        }
+        return this;
+    }
+
     public clone(): Mat3 {
         return new Mat3(this.isFloat32).copy(this);
     }

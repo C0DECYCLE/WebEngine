@@ -135,6 +135,13 @@ class Vec3 {
         return this;
     }
 
+    public store(target: Float32Array | Float64Array, offset: int = 0): Vec3 {
+        target[offset + 0] = this.x;
+        target[offset + 1] = this.y;
+        target[offset + 2] = this.z;
+        return this;
+    }
+
     public clone(): Vec3 {
         return new Vec3(this.x, this.y, this.z);
     }
