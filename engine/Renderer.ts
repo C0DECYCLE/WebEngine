@@ -74,11 +74,6 @@ class Renderer {
         objectWorld2.store(objectWorldInstances, 1 * 16);
         objectWorld3.store(objectWorldInstances, 2 * 16);
 
-        /*
-        const object2World: Mat4 = new Mat4();
-        object2World.translate(-1, 0, 0);
-        */
-
         const basicProgram: WebGLProgram =
             this.shaderManager.programs.get("basic")!;
 
@@ -143,30 +138,6 @@ class Renderer {
             0
         );
 
-        /*
-        const vao2: Nullable<WebGLVertexArrayObject> =
-            this.gl.createVertexArray();
-        this.gl.bindVertexArray(vao2);
-
-        const position2Buffer: Nullable<WebGLBuffer> = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, position2Buffer);
-        this.gl.bufferData(
-            this.gl.ARRAY_BUFFER,
-            TORUSpositions,
-            this.gl.STATIC_DRAW
-        );
-
-        this.gl.enableVertexAttribArray(0);
-        this.gl.vertexAttribPointer(
-            0,
-            3, //stride
-            this.gl.FLOAT,
-            false,
-            0,
-            0
-        );
-        */
-
         this.gl.bindVertexArray(null);
 
         //////////////////LOOP//////////////////
@@ -185,30 +156,15 @@ class Renderer {
             this.camera.viewProjection.values
         );
 
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, objectWorldInstancesBuffer);
+        this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, objectWorldInstances);
+
         this.gl.drawArraysInstanced(
             this.gl.TRIANGLES,
             0,
             Fpositions.length / 3, // num vertices per instance
             objectNumInstances // num instances
         );
-
-        /*
-        this.gl.bindVertexArray(vao2);
-
-        this.gl.uniformMatrix4fv(
-            viewProjectionUniformLocation,
-            false,
-            this.camera.viewProjection.values
-        );
-
-        this.gl.uniformMatrix4fv(
-            objectWorldUniformLocation,
-            false,
-            object2World.values
-        );
-
-        this.gl.drawArrays(this.gl.TRIANGLES, 0, TORUSpositions.length / 3);
-        */
     }
 
     public render(now: float): void {
