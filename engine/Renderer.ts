@@ -30,7 +30,6 @@ class Renderer {
         //////////////////SETUP//////////////////
         this.camera.position.set(100, 150, 250);
         this.camera.target.set(0, 0, 0);
-        this.camera.update();
 
         let objectWorld: Mat4 = new Mat4(); //object world transform matrix
         //objectWorld.translate(0, 125, -300);
@@ -47,17 +46,17 @@ class Renderer {
         const viewProjectionUniformLocation: Nullable<WebGLUniformLocation> =
             this.gl.getUniformLocation(program, "viewProjection"); //lookup uniform location
 
-        const positionAttributeLocation: int = this.gl.getAttribLocation(
-            program,
-            "vertexPosition"
-        ); //lookup attribute location
+        //const positionAttributeLocation: int = this.gl.getAttribLocation(
+        //    program,
+        //    "vertexPosition"
+        //); //lookup attribute location
 
         const vao: Nullable<WebGLVertexArrayObject> =
             this.gl.createVertexArray(); //create vertex array object
 
         this.gl.bindVertexArray(vao); //enable putting stuff into vao
 
-        this.gl.enableVertexAttribArray(positionAttributeLocation); //enable data attribute
+        this.gl.enableVertexAttribArray(0 /*positionAttributeLocation*/); //enable data attribute
 
         const positionBuffer: Nullable<WebGLBuffer> = this.gl.createBuffer(); //create gpu buffer
 
@@ -70,7 +69,7 @@ class Renderer {
         ); //transfer cpu to gpu buffer
 
         this.gl.vertexAttribPointer(
-            positionAttributeLocation,
+            0 /*positionAttributeLocation*/,
             3, //stride
             this.gl.FLOAT,
             false,
@@ -93,6 +92,8 @@ class Renderer {
             false,
             objectWorld.values
         ); //set unifrom for object matrix
+
+        this.camera.update(); //compute the current viewProjection
         this.gl.uniformMatrix4fv(
             viewProjectionUniformLocation,
             false,
