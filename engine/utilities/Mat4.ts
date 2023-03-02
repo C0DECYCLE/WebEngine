@@ -53,6 +53,9 @@ class Mat4 {
             z = x;
             y = x;
         }
+        if (x === 0 && y === 0 && z === 0) {
+            return this;
+        }
         // prettier-ignore
         this.multiply(Mat4.Cache.set(
             1, 0, 0, 0,
@@ -79,6 +82,9 @@ class Mat4 {
     }
 
     public rotateX(radian: float): Mat4 {
+        if (radian === 0) {
+            return this;
+        }
         const c = Math.cos(radian);
         const s = Math.sin(radian);
         // prettier-ignore
@@ -92,6 +98,9 @@ class Mat4 {
     }
 
     public rotateY(radian: float): Mat4 {
+        if (radian === 0) {
+            return this;
+        }
         const c = Math.cos(radian);
         const s = Math.sin(radian);
         // prettier-ignore
@@ -105,6 +114,9 @@ class Mat4 {
     }
 
     public rotateZ(radian: float): Mat4 {
+        if (radian === 0) {
+            return this;
+        }
         const c = Math.cos(radian);
         const s = Math.sin(radian);
         // prettier-ignore
@@ -125,6 +137,9 @@ class Mat4 {
         } else if (y === undefined || z === undefined) {
             y = x;
             z = x;
+        }
+        if (x === 0 && y === 0 && z === 0) {
+            return this;
         }
         // prettier-ignore
         this.multiply(Mat4.Cache.set(

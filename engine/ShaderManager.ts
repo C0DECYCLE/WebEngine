@@ -19,7 +19,8 @@ class ShaderManager {
         this.gl = gl;
     }
 
-    public async initialize(): Promise<void> {
+    public async initialize(names: string[]): Promise<void> {
+        this.names.push(...names);
         await this.fetchShaderSources();
         this.createShaders();
         this.createPrograms();

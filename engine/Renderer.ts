@@ -5,15 +5,32 @@
 */
 
 class Renderer {
-    public delta: float = 0;
-
     public camera: Camera;
 
     private readonly clearColor: Vec3;
     private then: float = -1;
+    private deltaMs: float = 0;
+    private updateMs: float = 0;
+    private drawMs: float = 0;
 
     private gl: WebGL2RenderingContext;
     private shaderManager: ShaderManager;
+
+    public get deltaTime(): float {
+        return this.deltaMs;
+    }
+
+    public get updateTime(): float {
+        return this.updateMs;
+    }
+
+    public get drawTime(): float {
+        return this.drawMs;
+    }
+
+    public get fps(): float {
+        return 1000 / this.deltaMs;
+    }
 
     public constructor(clearColor: Vec3) {
         this.clearColor = clearColor;
@@ -23,8 +40,12 @@ class Renderer {
         this.createCamera();
     }
 
-    public async initialize(): Promise<void> {
-        await this.shaderManager.initialize();
+    public async initialize(
+        geometryNames: string[] = [],
+        shaderNames: string[] = []
+    ): Promise<void> {
+        //await this.geometryManager.initialize(geometryNames);
+        await this.shaderManager.initialize(shaderNames);
         this.initializeContext();
 
         //////////////////SETUP//////////////////
@@ -35,8 +56,12 @@ class Renderer {
         //objectWorld.translate(0, 125, -300);
         objectWorld.translate(-40, 0, -40);
         //objectWorld.rotate(135 * toRadian, 0 * toRadian, 22.5 * toRadian);
-        objectWorld.rotate(90 * toRadian, 0 * toRadian, 0 * toRadian);
+        objectWorld.rotate(90 * toRadian, 0, 0);
         //objectWorld.scale(1.5, 1.5, 1.5);
+
+        let object2World: Mat4 = new Mat4();
+        object2World.translate(-160, 0, 0);
+        object2World.rotate(90 * toRadian, 0, 0);
 
         const program: WebGLProgram = this.shaderManager.programs.get("basic")!; //make shaders and shader programm
 
@@ -87,18 +112,26 @@ class Renderer {
 
         this.gl.bindVertexArray(vao); //set vertex array object to use
 
-        this.gl.uniformMatrix4fv(
-            objectWorldUniformLocation,
-            false,
-            objectWorld.values
-        ); //set unifrom for object matrix
-
         this.camera.update(); //compute the current viewProjection
         this.gl.uniformMatrix4fv(
             viewProjectionUniformLocation,
             false,
             this.camera.viewProjection.values
         ); //set unifrom for object
+
+        this.gl.uniformMatrix4fv(
+            objectWorldUniformLocation,
+            false,
+            objectWorld.values
+        ); //set unifrom for object matrix
+
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, Fpositions.length / 3); //draw call
+
+        this.gl.uniformMatrix4fv(
+            objectWorldUniformLocation,
+            false,
+            object2World.values
+        ); //set unifrom for object matrix
 
         this.gl.drawArrays(this.gl.TRIANGLES, 0, Fpositions.length / 3); //draw call
     }
@@ -108,12 +141,17 @@ class Renderer {
             this.then = now;
         }
 
-        this.delta = now - this.then;
+        const preUpdateMs: float = performance.now();
 
-        //////////////////UPDATE//////////////////
+        this.updateFrame();
+        this.updateMs = performance.now() - preUpdateMs;
 
-        //////////////////DRAW//////////////////
+        const preDrawMs: float = performance.now();
 
+        this.drawFrame();
+        this.drawMs = performance.now() - preDrawMs;
+
+        this.deltaMs = now - this.then;
         this.then = now;
     }
 
@@ -151,6 +189,14 @@ class Renderer {
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
+    }
+
+    private updateFrame(): void {
+        //for each renderlist
+    }
+
+    private drawFrame(): void {
+        //this.clearContext();
     }
 
     private clearContext(): void {

@@ -37,6 +37,9 @@ class Mat3 {
         } else if (y === undefined) {
             y = x;
         }
+        if (x === 0 && y === 0) {
+            return this;
+        }
         // prettier-ignore
         this.multiply(Mat3.Cache.set(
             1, 0, 0,
@@ -47,6 +50,9 @@ class Mat3 {
     }
 
     public rotate(radian: float): Mat3 {
+        if (radian === 0) {
+            return this;
+        }
         const c = Math.cos(radian);
         const s = Math.sin(radian);
         // prettier-ignore
@@ -64,6 +70,9 @@ class Mat3 {
             x = x.x;
         } else if (y === undefined) {
             y = x;
+        }
+        if (x === 0 && y === 0) {
+            return this;
         }
         // prettier-ignore
         this.multiply(Mat3.Cache.set(
