@@ -124,7 +124,7 @@ class Renderer {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexPositionsBuffer);
         this.gl.bufferData(
             this.gl.ARRAY_BUFFER,
-            Fpositions,
+            TORUSpositions,
             this.gl.STATIC_DRAW
         );
 
@@ -162,7 +162,7 @@ class Renderer {
         this.gl.drawArraysInstanced(
             this.gl.TRIANGLES,
             0,
-            Fpositions.length / 3, // num vertices per instance
+            TORUSpositions.length / 3, // num vertices per instance
             objectNumInstances // num instances
         );
     }

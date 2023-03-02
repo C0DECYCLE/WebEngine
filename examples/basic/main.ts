@@ -4,7 +4,7 @@
     2023
 */
 
-const clearColor: Vec3 = new Vec3(0.8, 0.9, 0.8);
+const clearColor: Vec3 = new Vec3(0.9, 0.9, 0.9);
 
 let renderer: Renderer;
 
