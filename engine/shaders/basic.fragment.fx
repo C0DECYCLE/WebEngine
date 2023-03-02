@@ -26,15 +26,15 @@ vec3 getFaceNormal(vec3 vertexPosition) {
 
 float getHalfLambert(vec3 faceNormal, vec3 lightDirection) {
     float shade = dot(faceNormal, -lightDirection) * 0.5 + 0.5;
-    return max(0.0, shade * shade * 2.0);
+    return shade * shade * 2.0;
 }
 
 void main() {
     vec3 faceNormal = getFaceNormal(finalVertexPosition);
     vec3 lightDirection = normalize(vec3(-1.0, -1.0, 1.0));
 
-    vec3 objectColor = vec3(0.9, 0.5, 1.0);
-    vec3 lightColor = vec3(1.0, 0.9, 0.5);
+    vec3 objectColor = vec3(0.7, 0.5, 1.0);
+    vec3 lightColor = vec3(1.0, 0.7, 0.3);
 
     fragColor = vec4(
         mix(
