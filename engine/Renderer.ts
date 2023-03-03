@@ -14,6 +14,7 @@ class Renderer {
     private drawMs: float = 0;
 
     private gl: WebGL2RenderingContext;
+    private geometryManager: GeometryManager;
     private shaderManager: ShaderManager;
 
     public get deltaTime(): float {
@@ -36,6 +37,7 @@ class Renderer {
         this.clearColor = clearColor;
 
         this.createContext(this.createCanvas());
+        this.createGeometryManager();
         this.createShaderManager();
         this.createCamera();
     }
@@ -44,7 +46,7 @@ class Renderer {
         geometryNames: string[] = [],
         shaderNames: string[] = []
     ): Promise<void> {
-        //await this.geometryManager.initialize(geometryNames);
+        await this.geometryManager.initialize(geometryNames);
         await this.shaderManager.initialize(shaderNames);
         this.initializeContext();
 
@@ -52,6 +54,9 @@ class Renderer {
 
         this.camera.position.set(1, 1.5, 2);
         this.camera.target.set(0, 0, 0);
+
+        const geometryVertecies: Float32Array =
+            this.geometryManager.datas.get("torus")!.vertecies;
 
         const objectNumInstances: int = 3;
         const objectWorldInstances: Float32Array = new Float32Array(
@@ -124,7 +129,7 @@ class Renderer {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexPositionsBuffer);
         this.gl.bufferData(
             this.gl.ARRAY_BUFFER,
-            TORUSpositions,
+            geometryVertecies,
             this.gl.STATIC_DRAW
         );
 
@@ -162,7 +167,7 @@ class Renderer {
         this.gl.drawArraysInstanced(
             this.gl.TRIANGLES,
             0,
-            TORUSpositions.length / 3, // num vertices per instance
+            geometryVertecies.length / 3, // num vertices per instance
             objectNumInstances // num instances
         );
     }
@@ -206,6 +211,10 @@ class Renderer {
             return;
         }
         this.gl = context;
+    }
+
+    private createGeometryManager(): void {
+        this.geometryManager = new GeometryManager(this.gl);
     }
 
     private createShaderManager(): void {

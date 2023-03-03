@@ -87,7 +87,7 @@ class ShaderManager {
     private async fetchShaderSources(): Promise<void> {
         await Promise.all(
             this.shaderSourceUrls().map((sourceUrl: string) =>
-                this.mapShaderSourceUrls(sourceUrl)
+                this.fetchShaderSourceUrls(sourceUrl)
             )
         );
     }
@@ -103,7 +103,7 @@ class ShaderManager {
         return shaderSourceUrls;
     }
 
-    private mapShaderSourceUrls(sourceUrl: string): Promise<void | Response> {
+    private fetchShaderSourceUrls(sourceUrl: string): Promise<void | Response> {
         return fetch(sourceUrl).then(async (response) => {
             const shaderSourceInfo: Nullable<ShaderSourceInfo> =
                 this.getShaderSourceInfo(sourceUrl);
