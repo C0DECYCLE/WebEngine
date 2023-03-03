@@ -15,6 +15,7 @@ class GeometryManager {
     ];
 
     public readonly datas: MapS<GeometryData> = new MapS<GeometryData>();
+    public readonly list: MapS<Geometry> = new MapS<Geometry>();
 
     private readonly gl: WebGL2RenderingContext;
 
@@ -25,6 +26,7 @@ class GeometryManager {
     public async initialize(names: string[]): Promise<void> {
         this.names.push(...names);
         await this.fetchObjFiles();
+        this.createGeometries();
     }
 
     private async fetchObjFiles(): Promise<void> {
@@ -37,14 +39,14 @@ class GeometryManager {
 
     private objFileUrls(): string[] {
         const objFileUrls: string[] = [];
-        for (let i: int = 0; i < this.names.length; i++) {
-            objFileUrls.push(`${this.rootPath}${this.names[i]}.obj`);
-        }
+        this.names.forEach((name) =>
+            objFileUrls.push(`${this.rootPath}${name}.obj`)
+        );
         return objFileUrls;
     }
 
     private fetchObjFile(fileUrl: string): Promise<void | Response> {
-        return fetch(fileUrl).then(async (response) => {
+        return fetch(fileUrl).then(async (response: Response) => {
             const data = this.parseObjData(await response.text());
             this.datas.set(this.getNameFromFileUrl(fileUrl), data);
         });
@@ -55,9 +57,9 @@ class GeometryManager {
         const result: GeometryData = {} as GeometryData;
         const vertecies: float[] = [];
 
-        for (let i: int = 0; i < lines.length; i++) {
-            const prefix: string = lines[i][0];
-            const content: string = lines[i].slice(2, lines[i].length);
+        lines.forEach((line: string) => {
+            const prefix: string = line[0];
+            const content: string = line.slice(2, line.length);
 
             if (prefix === "o") {
                 result.name = content;
@@ -65,15 +67,17 @@ class GeometryManager {
                 vertecies.push(
                     ...content.split(" ").map((value) => Number(value))
                 );
-            } else {
-                continue;
             }
-        }
+        });
         result.vertecies = new Float32Array(vertecies);
         return result;
     }
 
     private getNameFromFileUrl(fileUrl: string): string {
         return fileUrl.split(".obj")[0].split("/").at(-1)!;
+    }
+
+    private createGeometries(): void {
+        this.datas.forEach((geometryData: GeometryData) => {});
     }
 }

@@ -9,9 +9,9 @@ class Camera {
     public readonly target: Vec3 = new Vec3(0, 0, -1);
     public readonly up: Vec3 = new Vec3(0, 1, 0);
 
-    public readonly viewProjection: Mat4 = new Mat4();
+    public readonly viewProjection: Mat4 = new Mat4(true);
 
-    private readonly world: Mat4 = new Mat4();
+    private readonly world: Mat4 = new Mat4(true);
     private readonly projection: Mat4;
 
     private readonly gl: WebGL2RenderingContext;

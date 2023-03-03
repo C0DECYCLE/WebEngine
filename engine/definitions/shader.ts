@@ -23,3 +23,10 @@ type ShaderSourceInfo = {
     name: string;
     type: ShaderTypes;
 };
+
+type ShaderProgram = {
+    program: WebGLProgram;
+    uniformLocations: MapS<WebGLUniformLocation>;
+    instanceUniformLocations: MapS<WebGLInstanceUniformLocation>;
+    attributeLocations: MapS<WebGLAttributeLocation>;
+};

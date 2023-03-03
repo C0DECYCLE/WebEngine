@@ -63,15 +63,15 @@ class Renderer {
             objectNumInstances * 16 //Mat4 = 16 floats
         );
 
-        const objectWorld: Mat4 = new Mat4();
+        const objectWorld: Mat4 = new Mat4(true);
         objectWorld.translate(0, 0, -1);
         objectWorld.rotate(90 * toRadian, 0, 0);
 
-        const objectWorld2: Mat4 = new Mat4();
+        const objectWorld2: Mat4 = new Mat4(true);
         objectWorld2.translate(-2, 0, 0);
         objectWorld2.rotate(180 * toRadian, 0, 0);
 
-        const objectWorld3: Mat4 = new Mat4();
+        const objectWorld3: Mat4 = new Mat4(true);
         objectWorld3.translate(-1, 1, -1);
         objectWorld3.rotate(180 * toRadian, 0, 0);
 
@@ -79,17 +79,8 @@ class Renderer {
         objectWorld2.store(objectWorldInstances, 1 * 16);
         objectWorld3.store(objectWorldInstances, 2 * 16);
 
-        const basicProgram: WebGLProgram =
+        const shaderProgram: ShaderProgram =
             this.shaderManager.programs.get("basic")!;
-
-        const viewProjectionUniformLocation: Nullable<WebGLUniformLocation> =
-            this.gl.getUniformLocation(basicProgram, "viewProjection");
-        const objectWorldInstanceUniformLocation: int =
-            this.gl.getAttribLocation(basicProgram, "objectWorld");
-        const vertexPositionAttributeLocation: int = this.gl.getAttribLocation(
-            basicProgram,
-            "vertexPosition"
-        );
 
         const objectVAO: Nullable<WebGLVertexArrayObject> =
             this.gl.createVertexArray();
@@ -108,10 +99,10 @@ class Renderer {
         //Mat4 needs 4 vertex attributes (max 4 floats per attribute)
         for (let i = 0; i < 4; ++i) {
             this.gl.enableVertexAttribArray(
-                objectWorldInstanceUniformLocation + i
+                shaderProgram.instanceUniformLocations.get("objectWorld")! + i
             );
             this.gl.vertexAttribPointer(
-                objectWorldInstanceUniformLocation + i,
+                shaderProgram.instanceUniformLocations.get("objectWorld")! + i,
                 4,
                 this.gl.FLOAT,
                 false,
@@ -119,7 +110,7 @@ class Renderer {
                 i * 4 * 4 // offset in buffer, 4 floats per row, 4 bytes per float
             );
             this.gl.vertexAttribDivisor(
-                objectWorldInstanceUniformLocation + i,
+                shaderProgram.instanceUniformLocations.get("objectWorld")! + i,
                 1
             ); // only change once per instance
         }
@@ -133,9 +124,11 @@ class Renderer {
             this.gl.STATIC_DRAW
         );
 
-        this.gl.enableVertexAttribArray(vertexPositionAttributeLocation);
+        this.gl.enableVertexAttribArray(
+            shaderProgram.attributeLocations.get("vertexPosition")!
+        );
         this.gl.vertexAttribPointer(
-            vertexPositionAttributeLocation,
+            shaderProgram.attributeLocations.get("vertexPosition")!,
             3, //stride
             this.gl.FLOAT,
             false,
@@ -151,12 +144,12 @@ class Renderer {
 
         this.clearViewport();
 
-        this.gl.useProgram(basicProgram);
+        this.gl.useProgram(shaderProgram.program);
 
         this.gl.bindVertexArray(objectVAO);
 
         this.gl.uniformMatrix4fv(
-            viewProjectionUniformLocation,
+            shaderProgram.uniformLocations.get("viewProjection")!,
             false,
             this.camera.viewProjection.values
         );
