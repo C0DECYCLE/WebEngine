@@ -6,7 +6,7 @@
 
 class ShaderManager {
     public readonly rootPath: string = "/engine/shaders/";
-    public readonly names: string[] = ["basic"];
+    public readonly names: string[] = ["main"];
 
     public readonly sources: MapS<ShaderSourcePair> =
         new MapS<ShaderSourcePair>();
@@ -36,8 +36,7 @@ class ShaderManager {
                 : this.gl.FRAGMENT_SHADER
         );
         if (!shader) {
-            console.error("Renderer: Shader creation failed.");
-            return null;
+            throw new Error("Renderer: Shader creation failed.");
         }
         this.gl.shaderSource(shader, source);
         this.gl.compileShader(shader);
@@ -51,10 +50,9 @@ class ShaderManager {
         const shaderInfoLog: Nullable<string> =
             this.gl.getShaderInfoLog(shader);
         this.gl.deleteShader(shader);
-        console.error(
+        throw new Error(
             `Renderer: Shader compilation failed. (${shaderInfoLog})`
         );
-        return null;
     }
 
     private createProgram(
@@ -63,8 +61,7 @@ class ShaderManager {
     ): Nullable<WebGLProgram> {
         const program: Nullable<WebGLProgram> = this.gl.createProgram();
         if (!program) {
-            console.error("Renderer: Program creation failed.");
-            return null;
+            throw new Error("Renderer: Program creation failed.");
         }
         this.gl.attachShader(program, vertexShader);
         this.gl.attachShader(program, fragmentShader);
@@ -80,8 +77,9 @@ class ShaderManager {
         const programInfoLog: Nullable<string> =
             this.gl.getProgramInfoLog(program);
         this.gl.deleteProgram(program);
-        console.error(`Renderer: Program creation failed. (${programInfoLog})`);
-        return null;
+        throw new Error(
+            `Renderer: Program creation failed. (${programInfoLog})`
+        );
     }
 
     private async fetchShaderSources(): Promise<void> {
@@ -109,8 +107,7 @@ class ShaderManager {
                 this.getShaderSourceInfo(sourceUrl);
 
             if (!shaderSourceInfo) {
-                console.error("Renderer: Fetching ShaderInfo failed.");
-                return;
+                throw new Error("Renderer: Fetching ShaderInfo failed.");
             }
             this.storeShaderSource(shaderSourceInfo, await response.text());
         });
@@ -194,8 +191,7 @@ class ShaderManager {
         const uniformLocation: Nullable<WebGLUniformLocation> =
             this.gl.getUniformLocation(shaderProgram.program, name);
         if (!uniformLocation) {
-            console.error("Renderer: Fetching uniform location failed.");
-            return;
+            throw new Error("Renderer: Fetching uniform location failed.");
         }
         shaderProgram.uniformLocations.set(name, uniformLocation);
     }

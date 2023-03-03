@@ -14,8 +14,8 @@ class Renderer {
     private drawMs: float = 0;
 
     private gl: WebGL2RenderingContext;
-    private geometryManager: GeometryManager;
     private shaderManager: ShaderManager;
+    private geometryManager: GeometryManager;
 
     public get deltaTime(): float {
         return this.deltaMs;
@@ -37,8 +37,8 @@ class Renderer {
         this.clearColor = clearColor;
 
         this.createContext(this.createCanvas());
-        this.createGeometryManager();
         this.createShaderManager();
+        this.createGeometryManager();
         this.createCamera();
     }
 
@@ -46,8 +46,8 @@ class Renderer {
         geometryNames: string[] = [],
         shaderNames: string[] = []
     ): Promise<void> {
-        await this.geometryManager.initialize(geometryNames);
         await this.shaderManager.initialize(shaderNames);
+        await this.geometryManager.initialize(geometryNames);
         this.initializeContext();
 
         //////////////////SETUP//////////////////
@@ -55,13 +55,19 @@ class Renderer {
         this.camera.position.set(1, 1.5, 2);
         this.camera.target.set(0, 0, 0);
 
+        /*
         const geometryVertecies: Float32Array =
             this.geometryManager.datas.get("torus")!.vertecies;
+        */
 
+        /*
         const objectNumInstances: int = 3;
         const objectWorldInstances: Float32Array = new Float32Array(
             objectNumInstances * 16 //Mat4 = 16 floats
         );
+        */
+
+        const geometry: Geometry = this.geometryManager.list.get("torus")!;
 
         const objectWorld: Mat4 = new Mat4(true);
         objectWorld.translate(0, 0, -1);
@@ -75,27 +81,41 @@ class Renderer {
         objectWorld3.translate(-1, 1, -1);
         objectWorld3.rotate(180 * toRadian, 0, 0);
 
-        objectWorld.store(objectWorldInstances, 0 * 16);
-        objectWorld2.store(objectWorldInstances, 1 * 16);
-        objectWorld3.store(objectWorldInstances, 2 * 16);
+        const objectWorld4: Mat4 = new Mat4(true);
+        objectWorld4.translate(1, -1, 0);
+        objectWorld4.rotate(0, 0, 90 * toRadian);
 
+        objectWorld.store(geometry.instanceWorlds, 0 * 16);
+        objectWorld2.store(geometry.instanceWorlds, 1 * 16);
+        objectWorld3.store(geometry.instanceWorlds, 2 * 16);
+        objectWorld4.store(geometry.instanceWorlds, 3 * 16);
+
+        /*
         const shaderProgram: ShaderProgram =
-            this.shaderManager.programs.get("basic")!;
-
+            this.shaderManager.programs.get("main")!;
+        */
+        /*
         const objectVAO: Nullable<WebGLVertexArrayObject> =
             this.gl.createVertexArray();
         this.gl.bindVertexArray(objectVAO);
+        */
 
+        /*
         const objectWorldInstancesBuffer: Nullable<WebGLBuffer> =
             this.gl.createBuffer();
+        */
+        /*
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, objectWorldInstancesBuffer);
         this.gl.bufferData(
             this.gl.ARRAY_BUFFER,
             objectWorldInstances.byteLength, //2 * 16 * 4
             this.gl.DYNAMIC_DRAW
         );
+        */
+        /*
         this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, objectWorldInstances);
-
+        */
+        /*
         //Mat4 needs 4 vertex attributes (max 4 floats per attribute)
         for (let i = 0; i < 4; ++i) {
             this.gl.enableVertexAttribArray(
@@ -114,7 +134,8 @@ class Renderer {
                 1
             ); // only change once per instance
         }
-
+        */
+        /*
         const vertexPositionsBuffer: Nullable<WebGLBuffer> =
             this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexPositionsBuffer);
@@ -123,7 +144,9 @@ class Renderer {
             geometryVertecies,
             this.gl.STATIC_DRAW
         );
+        */
 
+        /*
         this.gl.enableVertexAttribArray(
             shaderProgram.attributeLocations.get("vertexPosition")!
         );
@@ -135,8 +158,11 @@ class Renderer {
             0,
             0
         );
+        */
 
+        /*
         this.gl.bindVertexArray(null);
+        */
 
         //////////////////LOOP//////////////////
 
@@ -144,25 +170,34 @@ class Renderer {
 
         this.clearViewport();
 
-        this.gl.useProgram(shaderProgram.program);
+        const program: ShaderProgram = this.shaderManager.programs.get("main")!;
 
-        this.gl.bindVertexArray(objectVAO);
+        this.gl.useProgram(program.program);
 
         this.gl.uniformMatrix4fv(
-            shaderProgram.uniformLocations.get("viewProjection")!,
+            program.uniformLocations.get("viewProjection")!,
             false,
             this.camera.viewProjection.values
         );
 
+        geometry.draw(4);
+        /*
+        this.gl.bindVertexArray(objectVAO);
+        */
+
+        /*
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, objectWorldInstancesBuffer);
         this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, objectWorldInstances);
+        */
 
+        /*
         this.gl.drawArraysInstanced(
             this.gl.TRIANGLES,
             0,
             geometryVertecies.length / 3, // num vertices per instance
             objectNumInstances // num instances
         );
+        */
     }
 
     public render(now: float): void {
@@ -200,14 +235,13 @@ class Renderer {
             canvas.getContext("webgl2");
 
         if (!context) {
-            console.error("Renderer: Get WebGL2RenderingContext failed.");
-            return;
+            throw new Error("Renderer: Get WebGL2RenderingContext failed.");
         }
         this.gl = context;
     }
 
     private createGeometryManager(): void {
-        this.geometryManager = new GeometryManager(this.gl);
+        this.geometryManager = new GeometryManager(this.gl, this.shaderManager);
     }
 
     private createShaderManager(): void {

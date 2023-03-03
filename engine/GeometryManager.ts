@@ -18,9 +18,14 @@ class GeometryManager {
     public readonly list: MapS<Geometry> = new MapS<Geometry>();
 
     private readonly gl: WebGL2RenderingContext;
+    private shaderManager: ShaderManager;
 
-    public constructor(gl: WebGL2RenderingContext) {
+    public constructor(
+        gl: WebGL2RenderingContext,
+        shaderManager: ShaderManager
+    ) {
         this.gl = gl;
+        this.shaderManager = shaderManager;
     }
 
     public async initialize(names: string[]): Promise<void> {
@@ -78,8 +83,10 @@ class GeometryManager {
     }
 
     private createGeometries(): void {
+        const program: ShaderProgram = this.shaderManager.programs.get("main")!;
+        const capacity: int = 10;
         this.datas.forEach((data: GeometryData, name: string) =>
-            this.list.set(name, new Geometry(this.gl, data))
+            this.list.set(name, new Geometry(this.gl, data, program, capacity))
         );
     }
 }
