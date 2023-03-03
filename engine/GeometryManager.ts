@@ -74,7 +74,13 @@ class GeometryManager {
                 );
             }
         });
+
         result.vertecies = new Float32Array(vertecies);
+        result.shader = "main";
+
+        if (!this.shaderManager.names.includes(result.shader)) {
+            throw new Error(`Renderer: Shader unknown. (${result.shader})`);
+        }
         return result;
     }
 
@@ -83,10 +89,15 @@ class GeometryManager {
     }
 
     private createGeometries(): void {
-        const program: ShaderProgram = this.shaderManager.programs.get("main")!;
-        const capacity: int = 10;
         this.datas.forEach((data: GeometryData, name: string) =>
-            this.list.set(name, new Geometry(this.gl, data, program, capacity))
+            this.list.set(name, this.createGeometry(data))
         );
+    }
+
+    private createGeometry(data: GeometryData): Geometry {
+        const program: ShaderProgram = this.shaderManager.programs.get(
+            data.shader
+        )!;
+        return new Geometry(this.gl, data, program, 10);
     }
 }

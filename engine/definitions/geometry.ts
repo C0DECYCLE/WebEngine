@@ -11,4 +11,5 @@ type WebGLAttributeLocation = int;
 type GeometryData = {
     name: string;
     vertecies: Float32Array;
+    shader: string;
 };

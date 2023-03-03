@@ -55,31 +55,27 @@ class Renderer {
         this.camera.position.set(1, 1.5, 2);
         this.camera.target.set(0, 0, 0);
 
+        const cache: Mat4 = new Mat4(true);
+
         const geometry: Geometry = this.geometryManager.list.get("torus")!;
 
-        const objectWorld: Mat4 = new Mat4(true);
-        objectWorld.translate(0, 0, -1);
-        objectWorld.rotate(90 * toRadian, 0, 0);
+        cache.reset();
+        cache.translate(0, 0, -1).rotate(90 * toRadian, 0, 0);
+        cache.store(geometry.instanceWorlds, 0 * 16);
 
-        const objectWorld2: Mat4 = new Mat4(true);
-        objectWorld2.translate(-2, 0, 0);
-        objectWorld2.rotate(180 * toRadian, 0, 0);
-
-        objectWorld.store(geometry.instanceWorlds, 0 * 16);
-        objectWorld2.store(geometry.instanceWorlds, 1 * 16);
+        cache.reset();
+        cache.translate(-2, 0, 0).rotate(180 * toRadian, 0, 0);
+        cache.store(geometry.instanceWorlds, 1 * 16);
 
         const geometry2: Geometry = this.geometryManager.list.get("icosphere")!;
 
-        const objectWorld3: Mat4 = new Mat4(true);
-        objectWorld3.translate(-1, 1, -1);
-        objectWorld3.rotate(180 * toRadian, 0, 0);
+        cache.reset();
+        cache.translate(-1, 1, -1).rotate(180 * toRadian, 0, 0);
+        cache.store(geometry2.instanceWorlds, 0 * 16);
 
-        const objectWorld4: Mat4 = new Mat4(true);
-        objectWorld4.translate(1, -1, 0);
-        objectWorld4.rotate(0, 0, 90 * toRadian);
-
-        objectWorld3.store(geometry2.instanceWorlds, 0 * 16);
-        objectWorld4.store(geometry2.instanceWorlds, 1 * 16);
+        cache.reset();
+        cache.translate(1, -1, 0).rotate(0, 0, 90 * toRadian);
+        cache.store(geometry2.instanceWorlds, 1 * 16);
 
         //////////////////LOOP//////////////////
 
@@ -92,7 +88,7 @@ class Renderer {
         this.gl.useProgram(program.program);
 
         this.gl.uniformMatrix4fv(
-            program.uniformLocations.get("viewProjection")!,
+            program.uniformLocations.get(ShaderVariables.VIEWPROJECTION)!,
             false,
             this.camera.viewProjection.values
         );
@@ -107,13 +103,11 @@ class Renderer {
         }
 
         const preUpdateMs: float = performance.now();
-
-        this.updateFrame();
+        //this.updateFrame();
         this.updateMs = performance.now() - preUpdateMs;
 
         const preDrawMs: float = performance.now();
-
-        this.drawFrame();
+        //this.drawFrame();
         this.drawMs = performance.now() - preDrawMs;
 
         this.deltaMs = now - this.then;
@@ -160,11 +154,23 @@ class Renderer {
     }
 
     private updateFrame(): void {
+        this.camera.update();
+
         //for each renderlist
     }
 
     private drawFrame(): void {
-        //this.clearViewport();
+        this.clearViewport();
+
+        const program: ShaderProgram = this.shaderManager.programs.get("main")!;
+
+        this.gl.useProgram(program.program);
+
+        this.gl.uniformMatrix4fv(
+            program.uniformLocations.get(ShaderVariables.VIEWPROJECTION)!,
+            false,
+            this.camera.viewProjection.values
+        );
     }
 
     private clearViewport(): void {

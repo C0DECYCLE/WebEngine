@@ -4,6 +4,12 @@
     2023
 */
 
+enum ShaderVariables {
+    VIEWPROJECTION = "viewProjection",
+    OBJECTWORLD = "objectWorld",
+    VERTEXPOSITION = "vertexPosition",
+}
+
 enum ShaderTypes {
     VERTEX = "vertex",
     FRAGMENT = "fragment",

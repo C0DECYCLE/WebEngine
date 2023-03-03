@@ -179,9 +179,18 @@ class ShaderManager {
     }
 
     private registerLocations(shaderProgram: ShaderProgram): void {
-        this.registerUniformLocation(shaderProgram, "viewProjection");
-        this.registerInstanceUniformLocation(shaderProgram, "objectWorld");
-        this.registerAttributeLocation(shaderProgram, "vertexPosition");
+        this.registerUniformLocation(
+            shaderProgram,
+            ShaderVariables.VIEWPROJECTION
+        );
+        this.registerInstanceUniformLocation(
+            shaderProgram,
+            ShaderVariables.OBJECTWORLD
+        );
+        this.registerAttributeLocation(
+            shaderProgram,
+            ShaderVariables.VERTEXPOSITION
+        );
     }
 
     private registerUniformLocation(

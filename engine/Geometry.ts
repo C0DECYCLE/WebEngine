@@ -55,10 +55,10 @@ class Geometry {
             this.instanceWorldsBuffer,
             this.instanceWorlds
         );
-        this.enableInstanceUniform("objectWorld", 16);
+        this.enableInstanceUniform(ShaderVariables.OBJECTWORLD, 16);
 
         this.bufferStaticData(this.verteciesBuffer, this.data.vertecies);
-        this.enableAttribute("vertexPosition", 3);
+        this.enableAttribute(ShaderVariables.VERTEXPOSITION, 3);
 
         this.gl.bindVertexArray(null);
     }
