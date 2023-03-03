@@ -4,9 +4,18 @@
     2023
 */
 
-const renderer: Renderer = new Renderer();
+const clearColor: Vec3 = new Vec3(0.9, 0.9, 0.9);
 
-window.addEventListener("compile", (_event: Event): void => {
+let renderer: Renderer;
 
-    renderer.initialize();
+window.addEventListener("compile", async (_event: Event): Promise<void> => {
+    renderer = new Renderer(clearColor);
+    await renderer.initialize();
+
+    function render(now: float): void {
+        renderer.render(now);
+
+        requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
 });
