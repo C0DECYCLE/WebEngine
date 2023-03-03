@@ -55,18 +55,6 @@ class Renderer {
         this.camera.position.set(1, 1.5, 2);
         this.camera.target.set(0, 0, 0);
 
-        /*
-        const geometryVertecies: Float32Array =
-            this.geometryManager.datas.get("torus")!.vertecies;
-        */
-
-        /*
-        const objectNumInstances: int = 3;
-        const objectWorldInstances: Float32Array = new Float32Array(
-            objectNumInstances * 16 //Mat4 = 16 floats
-        );
-        */
-
         const geometry: Geometry = this.geometryManager.list.get("torus")!;
 
         const objectWorld: Mat4 = new Mat4(true);
@@ -77,6 +65,11 @@ class Renderer {
         objectWorld2.translate(-2, 0, 0);
         objectWorld2.rotate(180 * toRadian, 0, 0);
 
+        objectWorld.store(geometry.instanceWorlds, 0 * 16);
+        objectWorld2.store(geometry.instanceWorlds, 1 * 16);
+
+        const geometry2: Geometry = this.geometryManager.list.get("icosphere")!;
+
         const objectWorld3: Mat4 = new Mat4(true);
         objectWorld3.translate(-1, 1, -1);
         objectWorld3.rotate(180 * toRadian, 0, 0);
@@ -85,84 +78,8 @@ class Renderer {
         objectWorld4.translate(1, -1, 0);
         objectWorld4.rotate(0, 0, 90 * toRadian);
 
-        objectWorld.store(geometry.instanceWorlds, 0 * 16);
-        objectWorld2.store(geometry.instanceWorlds, 1 * 16);
-        objectWorld3.store(geometry.instanceWorlds, 2 * 16);
-        objectWorld4.store(geometry.instanceWorlds, 3 * 16);
-
-        /*
-        const shaderProgram: ShaderProgram =
-            this.shaderManager.programs.get("main")!;
-        */
-        /*
-        const objectVAO: Nullable<WebGLVertexArrayObject> =
-            this.gl.createVertexArray();
-        this.gl.bindVertexArray(objectVAO);
-        */
-
-        /*
-        const objectWorldInstancesBuffer: Nullable<WebGLBuffer> =
-            this.gl.createBuffer();
-        */
-        /*
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, objectWorldInstancesBuffer);
-        this.gl.bufferData(
-            this.gl.ARRAY_BUFFER,
-            objectWorldInstances.byteLength, //2 * 16 * 4
-            this.gl.DYNAMIC_DRAW
-        );
-        */
-        /*
-        this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, objectWorldInstances);
-        */
-        /*
-        //Mat4 needs 4 vertex attributes (max 4 floats per attribute)
-        for (let i = 0; i < 4; ++i) {
-            this.gl.enableVertexAttribArray(
-                shaderProgram.instanceUniformLocations.get("objectWorld")! + i
-            );
-            this.gl.vertexAttribPointer(
-                shaderProgram.instanceUniformLocations.get("objectWorld")! + i,
-                4,
-                this.gl.FLOAT,
-                false,
-                16 * 4, // bytes per instance matrix stride
-                i * 4 * 4 // offset in buffer, 4 floats per row, 4 bytes per float
-            );
-            this.gl.vertexAttribDivisor(
-                shaderProgram.instanceUniformLocations.get("objectWorld")! + i,
-                1
-            ); // only change once per instance
-        }
-        */
-        /*
-        const vertexPositionsBuffer: Nullable<WebGLBuffer> =
-            this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexPositionsBuffer);
-        this.gl.bufferData(
-            this.gl.ARRAY_BUFFER,
-            geometryVertecies,
-            this.gl.STATIC_DRAW
-        );
-        */
-
-        /*
-        this.gl.enableVertexAttribArray(
-            shaderProgram.attributeLocations.get("vertexPosition")!
-        );
-        this.gl.vertexAttribPointer(
-            shaderProgram.attributeLocations.get("vertexPosition")!,
-            3, //stride
-            this.gl.FLOAT,
-            false,
-            0,
-            0
-        );
-        */
-
-        /*
-        this.gl.bindVertexArray(null);
-        */
+        objectWorld3.store(geometry2.instanceWorlds, 0 * 16);
+        objectWorld4.store(geometry2.instanceWorlds, 1 * 16);
 
         //////////////////LOOP//////////////////
 
@@ -180,24 +97,8 @@ class Renderer {
             this.camera.viewProjection.values
         );
 
-        geometry.draw(4);
-        /*
-        this.gl.bindVertexArray(objectVAO);
-        */
-
-        /*
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, objectWorldInstancesBuffer);
-        this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, objectWorldInstances);
-        */
-
-        /*
-        this.gl.drawArraysInstanced(
-            this.gl.TRIANGLES,
-            0,
-            geometryVertecies.length / 3, // num vertices per instance
-            objectNumInstances // num instances
-        );
-        */
+        geometry.draw(2);
+        geometry2.draw(2);
     }
 
     public render(now: float): void {
