@@ -78,6 +78,8 @@ class GeometryManager {
     }
 
     private createGeometries(): void {
-        this.datas.forEach((geometryData: GeometryData) => {});
+        this.datas.forEach((data: GeometryData, name: string) =>
+            this.list.set(name, new Geometry(this.gl, data))
+        );
     }
 }

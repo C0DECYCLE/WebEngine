@@ -7,7 +7,7 @@
 class Geometry {
     private readonly gl: WebGL2RenderingContext;
 
-    public constructor(gl: WebGL2RenderingContext) {
+    public constructor(gl: WebGL2RenderingContext, data: GeometryData) {
         this.gl = gl;
     }
 }
