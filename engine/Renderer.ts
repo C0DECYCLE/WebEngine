@@ -39,24 +39,30 @@ class Renderer {
 
         const cache: Mat4 = new Mat4(true);
 
-        const geometry: Geometry = this.geometryManager.list.get("torus")!;
+        const geometry: Geometry = this.geometryManager.list.get("suzanne")!;
 
         cache.reset();
-        cache.translate(0, 0, -1).rotate(90 * toRadian, 0, 0);
+        cache.translate(0, 0, -1);
+        cache.rotate(0, 0, 0);
+        cache.scale(0.5, 0.5, 0.5);
         geometry.storeInstance(cache, 0);
 
         cache.reset();
-        cache.translate(-2, 0, 0).rotate(180 * toRadian, 0, 0);
+        cache.translate(-2, 0, 0);
+        cache.rotate(90 * toRadian, 90 * toRadian, 0);
+        cache.scale(0.5, 0.5, 0.5);
         geometry.storeInstance(cache, 1);
 
-        const geometry2: Geometry = this.geometryManager.list.get("icosphere")!;
+        const geometry2: Geometry = this.geometryManager.list.get("torus")!;
 
         cache.reset();
-        cache.translate(-1, 1, -1).rotate(180 * toRadian, 0, 0);
+        cache.translate(-1, 1, -1);
+        cache.rotate(90 * toRadian, 180 * toRadian, 0);
         geometry2.storeInstance(cache, 0);
 
         cache.reset();
-        cache.translate(1, -1, 0).rotate(0, 0, 90 * toRadian);
+        cache.translate(1, -1, 0);
+        cache.rotate(0, 180 * toRadian, 0);
         geometry2.storeInstance(cache, 1);
 
         //////////////////LOOP//////////////////
