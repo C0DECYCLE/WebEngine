@@ -6,12 +6,12 @@
 
 class ShaderManager {
     public readonly rootPath: string = "/engine/shaders/";
-    public readonly names: string[] = ["basic"];
+    public readonly names: string[] = ["main"];
 
     public readonly sources: MapS<ShaderSourcePair> =
         new MapS<ShaderSourcePair>();
-    public readonly list: MapS<ShaderPair> = new MapS<ShaderPair>();
-    public readonly programs: MapS<WebGLProgram> = new MapS<WebGLProgram>();
+    public readonly pairs: MapS<ShaderPair> = new MapS<ShaderPair>();
+    public readonly programs: MapS<ShaderProgram> = new MapS<ShaderProgram>();
 
     private readonly gl: WebGL2RenderingContext;
 
@@ -26,7 +26,7 @@ class ShaderManager {
         this.createPrograms();
     }
 
-    public createShader(
+    private createShader(
         type: ShaderTypes,
         source: string
     ): Nullable<WebGLShader> {
@@ -36,8 +36,7 @@ class ShaderManager {
                 : this.gl.FRAGMENT_SHADER
         );
         if (!shader) {
-            console.error("Renderer: Shader creation failed.");
-            return null;
+            throw new Error("Renderer: Shader creation failed.");
         }
         this.gl.shaderSource(shader, source);
         this.gl.compileShader(shader);
@@ -51,20 +50,18 @@ class ShaderManager {
         const shaderInfoLog: Nullable<string> =
             this.gl.getShaderInfoLog(shader);
         this.gl.deleteShader(shader);
-        console.error(
+        throw new Error(
             `Renderer: Shader compilation failed. (${shaderInfoLog})`
         );
-        return null;
     }
 
-    public createProgram(
+    private createProgram(
         vertexShader: WebGLShader,
         fragmentShader: WebGLShader
     ): Nullable<WebGLProgram> {
         const program: Nullable<WebGLProgram> = this.gl.createProgram();
         if (!program) {
-            console.error("Renderer: Program creation failed.");
-            return null;
+            throw new Error("Renderer: Program creation failed.");
         }
         this.gl.attachShader(program, vertexShader);
         this.gl.attachShader(program, fragmentShader);
@@ -80,37 +77,37 @@ class ShaderManager {
         const programInfoLog: Nullable<string> =
             this.gl.getProgramInfoLog(program);
         this.gl.deleteProgram(program);
-        console.error(`Renderer: Program creation failed. (${programInfoLog})`);
-        return null;
+        throw new Error(
+            `Renderer: Program creation failed. (${programInfoLog})`
+        );
     }
 
     private async fetchShaderSources(): Promise<void> {
         await Promise.all(
             this.shaderSourceUrls().map((sourceUrl: string) =>
-                this.mapShaderSourceUrls(sourceUrl)
+                this.fetchShaderSourceUrls(sourceUrl)
             )
         );
     }
 
     private shaderSourceUrls(): string[] {
         const shaderSourceUrls: string[] = [];
-        for (let i: int = 0; i < this.names.length; i++) {
+        this.names.forEach((name) =>
             shaderSourceUrls.push(
-                `${this.rootPath}${this.names[i]}.${ShaderTypes.VERTEX}.fx`,
-                `${this.rootPath}${this.names[i]}.${ShaderTypes.FRAGMENT}.fx`
-            );
-        }
+                `${this.rootPath}${name}.${ShaderTypes.VERTEX}.fx`,
+                `${this.rootPath}${name}.${ShaderTypes.FRAGMENT}.fx`
+            )
+        );
         return shaderSourceUrls;
     }
 
-    private mapShaderSourceUrls(sourceUrl: string): Promise<void | Response> {
-        return fetch(sourceUrl).then(async (response) => {
+    private fetchShaderSourceUrls(sourceUrl: string): Promise<void | Response> {
+        return fetch(sourceUrl).then(async (response: Response) => {
             const shaderSourceInfo: Nullable<ShaderSourceInfo> =
                 this.getShaderSourceInfo(sourceUrl);
 
             if (!shaderSourceInfo) {
-                console.error("Renderer: Fetching ShaderInfo failed.");
-                return;
+                throw new Error("Renderer: Fetching ShaderInfo failed.");
             }
             this.storeShaderSource(shaderSourceInfo, await response.text());
         });
@@ -147,8 +144,8 @@ class ShaderManager {
     }
 
     private createShaders(): void {
-        this.sources.forEach((sourcePair: ShaderSourcePair, name: string) => {
-            this.list.set(name, {
+        this.sources.forEach((sourcePair: ShaderSourcePair, name: string) =>
+            this.pairs.set(name, {
                 [ShaderTypes.VERTEX]: this.createShader(
                     ShaderTypes.VERTEX,
                     sourcePair[ShaderTypes.VERTEX]
@@ -157,19 +154,78 @@ class ShaderManager {
                     ShaderTypes.FRAGMENT,
                     sourcePair[ShaderTypes.FRAGMENT]
                 )!,
-            } as ShaderPair);
-        });
+            } as ShaderPair)
+        );
     }
 
     private createPrograms(): void {
-        this.list.forEach((pair: ShaderPair, name: string) => {
-            this.programs.set(
-                name,
-                this.createProgram(
-                    pair[ShaderTypes.VERTEX],
-                    pair[ShaderTypes.FRAGMENT]
-                )!
-            );
-        });
+        this.pairs.forEach((pair: ShaderPair, name: string) =>
+            this.programs.set(name, this.createShaderProgram(pair))
+        );
+    }
+
+    private createShaderProgram(pair: ShaderPair): ShaderProgram {
+        const result: ShaderProgram = {} as ShaderProgram;
+        result.program = this.createProgram(
+            pair[ShaderTypes.VERTEX],
+            pair[ShaderTypes.FRAGMENT]
+        )!;
+        result.uniformLocations = new MapS<WebGLUniformLocation>();
+        result.instanceUniformLocations =
+            new MapS<WebGLInstanceUniformLocation>();
+        result.attributeLocations = new MapS<WebGLAttributeLocation>();
+        this.registerLocations(result);
+        return result;
+    }
+
+    private registerLocations(shaderProgram: ShaderProgram): void {
+        this.registerUniformLocation(
+            shaderProgram,
+            ShaderVariables.VIEWPROJECTION
+        );
+        this.registerInstanceUniformLocation(
+            shaderProgram,
+            ShaderVariables.OBJECTWORLD
+        );
+        this.registerAttributeLocation(
+            shaderProgram,
+            ShaderVariables.VERTEXPOSITION
+        );
+        this.registerAttributeLocation(
+            shaderProgram,
+            ShaderVariables.VERTEXCOLOR
+        );
+    }
+
+    private registerUniformLocation(
+        shaderProgram: ShaderProgram,
+        name: string
+    ): void {
+        const uniformLocation: Nullable<WebGLUniformLocation> =
+            this.gl.getUniformLocation(shaderProgram.program, name);
+        if (!uniformLocation) {
+            throw new Error("Renderer: Fetching uniform location failed.");
+        }
+        shaderProgram.uniformLocations.set(name, uniformLocation);
+    }
+
+    private registerInstanceUniformLocation(
+        shaderProgram: ShaderProgram,
+        name: string
+    ): void {
+        shaderProgram.instanceUniformLocations.set(
+            name,
+            this.gl.getAttribLocation(shaderProgram.program, name)
+        );
+    }
+
+    private registerAttributeLocation(
+        shaderProgram: ShaderProgram,
+        name: string
+    ): void {
+        shaderProgram.attributeLocations.set(
+            name,
+            this.gl.getAttribLocation(shaderProgram.program, name)
+        );
     }
 }
