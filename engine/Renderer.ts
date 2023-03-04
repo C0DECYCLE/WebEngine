@@ -8,30 +8,11 @@ class Renderer {
     public camera: Camera;
 
     private readonly clearColor: Vec3;
-    private then: float = -1;
-    private deltaMs: float = 0;
-    private updateMs: float = 0;
-    private drawMs: float = 0;
 
     private gl: WebGL2RenderingContext;
     private shaderManager: ShaderManager;
     private geometryManager: GeometryManager;
-
-    public get deltaTime(): float {
-        return this.deltaMs;
-    }
-
-    public get updateTime(): float {
-        return this.updateMs;
-    }
-
-    public get drawTime(): float {
-        return this.drawMs;
-    }
-
-    public get fps(): float {
-        return 1000 / this.deltaMs;
-    }
+    private timer: RenderTimer;
 
     public constructor(clearColor: Vec3) {
         this.clearColor = clearColor;
@@ -39,6 +20,7 @@ class Renderer {
         this.createContext(this.createCanvas());
         this.createShaderManager();
         this.createGeometryManager();
+        this.createTimer();
         this.createCamera();
     }
 
@@ -61,21 +43,21 @@ class Renderer {
 
         cache.reset();
         cache.translate(0, 0, -1).rotate(90 * toRadian, 0, 0);
-        cache.store(geometry.instanceWorlds, 0 * 16);
+        geometry.storeInstance(cache, 0);
 
         cache.reset();
         cache.translate(-2, 0, 0).rotate(180 * toRadian, 0, 0);
-        cache.store(geometry.instanceWorlds, 1 * 16);
+        geometry.storeInstance(cache, 1);
 
         const geometry2: Geometry = this.geometryManager.list.get("icosphere")!;
 
         cache.reset();
         cache.translate(-1, 1, -1).rotate(180 * toRadian, 0, 0);
-        cache.store(geometry2.instanceWorlds, 0 * 16);
+        geometry2.storeInstance(cache, 0);
 
         cache.reset();
         cache.translate(1, -1, 0).rotate(0, 0, 90 * toRadian);
-        cache.store(geometry2.instanceWorlds, 1 * 16);
+        geometry2.storeInstance(cache, 1);
 
         //////////////////LOOP//////////////////
 
@@ -87,31 +69,24 @@ class Renderer {
 
         this.gl.useProgram(program.program);
 
-        this.gl.uniformMatrix4fv(
-            program.uniformLocations.get(ShaderVariables.VIEWPROJECTION)!,
-            false,
-            this.camera.viewProjection.values
-        );
+        this.camera.bufferViewProjection(program);
 
         geometry.draw(2);
         geometry2.draw(2);
     }
 
     public render(now: float): void {
-        if (this.then === -1) {
-            this.then = now;
-        }
+        this.timer.begin(now);
 
-        const preUpdateMs: float = performance.now();
-        //this.updateFrame();
-        this.updateMs = performance.now() - preUpdateMs;
+        this.timer.beginUpdate();
+        this.updateFrame();
+        this.timer.endUpdate();
 
-        const preDrawMs: float = performance.now();
-        //this.drawFrame();
-        this.drawMs = performance.now() - preDrawMs;
+        this.timer.beginDraw();
+        this.drawFrame();
+        this.timer.endDraw();
 
-        this.deltaMs = now - this.then;
-        this.then = now;
+        this.timer.end(now);
     }
 
     private createCanvas(): HTMLCanvasElement {
@@ -143,6 +118,10 @@ class Renderer {
         this.shaderManager = new ShaderManager(this.gl);
     }
 
+    private createTimer(): void {
+        this.timer = new RenderTimer();
+    }
+
     private createCamera(): void {
         this.camera = new Camera(this.gl, 1000);
     }
@@ -153,25 +132,9 @@ class Renderer {
         this.gl.enable(this.gl.DEPTH_TEST);
     }
 
-    private updateFrame(): void {
-        this.camera.update();
+    private updateFrame(): void {}
 
-        //for each renderlist
-    }
-
-    private drawFrame(): void {
-        this.clearViewport();
-
-        const program: ShaderProgram = this.shaderManager.programs.get("main")!;
-
-        this.gl.useProgram(program.program);
-
-        this.gl.uniformMatrix4fv(
-            program.uniformLocations.get(ShaderVariables.VIEWPROJECTION)!,
-            false,
-            this.camera.viewProjection.values
-        );
-    }
+    private drawFrame(): void {}
 
     private clearViewport(): void {
         this.gl.clearColor(

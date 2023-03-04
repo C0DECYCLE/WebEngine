@@ -76,7 +76,10 @@ class GeometryManager {
         });
 
         result.vertecies = new Float32Array(vertecies);
+        result.count = result.vertecies.length / 3;
+
         result.shader = "main";
+        result.capacity = 10;
 
         if (!this.shaderManager.names.includes(result.shader)) {
             throw new Error(`Renderer: Shader unknown. (${result.shader})`);
@@ -98,6 +101,6 @@ class GeometryManager {
         const program: ShaderProgram = this.shaderManager.programs.get(
             data.shader
         )!;
-        return new Geometry(this.gl, data, program, 10);
+        return new Geometry(this.gl, data, program);
     }
 }
