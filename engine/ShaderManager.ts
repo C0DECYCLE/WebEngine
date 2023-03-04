@@ -191,6 +191,10 @@ class ShaderManager {
             shaderProgram,
             ShaderVariables.VERTEXPOSITION
         );
+        this.registerAttributeLocation(
+            shaderProgram,
+            ShaderVariables.VERTEXCOLOR
+        );
     }
 
     private registerUniformLocation(

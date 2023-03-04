@@ -8,6 +8,7 @@ enum ShaderVariables {
     VIEWPROJECTION = "viewProjection",
     OBJECTWORLD = "objectWorld",
     VERTEXPOSITION = "vertexPosition",
+    VERTEXCOLOR = "vertexColor",
 }
 
 enum ShaderTypes {

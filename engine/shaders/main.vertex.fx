@@ -16,13 +16,16 @@ in mat4 objectWorld;
 
 //attributes
 in vec3 vertexPosition;
+in vec3 vertexColor;
  
 out vec3 finalVertexPosition;
+out vec3 finalVertexColor;
 
 void main() {
-
     vec4 finalWorldPosition = objectWorld * vec4(vertexPosition, 1.0);
+
     finalVertexPosition = finalWorldPosition.xyz;
+    finalVertexColor = vertexColor.xyz;
 
     gl_Position = viewProjection * finalWorldPosition;
 }

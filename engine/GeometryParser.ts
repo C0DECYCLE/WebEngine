@@ -91,9 +91,9 @@ class GeometryParser {
             parseFloat(parts[0]),
             parseFloat(parts[1]),
             parseFloat(parts[2]),
-            parseFloat(parts[3]) || 0, //Math.random(),
-            parseFloat(parts[4]) || 0, //Math.random(),
-            parseFloat(parts[5]) || 0, //Math.random(),
+            parseFloat(parts[3]) || -1,
+            parseFloat(parts[4]) || -1,
+            parseFloat(parts[5]) || -1,
         ]);
     }
 

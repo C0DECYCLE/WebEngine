@@ -44,13 +44,11 @@ class Renderer {
         cache.reset();
         cache.translate(0, 0, -1);
         cache.rotate(0, 0, 0);
-        cache.scale(0.5, 0.5, 0.5);
         geometry.storeInstance(cache, 0);
 
         cache.reset();
         cache.translate(-2, 0, 0);
         cache.rotate(90 * toRadian, 90 * toRadian, 0);
-        cache.scale(0.5, 0.5, 0.5);
         geometry.storeInstance(cache, 1);
 
         const geometry2: Geometry = this.geometryManager.list.get("torus")!;

@@ -14,6 +14,7 @@ class Geometry {
     private vertexArrayObject: WebGLVertexArrayObject;
     private instanceWorldsBuffer: WebGLBuffer;
     private verteciesBuffer: WebGLBuffer;
+    private colorsBuffer: WebGLBuffer;
 
     public constructor(
         gl: WebGL2RenderingContext,
@@ -43,6 +44,7 @@ class Geometry {
         this.vertexArrayObject = this.createVertexArrayObject();
         this.instanceWorldsBuffer = this.createBuffer();
         this.verteciesBuffer = this.createBuffer();
+        this.colorsBuffer = this.createBuffer();
     }
 
     private createInstanceWorlds(): void {
@@ -77,6 +79,9 @@ class Geometry {
 
         this.bufferStaticData(this.verteciesBuffer, this.data.vertecies);
         this.enableAttribute(ShaderVariables.VERTEXPOSITION, 3);
+
+        this.bufferStaticData(this.colorsBuffer, this.data.colors);
+        this.enableAttribute(ShaderVariables.VERTEXCOLOR, 3);
 
         this.gl.bindVertexArray(null);
     }
