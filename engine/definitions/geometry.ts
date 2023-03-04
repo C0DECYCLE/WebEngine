@@ -8,10 +8,14 @@ type WebGLInstanceUniformLocation = int;
 
 type WebGLAttributeLocation = int;
 
+type GeometryParserPolygon = [float, float, float, float, float, float];
+
 type GeometryData = {
     name: string;
-    vertecies: Float32Array;
-    count: int;
-    shader: string;
     capacity: int;
+    shader: string;
+    vertecies: Float32Array;
+    colors: Float32Array;
+    wasIndexed: boolean;
+    count: int;
 };
