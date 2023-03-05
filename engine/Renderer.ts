@@ -5,13 +5,13 @@
 */
 
 class Renderer {
-    public camera: Camera;
-
     private readonly clearColor: Vec3;
 
     private gl: WebGL2RenderingContext;
     private shaderManager: ShaderManager;
     private geometryManager: GeometryManager;
+    private entityManager: EntityManager;
+    private camera: Camera;
     private timer: RenderTimer;
 
     public constructor(clearColor: Vec3) {
@@ -20,6 +20,7 @@ class Renderer {
         this.createContext(this.createCanvas());
         this.createShaderManager();
         this.createGeometryManager();
+        this.createEntityManager();
         this.createTimer();
         this.createCamera();
     }
@@ -32,51 +33,31 @@ class Renderer {
         await this.geometryManager.initialize(geometryNames);
         this.initializeContext();
 
-        //////////////////SETUP//////////////////
-
-        this.camera.position.set(1, 1.5, 2);
-        this.camera.target.set(0, 0, 0);
-
-        const cache: Mat4 = new Mat4(true);
-
+        /*
         const geometry: Geometry = this.geometryManager.list.get("suzanne")!;
 
-        cache.reset();
         cache.translate(0, 0, -1);
         cache.rotate(0, 0, 0);
-        geometry.storeInstance(cache, 0);
 
-        cache.reset();
         cache.translate(-2, 0, 0);
         cache.rotate(90 * toRadian, 90 * toRadian, 0);
-        geometry.storeInstance(cache, 1);
 
         const geometry2: Geometry = this.geometryManager.list.get("torus")!;
 
-        cache.reset();
         cache.translate(-1, 1, -1);
         cache.rotate(90 * toRadian, 180 * toRadian, 0);
-        geometry2.storeInstance(cache, 0);
-
-        cache.reset();
+        
         cache.translate(1, -1, 0);
         cache.rotate(0, 180 * toRadian, 0);
-        geometry2.storeInstance(cache, 1);
+        */
+    }
 
-        //////////////////LOOP//////////////////
+    public getCamera(): Camera {
+        return this.camera;
+    }
 
-        this.camera.update();
-
-        this.clearViewport();
-
-        const program: ShaderProgram = this.shaderManager.programs.get("main")!;
-
-        this.gl.useProgram(program.program);
-
-        this.camera.bufferViewProjection(program);
-
-        geometry.draw(2);
-        geometry2.draw(2);
+    public getEntityManager(): EntityManager {
+        return this.entityManager;
     }
 
     public render(now: float): void {
@@ -114,12 +95,16 @@ class Renderer {
         this.gl = context;
     }
 
+    private createShaderManager(): void {
+        this.shaderManager = new ShaderManager(this.gl);
+    }
+
     private createGeometryManager(): void {
         this.geometryManager = new GeometryManager(this.gl, this.shaderManager);
     }
 
-    private createShaderManager(): void {
-        this.shaderManager = new ShaderManager(this.gl);
+    private createEntityManager(): void {
+        this.entityManager = new EntityManager(this.geometryManager);
     }
 
     private createTimer(): void {
@@ -136,9 +121,19 @@ class Renderer {
         this.gl.enable(this.gl.DEPTH_TEST);
     }
 
-    private updateFrame(): void {}
+    private updateFrame(): void {
+        this.camera.update();
+        this.entityManager.prepare();
+    }
 
-    private drawFrame(): void {}
+    private drawFrame(): void {
+        this.clearViewport();
+
+        const program: ShaderProgram = this.bindProgram("main");
+
+        this.camera.bufferViewProjection(program);
+        this.entityManager.draw();
+    }
 
     private clearViewport(): void {
         this.gl.clearColor(
@@ -148,5 +143,11 @@ class Renderer {
             1.0
         );
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    }
+
+    private bindProgram(name: string): ShaderProgram {
+        const program: ShaderProgram = this.shaderManager.programs.get(name)!;
+        this.gl.useProgram(program.program);
+        return program;
     }
 }

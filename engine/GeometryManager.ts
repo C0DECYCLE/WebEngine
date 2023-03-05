@@ -31,6 +31,9 @@ class GeometryManager {
 
     public async initialize(names: string[]): Promise<void> {
         this.names.push(...names);
+        if (new Set(this.names).size !== this.names.length) {
+            throw new Error("Renderer: Duplicate geometry name.");
+        }
         await this.fetchObjFiles();
         this.createGeometries();
     }
@@ -61,7 +64,7 @@ class GeometryManager {
     private parseObjData(data: string): GeometryData {
         const result: GeometryData = GeometryParser.Obj(data);
         result.shader = "main";
-        result.capacity = 10;
+        result.capacity = 10_000;
         if (!this.shaderManager.names.includes(result.shader)) {
             throw new Error(`Renderer: Shader unknown. (${result.shader})`);
         }
