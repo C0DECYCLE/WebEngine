@@ -12,6 +12,10 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     renderer = new Renderer(clearColor);
     await renderer.initialize();
 
+    const camera: Camera = renderer.camera;
+    camera.position.set(1, 1.5, 2);
+    camera.target.set(0, 0, 0);
+
     function render(now: float): void {
         renderer.render(now);
 

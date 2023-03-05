@@ -4,6 +4,13 @@
     2023
 */
 
+enum ShaderVariables {
+    VIEWPROJECTION = "viewProjection",
+    OBJECTWORLD = "objectWorld",
+    VERTEXPOSITION = "vertexPosition",
+    VERTEXCOLOR = "vertexColor",
+}
+
 enum ShaderTypes {
     VERTEX = "vertex",
     FRAGMENT = "fragment",
@@ -22,4 +29,11 @@ type ShaderSourcePair = {
 type ShaderSourceInfo = {
     name: string;
     type: ShaderTypes;
+};
+
+type ShaderProgram = {
+    program: WebGLProgram;
+    uniformLocations: MapS<WebGLUniformLocation>;
+    instanceUniformLocations: MapS<WebGLInstanceUniformLocation>;
+    attributeLocations: MapS<WebGLAttributeLocation>;
 };
