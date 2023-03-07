@@ -15,7 +15,8 @@ class Mat3 {
     }
 
     public set(...floats: float[]): Mat3 {
-        for (let i: int = 0; i < floats.length; i++) {
+        let i: int;
+        for (i = 0; i < floats.length; i++) {
             this.values[i] = floats[i];
         }
         return this;
@@ -164,7 +165,8 @@ class Mat3 {
     }
 
     public store(target: Float32Array | Float64Array, offset: int = 0): Mat3 {
-        for (let i: int = 0; i < this.values.length; i++) {
+        let i: int = 0;
+        for (i = 0; i < this.values.length; i++) {
             target[offset + i] = this.values[i];
         }
         return this;

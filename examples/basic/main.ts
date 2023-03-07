@@ -25,9 +25,15 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         suzanne.wakeUp();
     }
 
+    const list: ObjectArray<Entity> = renderer.getEntityManager().getList();
+    const speed: float = 0.01;
+
     function render(now: float): void {
-        for (let i: int = 0; i < renderer.entityManager.list.length; i++) {
-            renderer.entityManager.list[i].rotation.add(0.01, -0.1, -0.01);
+        let i: int;
+        for (i = 0; i < list.length; i++) {
+            list[i].rotation.x += speed;
+            list[i].rotation.y -= speed;
+            list[i].rotation.z -= speed;
         }
 
         renderer.render(now);

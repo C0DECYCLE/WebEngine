@@ -14,6 +14,10 @@ class EntityManager {
         this.geometryManager = geometryManager;
     }
 
+    public getList(): ObjectArray<Entity> {
+        return this.list;
+    }
+
     public attach(entity: Entity): void {
         if (!this.geometryManager.list.has(entity.geometryName)) {
             throw new Error(
