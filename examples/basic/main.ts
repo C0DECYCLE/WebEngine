@@ -10,7 +10,6 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     await renderer.initialize();
 
     const camera: Camera = renderer.getCamera();
-    camera.position.set(25, 25, 25);
     camera.target.set(0, 0, 0);
 
     //TODO: stats, messure draw calls?
@@ -20,6 +19,8 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         const suzanne: Entity = new Entity("suzanne");
         suzanne.position
             .set(Math.random(), Math.random(), Math.random())
+            .scale(2)
+            .sub(1, 1, 1)
             .scale(20);
         suzanne.attach(renderer);
         suzanne.wakeUp();
@@ -29,6 +30,10 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     const speed: float = 0.01;
 
     function render(now: float): void {
+        camera.position
+            .set(Math.cos(now * 0.0001), 0.5, Math.sin(now * 0.0001))
+            .scale(40);
+
         let i: int;
         for (i = 0; i < list.length; i++) {
             list[i].rotation.x += speed;
