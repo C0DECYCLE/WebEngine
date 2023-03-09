@@ -19,20 +19,30 @@ class GeometryManager {
     public readonly list: MapS<Geometry> = new MapS<Geometry>();
 
     private readonly gl: WebGL2RenderingContext;
-    private shaderManager: ShaderManager;
+    private readonly shaderManager: ShaderManager;
+    private readonly stats: Stats;
 
     public constructor(
         gl: WebGL2RenderingContext,
-        shaderManager: ShaderManager
+        shaderManager: ShaderManager,
+        stats: Stats
     ) {
         this.gl = gl;
         this.shaderManager = shaderManager;
+        this.stats = stats;
     }
 
     public async initialize(names: string[]): Promise<void> {
         this.names.push(...names);
+        if (new Set(this.names).size !== this.names.length) {
+            throw new Error("Renderer: Duplicate geometry name.");
+        }
         await this.fetchObjFiles();
         this.createGeometries();
+    }
+
+    public getStats(): Stats {
+        return this.stats;
     }
 
     private async fetchObjFiles(): Promise<void> {
@@ -61,7 +71,7 @@ class GeometryManager {
     private parseObjData(data: string): GeometryData {
         const result: GeometryData = GeometryParser.Obj(data);
         result.shader = "main";
-        result.capacity = 10;
+        result.capacity = 10_000;
         if (!this.shaderManager.names.includes(result.shader)) {
             throw new Error(`Renderer: Shader unknown. (${result.shader})`);
         }
@@ -82,6 +92,6 @@ class GeometryManager {
         const program: ShaderProgram = this.shaderManager.programs.get(
             data.shader
         )!;
-        return new Geometry(this.gl, data, program);
+        return new Geometry(this.gl, data, program, this);
     }
 }

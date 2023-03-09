@@ -8,7 +8,11 @@ type int = number & { __type?: "int" };
 
 type float = number & { __type?: "float" };
 
+type uuid = string & { __type?: "uuid" };
+
 type Nullable<T> = T | null;
+
+type Undefinable<T> = T | undefined;
 
 type EmptyCallback = () => void;
 

@@ -10,6 +10,7 @@ precision highp float;
 
 in vec3 finalVertexPosition;
 in vec3 finalVertexColor;
+in float finalDepthValue;
 
 out vec4 fragColor;
 
@@ -55,5 +56,9 @@ void main() {
     }
     */
     //fragColor = vec4(finalVertexColor, 1.0);
+    
     fragColor = vec4(getFaceNormal(finalVertexPosition) * 0.5 + 0.5, 1.0);
+    
+    float depth = 1.0 / log(finalDepthValue);
+    //fragColor = vec4(depth, depth, depth, 1.0);
 }

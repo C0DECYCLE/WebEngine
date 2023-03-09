@@ -21,6 +21,9 @@ class ShaderManager {
 
     public async initialize(names: string[]): Promise<void> {
         this.names.push(...names);
+        if (new Set(this.names).size !== this.names.length) {
+            throw new Error("Renderer: Duplicate shader name.");
+        }
         await this.fetchShaderSources();
         this.createShaders();
         this.createPrograms();

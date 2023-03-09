@@ -9,8 +9,11 @@ class Geometry {
     public readonly program: ShaderProgram;
 
     private instanceWorlds: Float32Array;
+    private instanceStoreCount: int = 0;
 
     private readonly gl: WebGL2RenderingContext;
+    private readonly geometryManager: GeometryManager;
+
     private vertexArrayObject: WebGLVertexArrayObject;
     private instanceWorldsBuffer: WebGLBuffer;
     private verteciesBuffer: WebGLBuffer;
@@ -19,24 +22,42 @@ class Geometry {
     public constructor(
         gl: WebGL2RenderingContext,
         data: GeometryData,
-        program: ShaderProgram
+        program: ShaderProgram,
+        geometryManager: GeometryManager
     ) {
         this.gl = gl;
         this.data = data;
         this.program = program;
+        this.geometryManager = geometryManager;
 
         this.create();
         this.initialize();
     }
 
-    public storeInstance(mat: Mat4, offset: int): void {
-        mat.store(this.instanceWorlds, offset * 16);
+    public storeInstance(mat: Mat4): void {
+        if (this.instanceStoreCount == this.data.capacity) {
+            return console.warn(
+                `Renderer: Geometry capacity overflow. (${this.data.name})`
+            );
+        }
+        mat.store(this.instanceWorlds, this.instanceStoreCount * 16);
+        this.instanceStoreCount++;
     }
 
-    public draw(n: int = this.data.capacity): void {
+    public draw(): void {
+        if (this.instanceStoreCount === 0) {
+            return;
+        }
         this.gl.bindVertexArray(this.vertexArrayObject);
         this.bufferDynamicData(this.instanceWorldsBuffer, this.instanceWorlds);
-        this.gl.drawArraysInstanced(this.gl.TRIANGLES, 0, this.data.count, n);
+        this.gl.drawArraysInstanced(
+            this.gl.TRIANGLES,
+            0,
+            this.data.count,
+            this.instanceStoreCount
+        );
+        this.geometryManager.getStats().incrementDrawCalls();
+        this.instanceStoreCount = 0;
     }
 
     private create(): void {

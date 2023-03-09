@@ -34,6 +34,7 @@ class Camera {
     }
 
     private computeMatrix(): void {
+        //floating origin
         this.world.lookAt(this.position, this.target, this.up);
         this.viewProjection
             .copy(this.world)
