@@ -27,7 +27,7 @@ Number.prototype.between = function (a: int | float, b: int | float): boolean {
 Number.prototype.dotit = function (): string {
     return Math.round(this.valueOf())
         .toString()
-        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1'");
 };
 
 Number.prototype.clamp = function (min: int | float, max: int | float): float {

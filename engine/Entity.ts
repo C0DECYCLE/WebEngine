@@ -10,7 +10,6 @@ class Entity {
 
     public readonly position: Vec3 = new Vec3(0, 0, 0);
     public readonly rotation: Vec3 = new Vec3(0, 0, 0);
-    //public readonly scalation: Vec3 = new Vec3(1, 1, 1);
 
     private readonly world: Mat4 = new Mat4(true);
 
@@ -58,12 +57,11 @@ class Entity {
 
     private computeMatrix(): void {
         this.world.reset();
-        this.world.values[12] = this.position.x;
+        this.world.rotate(this.rotation);
+
+        this.world.values[12] = this.position.x; //floating origin
         this.world.values[13] = this.position.y;
         this.world.values[14] = this.position.z;
-        //this.world.translate(this.position); //floating origin
-        this.world.rotate(this.rotation);
-        //this.world.scale(this.scalation);
     }
 
     public stringifyInfo(): string {

@@ -91,7 +91,7 @@ class Stats {
             frame rate: ${this.fps.toFixed(1)} fps <br>
             frame delta: ${this.deltaTime.toFixed(2)} ms <br>
             <br>
-            entities: ${this.activeEntities} / ${this.totalEntities}<br>
+            entities: ${this.activeEntities.dotit()} / ${this.totalEntities.dotit()}<br>
             draw calls: ${this.drawCalls}<br>
             <br>
             cpu update: ${this.updateTime.toFixed(2)} ms <br>

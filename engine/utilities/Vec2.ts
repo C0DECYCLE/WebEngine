@@ -5,8 +5,28 @@
 */
 
 class Vec2 {
-    public x: float;
-    public y: float;
+    private _x: float;
+    private _y: float;
+
+    public isDirty: boolean = false;
+
+    public get x(): float {
+        return this._x;
+    }
+
+    public set x(value: float) {
+        this._x = value;
+        this.isDirty = true;
+    }
+
+    public get y(): float {
+        return this._y;
+    }
+
+    public set y(value: float) {
+        this._y = value;
+        this.isDirty = true;
+    }
 
     public constructor(x: float = 0, y: float = 0) {
         this.set(x, y);
