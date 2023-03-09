@@ -48,20 +48,30 @@ class Entity {
         this.isAwake = false;
     }
 
-    public prepare(geometry: Geometry): boolean {
+    public prepare(geometry: Geometry, positionOffset?: Vec3): boolean {
         //cull frustum lod occlusion
-        this.computeMatrix();
+
+        this.computeMatrix(positionOffset);
         geometry.storeInstance(this.world);
-        return true; //occluded
+
+        return true; //drawn
     }
 
-    private computeMatrix(): void {
-        this.world.reset();
-        this.world.rotate(this.rotation);
-
-        this.world.values[12] = this.position.x; //floating origin
-        this.world.values[13] = this.position.y;
-        this.world.values[14] = this.position.z;
+    private computeMatrix(positionOffset?: Vec3): void {
+        if (this.rotation.isDirty) {
+            this.world.reset();
+            this.world.rotate(this.rotation);
+            this.rotation.isDirty = false;
+        }
+        if (positionOffset !== undefined) {
+            this.world.values[12] = this.position.x - positionOffset.x;
+            this.world.values[13] = this.position.y - positionOffset.y;
+            this.world.values[14] = this.position.z - positionOffset.z;
+        } else {
+            this.world.values[12] = this.position.x;
+            this.world.values[13] = this.position.y;
+            this.world.values[14] = this.position.z;
+        }
     }
 
     public stringifyInfo(): string {
