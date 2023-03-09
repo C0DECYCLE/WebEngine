@@ -20,6 +20,7 @@ in vec3 vertexColor;
  
 out vec3 finalVertexPosition;
 out vec3 finalVertexColor;
+out float finalDepthValue;
 
 void main() {
     vec4 finalWorldPosition = objectWorld * vec4(vertexPosition, 1.0);
@@ -28,4 +29,5 @@ void main() {
     finalVertexColor = vertexColor.xyz;
 
     gl_Position = viewProjection * finalWorldPosition;
+    finalDepthValue = gl_Position.z;
 }

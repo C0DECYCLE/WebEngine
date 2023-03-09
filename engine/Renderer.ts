@@ -12,16 +12,16 @@ class Renderer {
     private geometryManager: GeometryManager;
     private entityManager: EntityManager;
     private camera: Camera;
-    private timer: RenderTimer;
+    private stats: Stats;
 
     public constructor(clearColor: Vec3) {
         this.clearColor = clearColor;
 
         this.createContext(this.createCanvas());
+        this.createStats();
         this.createShaderManager();
         this.createGeometryManager();
         this.createEntityManager();
-        this.createTimer();
         this.createCamera();
     }
 
@@ -32,24 +32,6 @@ class Renderer {
         await this.shaderManager.initialize(shaderNames);
         await this.geometryManager.initialize(geometryNames);
         this.initializeContext();
-
-        /*
-        const geometry: Geometry = this.geometryManager.list.get("suzanne")!;
-
-        cache.translate(0, 0, -1);
-        cache.rotate(0, 0, 0);
-
-        cache.translate(-2, 0, 0);
-        cache.rotate(90 * toRadian, 90 * toRadian, 0);
-
-        const geometry2: Geometry = this.geometryManager.list.get("torus")!;
-
-        cache.translate(-1, 1, -1);
-        cache.rotate(90 * toRadian, 180 * toRadian, 0);
-        
-        cache.translate(1, -1, 0);
-        cache.rotate(0, 180 * toRadian, 0);
-        */
     }
 
     public getCamera(): Camera {
@@ -61,17 +43,17 @@ class Renderer {
     }
 
     public render(now: float): void {
-        this.timer.begin(now);
+        this.stats.begin(now);
 
-        this.timer.beginUpdate();
+        this.stats.beginUpdate();
         this.updateFrame();
-        this.timer.endUpdate();
+        this.stats.endUpdate();
 
-        this.timer.beginDraw();
+        this.stats.beginDraw();
         this.drawFrame();
-        this.timer.endDraw();
+        this.stats.endDraw();
 
-        this.timer.end(now);
+        this.stats.end(now);
     }
 
     private createCanvas(): HTMLCanvasElement {
@@ -86,8 +68,10 @@ class Renderer {
     }
 
     private createContext(canvas: HTMLCanvasElement): void {
-        const context: Nullable<WebGL2RenderingContext> =
-            canvas.getContext("webgl2");
+        const context: Nullable<WebGL2RenderingContext> = canvas.getContext(
+            "webgl2"
+            //{ preserveDrawingBuffer: true } as WebGLContextAttributes //TODO: Investigate options
+        );
 
         if (!context) {
             throw new Error("Renderer: Get WebGL2RenderingContext failed.");
@@ -100,19 +84,26 @@ class Renderer {
     }
 
     private createGeometryManager(): void {
-        this.geometryManager = new GeometryManager(this.gl, this.shaderManager);
+        this.geometryManager = new GeometryManager(
+            this.gl,
+            this.shaderManager,
+            this.stats
+        );
     }
 
     private createEntityManager(): void {
-        this.entityManager = new EntityManager(this.geometryManager);
+        this.entityManager = new EntityManager(
+            this.geometryManager,
+            this.stats
+        );
     }
 
-    private createTimer(): void {
-        this.timer = new RenderTimer();
+    private createStats(): void {
+        this.stats = new Stats();
     }
 
     private createCamera(): void {
-        this.camera = new Camera(this.gl, 1000);
+        this.camera = new Camera(this.gl, 1_000);
     }
 
     private initializeContext(): void {
@@ -127,7 +118,7 @@ class Renderer {
     }
 
     private drawFrame(): void {
-        this.clearViewport();
+        this.clearViewport(); //TODO: Investigate preserver draw buffer
 
         const program: ShaderProgram = this.bindProgram("main");
 

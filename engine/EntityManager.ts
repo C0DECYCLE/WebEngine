@@ -8,10 +8,12 @@ class EntityManager {
     private readonly list: ObjectArray<Entity> = new ObjectArray<Entity>();
     private renderList: ObjectArray<Entity> = new ObjectArray<Entity>();
 
-    private geometryManager: GeometryManager;
+    private readonly geometryManager: GeometryManager;
+    private readonly stats: Stats;
 
-    public constructor(geometryManager: GeometryManager) {
+    public constructor(geometryManager: GeometryManager, stats: Stats) {
         this.geometryManager = geometryManager;
+        this.stats = stats;
     }
 
     public getList(): ObjectArray<Entity> {
@@ -41,8 +43,11 @@ class EntityManager {
         let entity: Entity;
         for (i = 0; i < this.renderList.length; i++) {
             entity = this.renderList[i];
-            entity.prepare(geometryList.get(entity.geometryName)!);
+            if (entity.prepare(geometryList.get(entity.geometryName)!)) {
+                this.stats.incrementEntities();
+            }
         }
+        this.stats.setTotalEntities(this.list.length);
     }
 
     public draw(): void {

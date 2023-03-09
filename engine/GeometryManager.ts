@@ -19,14 +19,17 @@ class GeometryManager {
     public readonly list: MapS<Geometry> = new MapS<Geometry>();
 
     private readonly gl: WebGL2RenderingContext;
-    private shaderManager: ShaderManager;
+    private readonly shaderManager: ShaderManager;
+    private readonly stats: Stats;
 
     public constructor(
         gl: WebGL2RenderingContext,
-        shaderManager: ShaderManager
+        shaderManager: ShaderManager,
+        stats: Stats
     ) {
         this.gl = gl;
         this.shaderManager = shaderManager;
+        this.stats = stats;
     }
 
     public async initialize(names: string[]): Promise<void> {
@@ -36,6 +39,10 @@ class GeometryManager {
         }
         await this.fetchObjFiles();
         this.createGeometries();
+    }
+
+    public getStats(): Stats {
+        return this.stats;
     }
 
     private async fetchObjFiles(): Promise<void> {
@@ -85,6 +92,6 @@ class GeometryManager {
         const program: ShaderProgram = this.shaderManager.programs.get(
             data.shader
         )!;
-        return new Geometry(this.gl, data, program);
+        return new Geometry(this.gl, data, program, this);
     }
 }

@@ -12,6 +12,8 @@ class Geometry {
     private instanceStoreCount: int = 0;
 
     private readonly gl: WebGL2RenderingContext;
+    private readonly geometryManager: GeometryManager;
+
     private vertexArrayObject: WebGLVertexArrayObject;
     private instanceWorldsBuffer: WebGLBuffer;
     private verteciesBuffer: WebGLBuffer;
@@ -20,11 +22,13 @@ class Geometry {
     public constructor(
         gl: WebGL2RenderingContext,
         data: GeometryData,
-        program: ShaderProgram
+        program: ShaderProgram,
+        geometryManager: GeometryManager
     ) {
         this.gl = gl;
         this.data = data;
         this.program = program;
+        this.geometryManager = geometryManager;
 
         this.create();
         this.initialize();
@@ -52,6 +56,7 @@ class Geometry {
             this.data.count,
             this.instanceStoreCount
         );
+        this.geometryManager.getStats().incrementDrawCalls();
         this.instanceStoreCount = 0;
     }
 

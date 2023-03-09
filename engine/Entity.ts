@@ -49,10 +49,11 @@ class Entity {
         this.isAwake = false;
     }
 
-    public prepare(geometry: Geometry): void {
+    public prepare(geometry: Geometry): boolean {
         //cull frustum lod occlusion
         this.computeMatrix();
         geometry.storeInstance(this.world);
+        return true; //occluded
     }
 
     private computeMatrix(): void {

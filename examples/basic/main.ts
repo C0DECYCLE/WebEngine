@@ -12,7 +12,6 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     const camera: Camera = renderer.getCamera();
     camera.target.set(0, 0, 0);
 
-    //TODO: stats, messure draw calls?
     //GITHUB TODO: lights, shadows, etc.. other game engine features
 
     for (let i: int = 0; i < 10_000; i++) {
@@ -33,7 +32,6 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         camera.position
             .set(Math.cos(now * 0.0001), 0.5, Math.sin(now * 0.0001))
             .scale(40);
-
         let i: int;
         for (i = 0; i < list.length; i++) {
             list[i].rotation.x += speed;
