@@ -1,10 +1,8 @@
 /*
     Palto Studio
     Developed by Noah Bussinger
-    2022
+    2023
 */
-
-const log = console.log;
 
 const PHI: float = (1.0 + 5.0 ** 0.5) / 2.0;
 

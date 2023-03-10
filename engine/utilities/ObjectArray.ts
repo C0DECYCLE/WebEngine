@@ -47,23 +47,23 @@ class ObjectArray<T extends object> extends Array<T> {
     public override splice(start: int, deleteCount?: int): T[];
     public override splice(start: int, _deleteCount: int, ..._items: T[]): T[] {
         if (start !== Number.MIN_VALUE) {
-            console.warn("ObjectArray: Illegal splice operation.");
+            warn("ObjectArray: Illegal splice operation.");
         }
         return [];
     }
 
     public override shift(): Undefinable<T> {
-        console.warn("ObjectArray: Illegal shift operation.");
+        warn("ObjectArray: Illegal shift operation.");
         return undefined;
     }
 
     public override sort(_compareFn?: (a: T, b: T) => int): this {
-        console.warn("ObjectArray: Illegal sort operation.");
+        warn("ObjectArray: Illegal sort operation.");
         return this;
     }
 
     public override unshift(..._items: T[]): int {
-        console.warn("ObjectArray: Illegal unshift operation.");
+        warn("ObjectArray: Illegal unshift operation.");
         return -1;
     }
 

@@ -29,7 +29,7 @@ class Entity {
     public wakeUp(): void {
         this.preventUnattached();
         if (this.isAwake === true) {
-            return console.warn(
+            return warn(
                 `Renderer: Entity already awake. ${this.stringifyInfo()}`
             );
         }
@@ -40,7 +40,7 @@ class Entity {
     public sleep(): void {
         this.preventUnattached();
         if (this.isAwake === false) {
-            return console.warn(
+            return warn(
                 `Renderer: Entity already awake. ${this.stringifyInfo()}`
             );
         }

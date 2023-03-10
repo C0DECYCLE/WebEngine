@@ -36,7 +36,7 @@ class Geometry {
 
     public storeInstance(mat: Mat4): void {
         if (this.instanceStoreCount == this.data.capacity) {
-            return console.warn(
+            return warn(
                 `Renderer: Geometry capacity overflow. (${this.data.name})`
             );
         }
