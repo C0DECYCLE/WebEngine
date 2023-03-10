@@ -56,7 +56,9 @@ class Geometry {
             this.data.count,
             this.instanceStoreCount
         );
-        this.geometryManager.getStats().incrementDrawCalls();
+        this.geometryManager
+            .getStats()
+            .incrementDrawCalls(this.data.count * this.instanceStoreCount);
         this.instanceStoreCount = 0;
     }
 

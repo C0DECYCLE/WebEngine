@@ -5,35 +5,30 @@
 */
 
 class Stats {
-    private deltaMs: float = 0;
-    private updateMs: float = 0;
-    private drawMs: float = 0;
-
     private then: float = -1;
+    private renderThen: float = -1;
     private updateThen: float = -1;
     private drawThen: float = -1;
 
+    private deltaMs: float = 0;
+    private renderMs: float = 0;
+    private updateMs: float = 0;
+    private drawMs: float = 0;
+
     private activeEntities: int = 0;
     private totalEntities: int = 0;
+
     private drawCalls: int = 0;
+    private activeVertecies: int = 0;
+
+    private resolution: [int, int] = [
+        document.body.clientWidth,
+        document.body.clientHeight,
+    ];
+    private devicePixelRatio: int = devicePixelRatio;
 
     private overlay: StatsOverlay;
-
-    public get deltaTime(): float {
-        return this.deltaMs;
-    }
-
-    public get updateTime(): float {
-        return this.updateMs;
-    }
-
-    public get drawTime(): float {
-        return this.drawMs;
-    }
-
-    public get fps(): float {
-        return 1_000 / this.deltaMs;
-    }
+    private overlayUpdateCounter: int = 0;
 
     public constructor() {
         this.createOverlay();
@@ -43,6 +38,7 @@ class Stats {
         if (this.then === -1) {
             this.then = now;
         }
+        this.renderThen = performance.now();
     }
 
     public beginUpdate(): void {
@@ -66,10 +62,12 @@ class Stats {
     public beginDraw(): void {
         this.drawThen = performance.now();
         this.drawCalls = 0;
+        this.activeVertecies = 0;
     }
 
-    public incrementDrawCalls(): void {
+    public incrementDrawCalls(vertecies: int): void {
         this.drawCalls += 1;
+        this.activeVertecies += vertecies;
     }
 
     public endDraw(): void {
@@ -79,23 +77,45 @@ class Stats {
     public end(now: float): void {
         this.deltaMs = now - this.then;
         this.then = now;
-        this.overlay.update(this.stringify());
+        this.renderMs = performance.now() - this.renderThen;
+
+        this.updateOverlay();
     }
 
     private createOverlay(): void {
         this.overlay = new StatsOverlay();
     }
 
+    private updateOverlay(): void {
+        if (this.overlayUpdateCounter === 0) {
+            this.overlay.update(this.stringify());
+            this.overlayUpdateCounter++;
+        } else if (this.overlayUpdateCounter === 3) {
+            this.overlayUpdateCounter = 0;
+        } else {
+            this.overlayUpdateCounter++;
+        }
+    }
+
     private stringify(): string {
         return `
-            frame rate: ${this.fps.toFixed(1)} fps <br>
-            frame delta: ${this.deltaTime.toFixed(2)} ms <br>
+            frame rate: ${(1_000 / this.deltaMs).toFixed(1)} fps <br>
+            frame delta: ${this.deltaMs.toFixed(2)} ms <br>
             <br>
             entities: ${this.activeEntities.dotit()} / ${this.totalEntities.dotit()}<br>
-            draw calls: ${this.drawCalls}<br>
             <br>
-            cpu update: ${this.updateTime.toFixed(2)} ms <br>
-            cpu draw: ${this.drawTime.toFixed(2)} ms <br>
+            cpu frame rate: ${(1_000 / this.renderMs).toFixed(1)} fps <br>
+            cpu frame time: ${this.renderMs.toFixed(2)} ms <br>
+            |_ update: ${this.updateMs.toFixed(2)} ms <br>
+            |_ draw: ${this.drawMs.toFixed(2)} ms <br>
+            cpu inter time: ${(this.deltaMs - this.renderMs).toFixed(2)} ms <br>
+            <br>
+            gpu draw calls: ${this.drawCalls}<br>
+            gpu vertecies: ${this.activeVertecies.dotit()}<br>
+            gpu faces: ${(this.activeVertecies / 3).dotit()}<br>
+            <br>
+            resolution: ${this.resolution[0]} px x ${this.resolution[1]} px<br>
+            device pixel ratio: ${this.devicePixelRatio}<br>
         `;
     }
 }
