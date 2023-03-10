@@ -34,10 +34,9 @@ class StatsOverlay {
     private createP(div: HTMLDivElement): HTMLParagraphElement {
         const p: HTMLDivElement = document.createElement("p");
         p.style.margin = "2vh";
-        p.style.color = "#E6E6E6";
+        p.style.color = "#FFFFFF";
         p.style.fontFamily = "system-ui";
         p.style.fontSize = "2vh";
-        p.style.opacity = "1.0";
 
         div.append(p);
         return p;

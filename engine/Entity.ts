@@ -10,7 +10,6 @@ class Entity {
 
     public readonly position: Vec3 = new Vec3(0, 0, 0);
     public readonly rotation: Vec3 = new Vec3(0, 0, 0);
-    //public readonly scalation: Vec3 = new Vec3(1, 1, 1);
 
     private readonly world: Mat4 = new Mat4(true);
 
@@ -30,7 +29,7 @@ class Entity {
     public wakeUp(): void {
         this.preventUnattached();
         if (this.isAwake === true) {
-            return console.warn(
+            return warn(
                 `Renderer: Entity already awake. ${this.stringifyInfo()}`
             );
         }
@@ -41,7 +40,7 @@ class Entity {
     public sleep(): void {
         this.preventUnattached();
         if (this.isAwake === false) {
-            return console.warn(
+            return warn(
                 `Renderer: Entity already awake. ${this.stringifyInfo()}`
             );
         }
@@ -49,21 +48,30 @@ class Entity {
         this.isAwake = false;
     }
 
-    public prepare(geometry: Geometry): boolean {
+    public prepare(geometry: Geometry, positionOffset?: Vec3): boolean {
         //cull frustum lod occlusion
-        this.computeMatrix();
+
+        this.computeMatrix(positionOffset);
         geometry.storeInstance(this.world);
-        return true; //occluded
+
+        return true; //drawn
     }
 
-    private computeMatrix(): void {
-        this.world.reset();
-        this.world.values[12] = this.position.x;
-        this.world.values[13] = this.position.y;
-        this.world.values[14] = this.position.z;
-        //this.world.translate(this.position); //floating origin
-        this.world.rotate(this.rotation);
-        //this.world.scale(this.scalation);
+    private computeMatrix(positionOffset?: Vec3): void {
+        if (this.rotation.isDirty) {
+            this.world.reset();
+            this.world.rotate(this.rotation);
+            this.rotation.isDirty = false;
+        }
+        if (positionOffset !== undefined) {
+            this.world.values[12] = this.position.x - positionOffset.x;
+            this.world.values[13] = this.position.y - positionOffset.y;
+            this.world.values[14] = this.position.z - positionOffset.z;
+        } else {
+            this.world.values[12] = this.position.x;
+            this.world.values[13] = this.position.y;
+            this.world.values[14] = this.position.z;
+        }
     }
 
     public stringifyInfo(): string {

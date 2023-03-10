@@ -19,11 +19,11 @@ class Camera {
         this.gl = gl;
         const ratio: float = this.gl.canvas.width / this.gl.canvas.height;
         this.projection = Mat4.Perspective(60 * toRadian, ratio, 1, far, true);
-        this.computeMatrix();
+        this.computeMatrix(true);
     }
 
-    public update(): void {
-        this.computeMatrix();
+    public update(floatingOrigin: boolean): void {
+        this.computeMatrix(floatingOrigin);
     }
 
     public bufferViewProjection(program: ShaderProgram): void {
@@ -33,9 +33,16 @@ class Camera {
         this.gl.uniformMatrix4fv(loc, false, this.viewProjection.values);
     }
 
-    private computeMatrix(): void {
-        //floating origin
-        this.world.lookAt(this.position, this.target, this.up);
+    private computeMatrix(floatingOrigin: boolean): void {
+        if (floatingOrigin) {
+            this.world.lookAt(
+                new Vec3(),
+                this.target.clone().sub(this.position),
+                this.up
+            );
+        } else {
+            this.world.lookAt(this.position, this.target, this.up);
+        }
         this.viewProjection
             .copy(this.world)
             .invert()

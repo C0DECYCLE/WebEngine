@@ -10,7 +10,7 @@ precision highp float;
 
 in vec3 finalVertexPosition;
 in vec3 finalVertexColor;
-in float finalDepthValue;
+//in float finalDepthValue;
 
 out vec4 fragColor;
 
@@ -33,7 +33,7 @@ float getShading(vec3 faceNormal, vec3 lightDirection) {
 
 void main() {
     vec3 faceNormal = getFaceNormal(finalVertexPosition);
-    /*    
+    /*
     vec3 lightColor = vec3(1.0, 0.7, 0.3);
     vec3 lightDirection = normalize(vec3(-1.0, -1.0, 1.0));
 
@@ -47,7 +47,7 @@ void main() {
 
         fragColor = vec4(
             mix(
-                finalVertexColor, //vec3(0.7, 0.5, 1.0);
+                finalVertexColor,
                 lightColor * getShading(faceNormal, lightDirection),
                 0.5
             ) * 0.75, 
@@ -59,6 +59,6 @@ void main() {
     
     fragColor = vec4(getFaceNormal(finalVertexPosition) * 0.5 + 0.5, 1.0);
     
-    float depth = 1.0 / log(finalDepthValue);
+    //float depth = 1.0 / log(finalDepthValue);
     //fragColor = vec4(depth, depth, depth, 1.0);
 }

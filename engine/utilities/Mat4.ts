@@ -15,10 +15,22 @@ class Mat4 {
     }
 
     public set(...floats: float[]): Mat4 {
-        let i: int = 0;
-        for (i = 0; i < floats.length; i++) {
-            this.values[i] = floats[i];
-        }
+        this.values[0] = floats[0];
+        this.values[1] = floats[1];
+        this.values[2] = floats[2];
+        this.values[3] = floats[3];
+        this.values[4] = floats[4];
+        this.values[5] = floats[5];
+        this.values[6] = floats[6];
+        this.values[7] = floats[7];
+        this.values[8] = floats[8];
+        this.values[9] = floats[9];
+        this.values[10] = floats[10];
+        this.values[11] = floats[11];
+        this.values[12] = floats[12];
+        this.values[13] = floats[13];
+        this.values[14] = floats[14];
+        this.values[15] = floats[15];
         return this;
     }
 
@@ -381,10 +393,22 @@ class Mat4 {
     }
 
     public store(target: Float32Array | Float64Array, offset: int = 0): Mat4 {
-        let i: int = 0;
-        for (i = 0; i < this.values.length; i++) {
-            target[offset + i] = this.values[i];
-        }
+        target[offset] = this.values[0];
+        target[offset + 1] = this.values[1];
+        target[offset + 2] = this.values[2];
+        target[offset + 3] = this.values[3];
+        target[offset + 4] = this.values[4];
+        target[offset + 5] = this.values[5];
+        target[offset + 6] = this.values[6];
+        target[offset + 7] = this.values[7];
+        target[offset + 8] = this.values[8];
+        target[offset + 9] = this.values[9];
+        target[offset + 10] = this.values[10];
+        target[offset + 11] = this.values[11];
+        target[offset + 12] = this.values[12];
+        target[offset + 13] = this.values[13];
+        target[offset + 14] = this.values[14];
+        target[offset + 15] = this.values[15];
         return this;
     }
 

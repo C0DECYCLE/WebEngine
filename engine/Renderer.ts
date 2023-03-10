@@ -5,7 +5,8 @@
 */
 
 class Renderer {
-    private readonly clearColor: Vec3;
+    private readonly clearColor?: Vec3;
+    private readonly floatingOrigin: boolean;
 
     private gl: WebGL2RenderingContext;
     private shaderManager: ShaderManager;
@@ -14,8 +15,9 @@ class Renderer {
     private camera: Camera;
     private stats: Stats;
 
-    public constructor(clearColor: Vec3) {
+    public constructor(clearColor?: Vec3, floatingOrigin: boolean = true) {
         this.clearColor = clearColor;
+        this.floatingOrigin = floatingOrigin;
 
         this.createContext(this.createCanvas());
         this.createStats();
@@ -69,10 +71,19 @@ class Renderer {
 
     private createContext(canvas: HTMLCanvasElement): void {
         const context: Nullable<WebGL2RenderingContext> = canvas.getContext(
-            "webgl2"
-            //{ preserveDrawingBuffer: true } as WebGLContextAttributes //TODO: Investigate options
+            "webgl2",
+            {
+                alpha: false,
+                antialias: false,
+                depth: true,
+                failIfMajorPerformanceCaveat: false,
+                powerPreference: "high-performance",
+                premultipliedAlpha: true,
+                preserveDrawingBuffer: false,
+                stencil: false,
+                desynchronized: false,
+            } as WebGLContextAttributes
         );
-
         if (!context) {
             throw new Error("Renderer: Get WebGL2RenderingContext failed.");
         }
@@ -103,37 +114,37 @@ class Renderer {
     }
 
     private createCamera(): void {
-        this.camera = new Camera(this.gl, 1_000);
+        this.camera = new Camera(this.gl, 1_000); //config
     }
 
     private initializeContext(): void {
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
+        if (this.clearColor !== undefined) {
+            this.gl.clearColor(
+                this.clearColor.x,
+                this.clearColor.y,
+                this.clearColor.z,
+                1.0
+            );
+        }
     }
 
     private updateFrame(): void {
-        this.camera.update();
-        this.entityManager.prepare();
+        this.camera.update(this.floatingOrigin);
+        this.entityManager.prepare(this.camera.position);
     }
 
     private drawFrame(): void {
-        this.clearViewport(); //TODO: Investigate preserver draw buffer
+        if (this.clearColor !== undefined) {
+            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+        }
 
         const program: ShaderProgram = this.bindProgram("main");
 
         this.camera.bufferViewProjection(program);
         this.entityManager.draw();
-    }
-
-    private clearViewport(): void {
-        this.gl.clearColor(
-            this.clearColor.x,
-            this.clearColor.y,
-            this.clearColor.z,
-            1.0
-        );
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
 
     private bindProgram(name: string): ShaderProgram {
