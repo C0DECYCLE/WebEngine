@@ -11,7 +11,7 @@ class Entity {
     public readonly position: Vec3 = new Vec3(0, 0, 0);
     public readonly rotation: Vec3 = new Vec3(0, 0, 0);
 
-    private readonly world: Mat4 = new Mat4(true);
+    private readonly world: Mat4 = new Mat4();
 
     private camera: Nullable<Camera> = null;
     private entityManager: Nullable<EntityManager> = null;

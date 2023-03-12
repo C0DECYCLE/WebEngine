@@ -6,11 +6,11 @@
 
 class Mat4 {
     public readonly values: Float32Array | Float64Array;
-    public readonly isFloat32: boolean;
+    public readonly isFloat64: boolean;
 
-    public constructor(isFloat32: boolean = false) {
-        this.values = isFloat32 ? new Float32Array(16) : new Float64Array(16);
-        this.isFloat32 = isFloat32;
+    public constructor(isFloat64: boolean = false) {
+        this.values = isFloat64 ? new Float64Array(16) : new Float32Array(16);
+        this.isFloat64 = isFloat64;
         this.reset();
     }
 
@@ -413,7 +413,7 @@ class Mat4 {
     }
 
     public clone(): Mat4 {
-        return new Mat4(this.isFloat32).copy(this);
+        return new Mat4(this.isFloat64).copy(this);
     }
 
     private static Cache: Mat4 = new Mat4();
@@ -425,10 +425,10 @@ class Mat4 {
         bottom: float,
         near: float,
         far: float,
-        isFloat32?: boolean
+        isFloat64?: boolean
     ): Mat4 {
         // prettier-ignore
-        return new Mat4(isFloat32).set(
+        return new Mat4(isFloat64).set(
             2 / (right - left), 0, 0, 0,
             0, 2 / (top - bottom), 0, 0,
             0, 0, 2 / (near - far), 0,
@@ -441,12 +441,12 @@ class Mat4 {
         aspect: float,
         near: float,
         far: float,
-        isFloat32?: boolean
+        isFloat64?: boolean
     ): Mat4 {
         const f: float = Math.tan(Math.PI * 0.5 - 0.5 * fov);
         const rangeInv: float = 1.0 / (near - far);
         // prettier-ignore
-        return new Mat4(isFloat32).set(
+        return new Mat4(isFloat64).set(
             f / aspect, 0, 0, 0,
             0, f, 0, 0,
             0, 0, (near + far) * rangeInv, -1,

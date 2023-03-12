@@ -6,11 +6,11 @@
 
 class Mat3 {
     public readonly values: Float32Array | Float64Array;
-    public readonly isFloat32: boolean;
+    public readonly isFloat64: boolean;
 
-    public constructor(isFloat32: boolean = false) {
-        this.values = isFloat32 ? new Float32Array(9) : new Float64Array(9);
-        this.isFloat32 = isFloat32;
+    public constructor(isFloat64: boolean = false) {
+        this.values = isFloat64 ? new Float64Array(9) : new Float32Array(9);
+        this.isFloat64 = isFloat64;
         this.reset();
     }
 
@@ -183,7 +183,7 @@ class Mat3 {
     }
 
     public clone(): Mat3 {
-        return new Mat3(this.isFloat32).copy(this);
+        return new Mat3(this.isFloat64).copy(this);
     }
 
     private static Cache: Mat3 = new Mat3();
@@ -191,10 +191,10 @@ class Mat3 {
     public static Projection(
         width: float,
         height: float,
-        isFloat32?: boolean
+        isFloat64?: boolean
     ): Mat3 {
         // prettier-ignore
-        return new Mat3(isFloat32).set(
+        return new Mat3(isFloat64).set(
             2 / width, 0, 0,
             0, -2 / height, 0,
             -1, 1, 1
