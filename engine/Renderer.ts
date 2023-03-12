@@ -6,7 +6,6 @@
 
 class Renderer {
     private readonly clearColor?: Vec3;
-    private readonly floatingOrigin: boolean;
 
     private gl: WebGL2RenderingContext;
     private shaderManager: ShaderManager;
@@ -15,9 +14,8 @@ class Renderer {
     private camera: Camera;
     private stats: Stats;
 
-    public constructor(clearColor?: Vec3, floatingOrigin: boolean = true) {
+    public constructor(clearColor?: Vec3) {
         this.clearColor = clearColor;
-        this.floatingOrigin = floatingOrigin;
 
         this.createContext(this.createCanvas());
         this.createStats();
@@ -132,8 +130,8 @@ class Renderer {
     }
 
     private updateFrame(): void {
-        this.camera.update(this.floatingOrigin);
-        this.entityManager.prepare(this.camera.position);
+        this.camera.update();
+        this.entityManager.prepare();
     }
 
     private drawFrame(): void {

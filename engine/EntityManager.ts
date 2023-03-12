@@ -37,18 +37,13 @@ class EntityManager {
         this.renderList.delete(entity);
     }
 
-    public prepare(positionOffset?: Vec3): void {
+    public prepare(): void {
         const geometryList: MapS<Geometry> = this.geometryManager.list;
         let i: int;
         let entity: Entity;
         for (i = 0; i < this.renderList.length; i++) {
             entity = this.renderList[i];
-            if (
-                entity.prepare(
-                    geometryList.get(entity.geometryName)!,
-                    positionOffset
-                )
-            ) {
+            if (entity.prepare(geometryList.get(entity.geometryName)!)) {
                 this.stats.incrementEntities();
             }
         }
