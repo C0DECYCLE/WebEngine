@@ -7,10 +7,9 @@
 class GeometryManager {
     public readonly rootPath: string = "/engine/geometries/";
     public readonly names: string[] = [
-        "plane",
         "cube",
+        "sphere",
         "icosphere",
-        "f",
         "torus",
         "suzanne",
     ];

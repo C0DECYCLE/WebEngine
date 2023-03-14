@@ -5,6 +5,8 @@
 */
 
 class GeometryParser {
+    ////////////////////////////////////////
+    /*
     public static UnwrapVertecies(data: GeometryWrapData): Float32Array {
         const vertecies: Float32Array = new Float32Array(
             data.cells.length * 3 * 3
@@ -78,57 +80,44 @@ class GeometryParser {
         data.positions = cleanPositions;
         return data;
     }
+    */
+    ////////////////////////////////////////
 
     public static Obj(raw: string): GeometryData {
         const result: GeometryData = {} as GeometryData;
         const vertecies: float[] = [];
         const colors: float[] = [];
         const polygons: GeometryParserPolygon[] = [[0, 0, 0, 0, 0, 0]];
-        const cells: GeometryParserCell[] = [];
-        result.wasIndexed = false;
-        GeometryParser.UnpackData(
-            raw,
-            polygons,
-            cells,
-            vertecies,
-            colors,
-            result
-        );
+        GeometryParser.UnpackData(raw, polygons, vertecies, colors, result);
+        ////////////////////////////////////////
+        /*
         let s: GeometryWrapData;
 
-        if (result.wasIndexed) {
-            const positions: GeometryParserPosition[] = [];
-            for (let i: int = 0; i < polygons.length; i++) {
-                //@ts-ignore
-                positions.push(polygons[i].slice(0, 3));
-            }
-            const wrapped = GeometryParser.WrapVertecies(
-                new Float32Array(vertecies)
-            );
-
-            console.log(
-                "positions",
-                positions,
-                "cells",
-                cells,
-                "wrapped.cells",
-                wrapped.cells,
-                "wrapped.positions",
-                wrapped.positions
-            );
-            s = simplify(
-                wrapped.cells,
-                wrapped.positions
-            )(Math.ceil(wrapped.positions.length * 0.5));
-            console.log(s);
+        const positions: GeometryParserPosition[] = [];
+        for (let i: int = 0; i < polygons.length; i++) {
+            //@ts-ignore
+            positions.push(polygons[i].slice(0, 3));
         }
-
-        GeometryParser.HandleUnindexed(polygons, vertecies, colors, result);
+        const wrapped = GeometryParser.WrapVertecies(
+            new Float32Array(vertecies)
+        );
+        */
+        /*
+        s = simplify(
+            wrapped.cells,
+            wrapped.positions
+        )(Math.ceil(wrapped.positions.length * 0.5));
+        */
+        ////////////////////////////////////////
+        /*
         if (s) {
             result.vertecies = GeometryParser.UnwrapVertecies(s);
         } else {
             result.vertecies = new Float32Array(vertecies);
         }
+        */
+        ////////////////////////////////////////
+        result.vertecies = new Float32Array(vertecies);
         result.colors = new Float32Array(colors);
         result.count = result.vertecies.length / 3;
         return result;
@@ -137,7 +126,6 @@ class GeometryParser {
     private static UnpackData(
         raw: string,
         polygons: GeometryParserPolygon[],
-        cells: GeometryParserCell[],
         vertecies: float[],
         colors: float[],
         result: GeometryData
@@ -159,7 +147,6 @@ class GeometryParser {
                 keyword,
                 parts,
                 polygons,
-                cells,
                 vertecies,
                 colors,
                 result
@@ -171,7 +158,6 @@ class GeometryParser {
         keyword: string,
         parts: string[],
         polygons: GeometryParserPolygon[],
-        cells: GeometryParserCell[],
         vertecies: float[],
         colors: float[],
         result: GeometryData
@@ -181,14 +167,7 @@ class GeometryParser {
         } else if (keyword === "v") {
             GeometryParser.ParseKeywordV(parts, polygons);
         } else if (keyword === "f") {
-            GeometryParser.ParseKeywordF(
-                parts,
-                polygons,
-                cells,
-                vertecies,
-                colors,
-                result
-            );
+            GeometryParser.ParseKeywordF(parts, polygons, vertecies, colors);
         }
     }
 
@@ -219,34 +198,12 @@ class GeometryParser {
     private static ParseKeywordF(
         parts: string[],
         polygons: GeometryParserPolygon[],
-        cells: GeometryParserCell[],
-        vertecies: float[],
-        colors: float[],
-        result: GeometryData
-    ): void {
-        if (result.wasIndexed === false) {
-            result.wasIndexed = true;
-        }
-        GeometryParser.RegisterIndexedTriangle(
-            parts,
-            polygons,
-            cells,
-            vertecies,
-            colors
-        );
-    }
-
-    private static RegisterIndexedTriangle(
-        parts: string[],
-        polygons: GeometryParserPolygon[],
-        cells: GeometryParserCell[],
         vertecies: float[],
         colors: float[]
     ): void {
         const a: int = parseInt(parts[0]);
         const b: int = parseInt(parts[1]);
         const c: int = parseInt(parts[2]);
-        cells.push([a, b, c]);
         GeometryParser.RegisterIndexedVertex(a, polygons, vertecies, colors);
         GeometryParser.RegisterIndexedVertex(b, polygons, vertecies, colors);
         GeometryParser.RegisterIndexedVertex(c, polygons, vertecies, colors);
@@ -259,29 +216,7 @@ class GeometryParser {
         colors: float[]
     ): void {
         const i: int = index + (index >= 0 ? 0 : polygons.length);
-        GeometryParser.PushPolygon(polygons[i], vertecies, colors);
-    }
-
-    private static HandleUnindexed(
-        polygons: GeometryParserPolygon[],
-        vertecies: float[],
-        colors: float[],
-        result: GeometryData
-    ): void {
-        if (result.wasIndexed === true) {
-            return;
-        }
-        for (let i = 1; i < polygons.length; i++) {
-            GeometryParser.PushPolygon(polygons[i], vertecies, colors);
-        }
-    }
-
-    private static PushPolygon(
-        polygon: GeometryParserPolygon,
-        vertecies: float[],
-        colors: float[]
-    ): void {
-        vertecies.push(...polygon.slice(0, 3));
-        colors.push(...polygon.slice(3, 6));
+        vertecies.push(...polygons[i].slice(0, 3));
+        colors.push(...polygons[i].slice(3, 6));
     }
 }

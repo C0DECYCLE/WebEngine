@@ -23,6 +23,5 @@ type GeometryData = {
     shader: string;
     vertecies: Float32Array;
     colors: Float32Array;
-    wasIndexed: boolean;
     count: int;
 };

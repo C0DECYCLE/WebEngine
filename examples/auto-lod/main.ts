@@ -20,7 +20,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     bunny.rotation.set(0, 180 * toRadian, 0);
     bunny.wakeUp();
 
-    const bunny2: Entity = new Entity("suzanne");
+    const bunny2: Entity = new Entity("torus");
     bunny2.attach(renderer);
     bunny2.position.set(-1, 0, 0);
     bunny2.rotation.set(0, 180 * toRadian, 0);
