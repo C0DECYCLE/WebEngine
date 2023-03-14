@@ -4,7 +4,7 @@
     2023
 */
 
-let renderer: Renderer;
+var renderer: Renderer;
 
 window.addEventListener("compile", async (_event: Event): Promise<void> => {
     renderer = new Renderer(new Vec3(0.9, 0.9, 0.9));
