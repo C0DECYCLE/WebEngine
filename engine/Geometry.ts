@@ -25,7 +25,7 @@ class Geometry {
         this.create();
     }
 
-    public storeInstance(mat: Mat4, lod: int = 0): void {
+    public storeInstance(mat: Mat4, lod: int): void {
         if (!this.lods.has(lod)) {
             return warn(
                 `Renderer: Lod level not available on geometry. (${this.data.name}, ${lod})`

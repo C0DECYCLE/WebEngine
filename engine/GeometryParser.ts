@@ -14,41 +14,34 @@ class GeometryParser {
         const polygons: GeometryPolygon[] = [[0, 0, 0, 0, 0, 0]];
         GeometryParser.UnpackData(raw, polygons, vertecies, colors, result);
 
-        ////////////////////////////////////////
-        /*
-        let s: GeometryWrapData;
-
-        const positions: GeometryParserPosition[] = [];
-        for (let i: int = 0; i < polygons.length; i++) {
-            //@ts-ignore
-            positions.push(polygons[i].slice(0, 3));
-        }
-        const wrapped = GeometryParser.WrapVertecies(
-            new Float32Array(vertecies)
-        );
-        */
-        /*
-        s = simplify(
-            wrapped.cells,
-            wrapped.positions
-        )(Math.ceil(wrapped.positions.length * 0.5));
-        */
-        ////////////////////////////////////////
-        /*
-        if (s) {
-            result.vertecies = GeometryParser.UnwrapVertecies(s);
-        } else {
-            result.vertecies = new Float32Array(vertecies);
-        }
-        */
-        ////////////////////////////////////////
-
-        result.lods.set(0, {
+        const base: GeometryDataLod = {
             level: 0,
             vertecies: new Float32Array(vertecies),
             colors: new Float32Array(colors),
             count: vertecies.length / 3,
+        } as GeometryDataLod;
+        result.lods.set(0, base);
+
+        ////////////////////////////////////////
+
+        const wrap = GeometryWrapper.Wrap(base.vertecies);
+        const positions: GeometryPosition[] = [];
+        for (let i: int = 0; i < polygons.length; i++) {
+            //@ts-ignore
+            positions.push(polygons[i].slice(0, 3));
+        }
+        const count: int = Math.ceil(wrap.positions.length * 0.5);
+        const simple: GeometryWrapData = simplify(wrap)(count);
+        const data: Float32Array = GeometryWrapper.Unwrap(simple);
+
+        result.lods.set(1, {
+            level: 1,
+            vertecies: data,
+            colors: new Float32Array(colors.slice(0, data.length)),
+            count: data.length / 3,
         } as GeometryDataLod);
+
+        ////////////////////////////////////////
 
         return result;
     }

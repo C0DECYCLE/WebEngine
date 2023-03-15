@@ -1,13 +1,9 @@
 // @ts-nocheck
 
 let simplify: (
-    cells: number[][],
-    positions: number[][],
-    threshold?: number
-) => (targetCount: number) => {
-    positions: number[][];
-    cells: number[][];
-};
+    data: GeometryWrapData,
+    threshold?: float
+) => (targetCount: int) => GeometryWrapData;
 
 (function () {
     /////////////////////HELPERS/////////////////////
@@ -3575,12 +3571,9 @@ return " +
         return { vertex: optimal.slice(0, 3), error: error };
     }
 
-    function meshSimplify(
-        cells: number[][],
-        positions: number[][],
-        threshold: number = 0
-    ) {
-        cells = removeDegenerates(cells);
+    function meshSimplify(data, threshold = 0) {
+        const positions = data.positions;
+        const cells = removeDegenerates(data.cells);
         const faceNormals = normals(cells, positions);
 
         var n = positions.length;
@@ -3673,10 +3666,7 @@ return " +
         });
 
         var n = positions.length;
-        return function (targetCount: number): {
-            positions: number[][];
-            cells: number[][];
-        } {
+        return function (targetCount) {
             // deep-copy trick: https://stackoverflow.com/questions/597588/how-do-you-clone-an-array-of-objects-in-javascript
             var newCells = JSON.parse(JSON.stringify(cells));
             var deletedCount = 0;

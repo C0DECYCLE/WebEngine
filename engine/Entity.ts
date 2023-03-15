@@ -17,6 +17,9 @@ class Entity {
     private entityManager: Nullable<EntityManager> = null;
     private isAwake: boolean = false;
 
+    private targetLod: int = -1;
+    private tempLod: int;
+
     public constructor(geometryName: string) {
         this.geometryName = geometryName;
     }
@@ -49,11 +52,25 @@ class Entity {
         this.isAwake = false;
     }
 
+    public staticLod(lod: int): void {
+        this.targetLod = lod;
+    }
+
+    public dynamicLod(): void {
+        this.targetLod = -1;
+    }
+
     public prepare(geometry: Geometry): boolean {
-        //cull frustum lod occlusion
+        //cull: frustum occlusion lod
+
+        this.tempLod = this.targetLod;
+        if (this.targetLod === -1) {
+            //select: lod
+            this.tempLod = 0;
+        }
 
         this.computeMatrix();
-        geometry.storeInstance(this.world);
+        geometry.storeInstance(this.world, this.tempLod);
 
         return true; //drawn
     }
