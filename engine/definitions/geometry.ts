@@ -9,7 +9,9 @@ type WebGLInstanceUniformLocation = int;
 type WebGLAttributeLocation = int;
 
 type GeometryPolygon = [float, float, float, float, float, float];
+
 type GeometryPosition = [float, float, float];
+
 type GeometryCell = [int, int, int];
 
 type GeometryWrapData = {
@@ -17,11 +19,16 @@ type GeometryWrapData = {
     cells: GeometryCell[];
 };
 
-type GeometryData = {
-    name: string;
-    capacity: int;
-    shader: string;
+type GeometryDataLod = {
+    level: int;
     vertecies: Float32Array;
     colors: Float32Array;
     count: int;
+};
+
+type GeometryData = {
+    name: string;
+    shader: string;
+    capacity: int;
+    lods: Map<int, GeometryDataLod>;
 };

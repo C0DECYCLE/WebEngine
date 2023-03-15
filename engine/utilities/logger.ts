@@ -4,7 +4,7 @@
     2023
 */
 
-const logger_maximum: int = 1_000;
+const logger_maximum: int = 256;
 
 let logger_count: int = 0;
 

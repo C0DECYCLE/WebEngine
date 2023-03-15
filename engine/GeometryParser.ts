@@ -7,6 +7,8 @@
 class GeometryParser {
     public static Obj(raw: string): GeometryData {
         const result: GeometryData = {} as GeometryData;
+        result.lods = new Map<int, GeometryDataLod>();
+
         const vertecies: float[] = [];
         const colors: float[] = [];
         const polygons: GeometryPolygon[] = [[0, 0, 0, 0, 0, 0]];
@@ -41,9 +43,13 @@ class GeometryParser {
         */
         ////////////////////////////////////////
 
-        result.vertecies = new Float32Array(vertecies);
-        result.colors = new Float32Array(colors);
-        result.count = result.vertecies.length / 3;
+        result.lods.set(0, {
+            level: 0,
+            vertecies: new Float32Array(vertecies),
+            colors: new Float32Array(colors),
+            count: vertecies.length / 3,
+        } as GeometryDataLod);
+
         return result;
     }
 

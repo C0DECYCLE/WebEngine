@@ -54,7 +54,7 @@ class GeometryManager {
 
     private objFileUrls(): string[] {
         const objFileUrls: string[] = [];
-        this.names.forEach((name) =>
+        this.names.forEach((name, _i: int) =>
             objFileUrls.push(`${this.rootPath}${name}.obj`)
         );
         return objFileUrls;
