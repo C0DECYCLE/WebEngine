@@ -5,80 +5,94 @@
 */
 
 class GeometryWrapper {
-    /*
-    public static UnwrapVertecies(data: GeometryWrapData): Float32Array {
+    public static Unwrap(data: GeometryWrapData): Float32Array {
         const vertecies: Float32Array = new Float32Array(
             data.cells.length * 3 * 3
         );
         for (let i: int = 0; i < data.cells.length; i++) {
-            const cell: GeometryParserCell = data.cells[i];
+            const cell: GeometryCell = data.cells[i];
             for (let j: int = 0; j < 3; j++) {
                 const index: int = i * 3 + j;
-                const polygon: GeometryParserPosition = data.positions[cell[j]];
+                const position: GeometryPosition = data.positions[cell[j]];
                 for (let k: int = 0; k < 3; k++) {
-                    vertecies[index * 3 + k] = polygon[k]; // || -1;
+                    vertecies[index * 3 + k] = position[k];
                 }
             }
         }
         return vertecies;
     }
-    */
-    /*
-    public static WrapVertecies(vertecies: Float32Array): GeometryWrapData {
+
+    public static Wrap(vertecies: Float32Array): GeometryWrapData {
         const data: GeometryWrapData = {
             positions: [],
             cells: [],
         } as GeometryWrapData;
         for (let i: int = 0; i < vertecies.length / (3 * 3); i++) {
-            data.cells.push([i * 3, i * 3 + 1, i * 3 + 2]);
+            const cell: GeometryCell = [i * 3, i * 3 + 1, i * 3 + 2];
+            data.cells.push(cell);
         }
         for (let i: int = 0; i < vertecies.length / 3; i++) {
-            data.positions.push([
+            const position: GeometryPosition = [
                 vertecies[i * 3],
                 vertecies[i * 3 + 1],
                 vertecies[i * 3 + 2],
-            ]);
+            ];
+            data.positions.push(position);
         }
-        const cleanPositions: GeometryParserPosition[] = [];
+        return GeometryWrapper.Uniquify(data);
+    }
+
+    private static Uniquify(data: GeometryWrapData): GeometryWrapData {
+        const uniques: GeometryPosition[] = [];
         for (let i: int = 0; i < data.positions.length; i++) {
-            const a: GeometryParserPosition = data.positions[i];
-            let duplicate: Nullable<int> = null;
-            for (let j: int = 0; j < cleanPositions.length; j++) {
-                const b: GeometryParserPosition = cleanPositions[j];
-                if (a[0] === b[0] && a[1] === b[1] && a[2] === b[2]) {
-                    duplicate = j;
-                }
-            }
+            const candidate: GeometryPosition = data.positions[i];
+            const duplicate: Nullable<int> = GeometryWrapper.FindDuplicate(
+                uniques,
+                candidate
+            );
             if (duplicate === null) {
-                cleanPositions.push(a);
-                for (let k: int = 0; k < data.cells.length; k++) {
-                    if (data.cells[k][0] === i) {
-                        data.cells[k][0] = cleanPositions.length - 1;
-                    }
-                    if (data.cells[k][1] === i) {
-                        data.cells[k][1] = cleanPositions.length - 1;
-                    }
-                    if (data.cells[k][2] === i) {
-                        data.cells[k][2] = cleanPositions.length - 1;
-                    }
-                }
+                GeometryWrapper.ReplaceMatching(data.cells, i, uniques.length);
+                uniques.push(candidate);
             } else {
-                for (let k: int = 0; k < data.cells.length; k++) {
-                    if (data.cells[k][0] === i) {
-                        data.cells[k][0] = duplicate;
-                    }
-                    if (data.cells[k][1] === i) {
-                        data.cells[k][1] = duplicate;
-                    }
-                    if (data.cells[k][2] === i) {
-                        data.cells[k][2] = duplicate;
-                    }
-                }
+                GeometryWrapper.ReplaceMatching(data.cells, i, duplicate);
             }
         }
-        //log(data.positions, cleanPositions, data.cells);
-        data.positions = cleanPositions;
+        data.positions = uniques;
         return data;
     }
-    */
+
+    private static FindDuplicate(
+        uniques: GeometryPosition[],
+        candidate: GeometryPosition
+    ): Nullable<int> {
+        for (let i: int = 0; i < uniques.length; i++) {
+            const unique: GeometryPosition = uniques[i];
+            if (
+                candidate[0] === unique[0] &&
+                candidate[1] === unique[1] &&
+                candidate[2] === unique[2]
+            ) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    private static ReplaceMatching(
+        cells: GeometryCell[],
+        match: int,
+        replace: int
+    ): void {
+        for (let i: int = 0; i < cells.length; i++) {
+            if (cells[i][0] === match) {
+                cells[i][0] = replace;
+            }
+            if (cells[i][1] === match) {
+                cells[i][1] = replace;
+            }
+            if (cells[i][2] === match) {
+                cells[i][2] = replace;
+            }
+        }
+    }
 }

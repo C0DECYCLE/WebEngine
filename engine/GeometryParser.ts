@@ -9,7 +9,7 @@ class GeometryParser {
         const result: GeometryData = {} as GeometryData;
         const vertecies: float[] = [];
         const colors: float[] = [];
-        const polygons: GeometryParserPolygon[] = [[0, 0, 0, 0, 0, 0]];
+        const polygons: GeometryPolygon[] = [[0, 0, 0, 0, 0, 0]];
         GeometryParser.UnpackData(raw, polygons, vertecies, colors, result);
 
         ////////////////////////////////////////
@@ -49,7 +49,7 @@ class GeometryParser {
 
     private static UnpackData(
         raw: string,
-        polygons: GeometryParserPolygon[],
+        polygons: GeometryPolygon[],
         vertecies: float[],
         colors: float[],
         result: GeometryData
@@ -81,7 +81,7 @@ class GeometryParser {
     private static ParseKeyword(
         keyword: string,
         parts: string[],
-        polygons: GeometryParserPolygon[],
+        polygons: GeometryPolygon[],
         vertecies: float[],
         colors: float[],
         result: GeometryData
@@ -104,7 +104,7 @@ class GeometryParser {
 
     private static ParseKeywordV(
         parts: string[],
-        polygons: GeometryParserPolygon[]
+        polygons: GeometryPolygon[]
     ): void {
         if (parts.length < 3) {
             throw new Error(`Renderer: Obj file missing vertex part.`);
@@ -121,7 +121,7 @@ class GeometryParser {
 
     private static ParseKeywordF(
         parts: string[],
-        polygons: GeometryParserPolygon[],
+        polygons: GeometryPolygon[],
         vertecies: float[],
         colors: float[]
     ): void {
@@ -135,7 +135,7 @@ class GeometryParser {
 
     private static RegisterIndexedVertex(
         index: int,
-        polygons: GeometryParserPolygon[],
+        polygons: GeometryPolygon[],
         vertecies: float[],
         colors: float[]
     ): void {
