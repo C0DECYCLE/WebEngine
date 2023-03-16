@@ -5,45 +5,56 @@
 */
 
 class GeometryWrapper {
-    public static Unwrap(data: GeometryWrapData): Float32Array {
-        const vertecies: Float32Array = new Float32Array(
-            data.cells.length * 3 * 3
-        );
+    public static Unwrap(data: GeometryWrapData): GeometryUnwrapData {
+        const length: int = data.cells.length * 3 * 3;
+        const positions: Float32Array = new Float32Array(length);
+        const colors: Float32Array = new Float32Array(length);
         for (let i: int = 0; i < data.cells.length; i++) {
             const cell: GeometryCell = data.cells[i];
             for (let j: int = 0; j < 3; j++) {
                 const index: int = i * 3 + j;
                 const position: GeometryPosition = data.positions[cell[j]];
+                const color: GeometryColor = data.colors[cell[j]];
                 for (let k: int = 0; k < 3; k++) {
-                    vertecies[index * 3 + k] = position[k];
+                    positions[index * 3 + k] = position[k];
+                    colors[index * 3 + k] = color[k];
                 }
             }
         }
-        return vertecies;
+        return {
+            positions: positions,
+            colors: colors,
+        } as GeometryUnwrapData;
     }
 
-    public static Wrap(vertecies: Float32Array): GeometryWrapData {
-        const data: GeometryWrapData = {
+    public static Wrap(data: GeometryUnwrapData): GeometryWrapData {
+        const result: GeometryWrapData = {
             positions: [],
+            colors: [],
             cells: [],
         } as GeometryWrapData;
-        for (let i: int = 0; i < vertecies.length / (3 * 3); i++) {
+        for (let i: int = 0; i < data.positions.length / (3 * 3); i++) {
             const cell: GeometryCell = [i * 3, i * 3 + 1, i * 3 + 2];
-            data.cells.push(cell);
+            result.cells.push(cell);
         }
-        for (let i: int = 0; i < vertecies.length / 3; i++) {
-            const position: GeometryPosition = [
-                vertecies[i * 3],
-                vertecies[i * 3 + 1],
-                vertecies[i * 3 + 2],
-            ];
-            data.positions.push(position);
+        for (let i: int = 0; i < data.positions.length / 3; i++) {
+            result.positions.push([
+                data.positions[i * 3],
+                data.positions[i * 3 + 1],
+                data.positions[i * 3 + 2],
+            ] as GeometryPosition);
+            result.colors.push([
+                data.colors[i * 3],
+                data.colors[i * 3 + 1],
+                data.colors[i * 3 + 2],
+            ] as GeometryColor);
         }
-        return GeometryWrapper.Uniquify(data);
+        return GeometryWrapper.Uniquify(result);
     }
 
     private static Uniquify(data: GeometryWrapData): GeometryWrapData {
         const uniques: GeometryPosition[] = [];
+        const colors: GeometryColor[] = [];
         for (let i: int = 0; i < data.positions.length; i++) {
             const candidate: GeometryPosition = data.positions[i];
             const duplicate: Nullable<int> = GeometryWrapper.FindDuplicate(
@@ -53,11 +64,13 @@ class GeometryWrapper {
             if (duplicate === null) {
                 GeometryWrapper.ReplaceMatching(data.cells, i, uniques.length);
                 uniques.push(candidate);
+                colors.push(data.colors[i]);
             } else {
                 GeometryWrapper.ReplaceMatching(data.cells, i, duplicate);
             }
         }
         data.positions = uniques;
+        data.colors = colors;
         return data;
     }
 

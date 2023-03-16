@@ -15,7 +15,10 @@ class GeometryParser {
 
         const baseVertecies: Float32Array = new Float32Array(vertecies);
         const baseColors: Float32Array = new Float32Array(colors);
-        const wrap: GeometryWrapData = GeometryWrapper.Wrap(baseVertecies);
+        const wrap: GeometryWrapData = GeometryWrapper.Wrap({
+            positions: baseVertecies,
+            colors: baseColors,
+        } as GeometryUnwrapData);
 
         for (let i: int = 0; i < Geometry.LodMatrix.length; i++) {
             const config: GeometryLodConfig = Geometry.LodMatrix[i];

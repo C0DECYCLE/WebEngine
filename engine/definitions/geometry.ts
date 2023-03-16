@@ -24,7 +24,13 @@ type GeometryLodConfig = [int, float, float];
 
 type GeometryWrapData = {
     positions: GeometryPosition[];
+    colors: GeometryColor[];
     cells: GeometryCell[];
+};
+
+type GeometryUnwrapData = {
+    positions: Float32Array;
+    colors: Float32Array;
 };
 
 type GeometryDataLod = {

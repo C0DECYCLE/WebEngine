@@ -415,8 +415,9 @@ let simplify: (
 
     var removeOrphans;
     (function () {
-        removeOrphans = function (cells, positions) {
+        removeOrphans = function (cells, positions, colors) {
             var newPositions = [];
+            var newColors = [];
             var indexLookup = {};
 
             var newCells = cells.map(function (cell) {
@@ -424,6 +425,7 @@ let simplify: (
                     if (indexLookup[index] === undefined) {
                         indexLookup[index] = newPositions.length;
                         newPositions.push(positions[index]);
+                        newColors.push(colors[index]);
                     }
                     return indexLookup[index];
                 });
@@ -432,6 +434,7 @@ let simplify: (
             return {
                 cells: newCells,
                 positions: newPositions,
+                colors: newColors,
             };
         };
     })();
@@ -3568,11 +3571,12 @@ return " +
         }
 
         var error = vertexError(optimal, mat4Cost);
-        return { vertex: optimal.slice(0, 3), error: error };
+        return { vertex: optimal.slice(0, 3), color: v1.color, error: error };
     }
 
     function meshSimplify(data, threshold = 0) {
         const positions = data.positions;
+        const colors = data.colors;
         const cells = removeDegenerates(data.cells);
         const faceNormals = normals(cells, positions);
 
@@ -3580,6 +3584,7 @@ return " +
         var vertices = positions.map(function (p, i) {
             return {
                 position: p,
+                color: colors[i],
                 index: i,
                 pairs: [],
                 error: ndarray(new Float32Array(4 * 4).fill(0), [4, 4]),
@@ -3657,6 +3662,7 @@ return " +
                     pair: [v1.index, v2Index],
                     cost: optimal.error,
                     optimalPosition: optimal.vertex,
+                    optimalColor: optimal.color,
                 };
 
                 costs.push(edge);
@@ -3680,6 +3686,7 @@ return " +
                     continue;
                 }
                 vertices[i1].position = leastCost.optimalPosition;
+                vertices[i1].color = leastCost.optimalColor;
 
                 for (var i = newCells.length - 1; i >= 0; i--) {
                     var cell = newCells[i];
@@ -3710,6 +3717,7 @@ return " +
                             vertices[edge.pair[(edgeIndex1 + 1) % 2]]
                         );
                         edge.optimalPosition = optimal.vertex;
+                        edge.optimalColor = optimal.color;
                         edge.cost = optimal.error;
                     }
 
@@ -3721,6 +3729,7 @@ return " +
                         );
                         edge.pair[edgeIndex2] = i1;
                         edge.optimalPosition = optimal.vertex;
+                        edge.optimalColor = optimal.color;
                         edge.cost = optimal.error;
                     }
                 });
@@ -3733,6 +3742,9 @@ return " +
                 newCells,
                 vertices.map(function (p) {
                     return p.position;
+                }),
+                vertices.map(function (p) {
+                    return p.color;
                 })
             );
         };

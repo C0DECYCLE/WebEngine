@@ -14,7 +14,7 @@ class GeometryGenerator {
         if (config[2] === 1.0) {
             return GeometryGenerator.BaseLod(config, baseVertecies, baseColors);
         }
-        return GeometryGenerator.SimplifyLod(config, baseColors, wrap);
+        return GeometryGenerator.SimplifyLod(config, wrap);
     }
 
     private static BaseLod(
@@ -32,20 +32,16 @@ class GeometryGenerator {
 
     private static SimplifyLod(
         config: GeometryLodConfig,
-        baseColors: Float32Array,
         wrap: GeometryWrapData
     ): GeometryDataLod {
-        const vertecies: Float32Array = GeometryWrapper.Unwrap(
+        const data: GeometryUnwrapData = GeometryWrapper.Unwrap(
             simplify(wrap)(Math.ceil(wrap.positions.length * config[2]))
-        );
-        const colors: Float32Array = new Float32Array(
-            Array.from(baseColors).slice(0, vertecies.length)
         );
         return {
             level: config[0],
-            vertecies: vertecies,
-            colors: GeometryHelper.FlattenColors(colors),
-            count: vertecies.length / 3,
+            vertecies: data.positions,
+            colors: GeometryHelper.FlattenColors(data.colors),
+            count: data.positions.length / 3,
         } as GeometryDataLod;
     }
 }
