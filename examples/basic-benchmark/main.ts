@@ -4,7 +4,7 @@
     2023
 */
 
-let renderer: Renderer;
+var renderer: Renderer;
 
 window.addEventListener("compile", async (_event: Event): Promise<void> => {
     renderer = new Renderer(new Vec3(0.9, 0.9, 0.9));
@@ -15,7 +15,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     for (let i: int = 0; i < 10_000; i++) {
         const suzanne: Entity = new Entity(
-            Math.random() > 0.3 ? "suzanne" : "torus"
+            Math.random() > 0.5 ? "suzanne" : "torus"
         );
         suzanne.position
             .set(Math.random(), Math.random(), Math.random())

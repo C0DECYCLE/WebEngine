@@ -5,12 +5,11 @@
 */
 
 class GeometryManager {
-    public readonly rootPath: string = "/engine/geometries/";
+    public readonly rootPath: string = "/engine/models/";
     public readonly names: string[] = [
-        "plane",
         "cube",
+        "sphere",
         "icosphere",
-        "f",
         "torus",
         "suzanne",
     ];
@@ -55,7 +54,7 @@ class GeometryManager {
 
     private objFileUrls(): string[] {
         const objFileUrls: string[] = [];
-        this.names.forEach((name) =>
+        this.names.forEach((name, _i: int) =>
             objFileUrls.push(`${this.rootPath}${name}.obj`)
         );
         return objFileUrls;

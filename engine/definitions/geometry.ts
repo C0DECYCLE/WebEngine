@@ -8,14 +8,42 @@ type WebGLInstanceUniformLocation = int;
 
 type WebGLAttributeLocation = int;
 
-type GeometryParserPolygon = [float, float, float, float, float, float];
+type GeometryPosition = [float, float, float];
+
+type GeometryColor = [float, float, float];
+
+type GeometryPolygon = [float, float, float, float, float, float];
+
+type GeometryFace<
+    T = int | float | GeometryPosition | GeometryColor | GeometryPolygon
+> = [T, T, T];
+
+type GeometryCell = GeometryFace<int>;
+
+type GeometryLodConfig = [int, float, float];
+
+type GeometryWrapData = {
+    positions: GeometryPosition[];
+    colors: GeometryColor[];
+    cells: GeometryCell[];
+};
+
+type GeometryUnwrapData = {
+    positions: Float32Array;
+    colors: Float32Array;
+};
+
+type GeometryDataLod = {
+    level: int;
+    minimum: float;
+    vertecies: Float32Array;
+    colors: Float32Array;
+    count: int;
+};
 
 type GeometryData = {
     name: string;
-    capacity: int;
     shader: string;
-    vertecies: Float32Array;
-    colors: Float32Array;
-    wasIndexed: boolean;
-    count: int;
+    capacity: int;
+    lods: Map<int, GeometryDataLod>;
 };

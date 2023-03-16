@@ -95,7 +95,7 @@ class ShaderManager {
 
     private shaderSourceUrls(): string[] {
         const shaderSourceUrls: string[] = [];
-        this.names.forEach((name) =>
+        this.names.forEach((name, _i: int) =>
             shaderSourceUrls.push(
                 `${this.rootPath}${name}.${ShaderTypes.VERTEX}.fx`,
                 `${this.rootPath}${name}.${ShaderTypes.FRAGMENT}.fx`

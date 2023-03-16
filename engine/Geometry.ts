@@ -7,17 +7,10 @@
 class Geometry {
     public readonly data: GeometryData;
     public readonly program: ShaderProgram;
-
-    private instanceWorlds: Float32Array;
-    private instanceStoreCount: int = 0;
+    public readonly geometryManager: GeometryManager;
 
     private readonly gl: WebGL2RenderingContext;
-    private readonly geometryManager: GeometryManager;
-
-    private vertexArrayObject: WebGLVertexArrayObject;
-    private instanceWorldsBuffer: WebGLBuffer;
-    private verteciesBuffer: WebGLBuffer;
-    private colorsBuffer: WebGLBuffer;
+    private readonly lods: Map<int, GeometryLod> = new Map<int, GeometryLod>();
 
     public constructor(
         gl: WebGL2RenderingContext,
@@ -29,127 +22,37 @@ class Geometry {
         this.data = data;
         this.program = program;
         this.geometryManager = geometryManager;
-
         this.create();
-        this.initialize();
     }
 
-    public storeInstance(mat: Mat4): void {
-        if (this.instanceStoreCount == this.data.capacity) {
+    public storeInstance(mat: Mat4, lod: int): void {
+        if (!this.lods.has(lod)) {
             return warn(
-                `Renderer: Geometry capacity overflow. (${this.data.name})`
+                `Renderer: Lod level not available on geometry. (${this.data.name}, ${lod})`
             );
         }
-        mat.store(this.instanceWorlds, this.instanceStoreCount * 16);
-        this.instanceStoreCount++;
+        this.lods.get(lod)?.storeInstance(mat);
     }
 
     public draw(): void {
-        if (this.instanceStoreCount === 0) {
-            return;
-        }
-        this.gl.bindVertexArray(this.vertexArrayObject);
-        this.bufferDynamicData(this.instanceWorldsBuffer, this.instanceWorlds);
-        this.gl.drawArraysInstanced(
-            this.gl.TRIANGLES,
-            0,
-            this.data.count,
-            this.instanceStoreCount
-        );
-        this.geometryManager
-            .getStats()
-            .incrementDrawCalls(this.data.count * this.instanceStoreCount);
-        this.instanceStoreCount = 0;
+        this.lods.forEach((lod: GeometryLod, _level: int) => lod.draw());
     }
 
     private create(): void {
-        this.createInstanceWorlds();
-        this.vertexArrayObject = this.createVertexArrayObject();
-        this.instanceWorldsBuffer = this.createBuffer();
-        this.verteciesBuffer = this.createBuffer();
-        this.colorsBuffer = this.createBuffer();
-    }
-
-    private createInstanceWorlds(): void {
-        this.instanceWorlds = new Float32Array(this.data.capacity * 16);
-    }
-
-    private createVertexArrayObject(): WebGLVertexArrayObject {
-        const vao: Nullable<WebGLVertexArrayObject> =
-            this.gl.createVertexArray();
-        if (!vao) {
-            throw new Error("Renderer: Creating vertex array object failed.");
-        }
-        return vao;
-    }
-
-    private createBuffer(): WebGLBuffer {
-        const buffer: Nullable<WebGLBuffer> = this.gl.createBuffer();
-        if (!buffer) {
-            throw new Error("Renderer: Creating buffer failed.");
-        }
-        return buffer;
-    }
-
-    private initialize(): void {
-        this.gl.bindVertexArray(this.vertexArrayObject);
-
-        this.allocateDynamicData(
-            this.instanceWorldsBuffer,
-            this.instanceWorlds
-        );
-        this.enableInstanceUniform(ShaderVariables.OBJECTWORLD, 16);
-
-        this.bufferStaticData(this.verteciesBuffer, this.data.vertecies);
-        this.enableAttribute(ShaderVariables.VERTEXPOSITION, 3);
-
-        this.bufferStaticData(this.colorsBuffer, this.data.colors);
-        this.enableAttribute(ShaderVariables.VERTEXCOLOR, 3);
-
-        this.gl.bindVertexArray(null);
-    }
-
-    private allocateDynamicData(buffer: WebGLBuffer, data: Float32Array): void {
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-        this.gl.bufferData(
-            this.gl.ARRAY_BUFFER,
-            data.byteLength,
-            this.gl.DYNAMIC_DRAW
+        this.data.lods.forEach((dataLod: GeometryDataLod, _level: int) =>
+            this.createLod(dataLod)
         );
     }
 
-    private bufferDynamicData(buffer: WebGLBuffer, data: Float32Array): void {
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-        this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, data);
+    private createLod(dataLod: GeometryDataLod): void {
+        this.lods.set(dataLod.level, new GeometryLod(this.gl, dataLod, this));
     }
 
-    private enableInstanceUniform(name: string, stride: int): void {
-        const loc: WebGLInstanceUniformLocation =
-            this.program.instanceUniformLocations.get(name)!;
-
-        for (let i = 0; i < Math.ceil(stride / 4); ++i) {
-            this.gl.enableVertexAttribArray(loc + i);
-            this.gl.vertexAttribPointer(
-                loc + i,
-                4,
-                this.gl.FLOAT,
-                false,
-                stride * 4,
-                i * 4 * 4
-            );
-            this.gl.vertexAttribDivisor(loc + i, 1);
-        }
-    }
-
-    private bufferStaticData(buffer: WebGLBuffer, data: Float32Array): void {
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
-    }
-
-    private enableAttribute(name: string, stride: int): void {
-        const loc: WebGLAttributeLocation =
-            this.program.attributeLocations.get(name)!;
-        this.gl.enableVertexAttribArray(loc);
-        this.gl.vertexAttribPointer(loc, stride, this.gl.FLOAT, false, 0, 0);
-    }
+    public static readonly LodMatrix: GeometryLodConfig[] = [
+        //level, coverage minimum, simplify percentage
+        [0, 0.25, 1.0] as GeometryLodConfig,
+        [1, 0.1, 0.5] as GeometryLodConfig,
+        [2, 0.05, 0.25] as GeometryLodConfig,
+        [3, 0.01, 0.1] as GeometryLodConfig,
+    ];
 }
