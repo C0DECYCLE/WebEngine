@@ -18,9 +18,9 @@ function warn(...data: any[]): void {
 
 function logger(type: "log" | "warn", ...data: any[]): void {
     logger_count++;
-    if (logger_count === logger_maximum) {
+    if (logger_count === logger_maximum + 1) {
         return console.warn("Logger: Maximum count exeeded.");
-    } else if (logger_count < logger_maximum) {
+    } else if (logger_count < logger_maximum + 1) {
         return console[type](...data);
     }
 }
