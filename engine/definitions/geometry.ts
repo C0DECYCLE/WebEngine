@@ -8,11 +8,19 @@ type WebGLInstanceUniformLocation = int;
 
 type WebGLAttributeLocation = int;
 
-type GeometryPolygon = [float, float, float, float, float, float];
-
 type GeometryPosition = [float, float, float];
 
-type GeometryCell = [int, int, int];
+type GeometryColor = [float, float, float];
+
+type GeometryPolygon = [float, float, float, float, float, float];
+
+type GeometryFace<
+    T = int | float | GeometryPosition | GeometryColor | GeometryPolygon
+> = [T, T, T];
+
+type GeometryCell = GeometryFace<int>;
+
+type GeometryLodConfig = [int, float, float];
 
 type GeometryWrapData = {
     positions: GeometryPosition[];
@@ -21,6 +29,7 @@ type GeometryWrapData = {
 
 type GeometryDataLod = {
     level: int;
+    minimum: float;
     vertecies: Float32Array;
     colors: Float32Array;
     count: int;

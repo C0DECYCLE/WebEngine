@@ -47,4 +47,12 @@ class Geometry {
     private createLod(dataLod: GeometryDataLod): void {
         this.lods.set(dataLod.level, new GeometryLod(this.gl, dataLod, this));
     }
+
+    public static readonly LodMatrix: GeometryLodConfig[] = [
+        //level, coverage minimum, simplify percentage
+        [0, 0.25, 1.0] as GeometryLodConfig,
+        [1, 0.1, 0.5] as GeometryLodConfig,
+        [2, 0.05, 0.25] as GeometryLodConfig,
+        [3, 0.01, 0.1] as GeometryLodConfig,
+    ];
 }

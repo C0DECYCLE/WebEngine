@@ -14,35 +14,31 @@ class GeometryParser {
         const polygons: GeometryPolygon[] = [[0, 0, 0, 0, 0, 0]];
         GeometryParser.UnpackData(raw, polygons, vertecies, colors, result);
 
-        const base: GeometryDataLod = {
-            level: 0,
-            vertecies: new Float32Array(vertecies),
-            colors: new Float32Array(colors),
-            count: vertecies.length / 3,
-        } as GeometryDataLod;
-        result.lods.set(0, base);
+        const baseVertecies: Float32Array = new Float32Array(vertecies);
+        const baseColors: Float32Array = new Float32Array(colors);
+        const wrap: GeometryWrapData = GeometryWrapper.Wrap(baseVertecies);
 
-        ////////////////////////////////////////
+        for (let i: int = 0; i < Geometry.LodMatrix.length; i++) {
+            const config: GeometryLodConfig = Geometry.LodMatrix[i];
+            const count: int = Math.ceil(wrap.positions.length * config[2]);
 
-        const wrap = GeometryWrapper.Wrap(base.vertecies);
-        const positions: GeometryPosition[] = [];
-        for (let i: int = 0; i < polygons.length; i++) {
-            //@ts-ignore
-            positions.push(polygons[i].slice(0, 3));
+            const dataVertecies: Float32Array =
+                config[2] === 1.0
+                    ? baseVertecies
+                    : GeometryWrapper.Unwrap(simplify(wrap)(count));
+
+            const dataColors: Float32Array =
+                config[2] === 1.0
+                    ? baseColors
+                    : new Float32Array(colors.slice(0, dataVertecies.length));
+
+            result.lods.set(config[0], {
+                level: config[0],
+                vertecies: dataVertecies,
+                colors: GeometryParser.FlattenColors(dataColors),
+                count: dataVertecies.length / 3,
+            } as GeometryDataLod);
         }
-        const count: int = Math.ceil(wrap.positions.length * 0.5);
-        const simple: GeometryWrapData = simplify(wrap)(count);
-        const data: Float32Array = GeometryWrapper.Unwrap(simple);
-
-        result.lods.set(1, {
-            level: 1,
-            vertecies: data,
-            colors: new Float32Array(colors.slice(0, data.length)),
-            count: data.length / 3,
-        } as GeometryDataLod);
-
-        ////////////////////////////////////////
-
         return result;
     }
 
@@ -115,7 +111,7 @@ class GeometryParser {
             parseFloat(parts[3]) || -1,
             parseFloat(parts[4]) || -1,
             parseFloat(parts[5]) || -1,
-        ]);
+        ] as GeometryPolygon);
     }
 
     private static ParseKeywordF(
@@ -141,5 +137,51 @@ class GeometryParser {
         const i: int = index + (index >= 0 ? 0 : polygons.length);
         vertecies.push(...polygons[i].slice(0, 3));
         colors.push(...polygons[i].slice(3, 6));
+    }
+
+    private static FlattenColors(colors: Float32Array): Float32Array {
+        for (let i: int = 0; i < colors.length / (3 * 3); i++) {
+            //@ts-ignore
+            const face: GeometryFace<GeometryColor> = [];
+            for (let j: int = 0; j < 3; j++) {
+                face[j] = [
+                    colors[i * (3 * 3) + 3 * j + 0],
+                    colors[i * (3 * 3) + 3 * j + 1],
+                    colors[i * (3 * 3) + 3 * j + 2],
+                ] as GeometryColor;
+            }
+            if (!GeometryParser.EqualFace(face)) {
+                GeometryParser.FlattenFace(colors, face, i);
+            }
+        }
+        return colors;
+    }
+
+    private static EqualFace(face: GeometryFace<GeometryColor>): boolean {
+        const x: boolean =
+            face[0][0] === face[1][0] && face[0][0] === face[2][0];
+        const y: boolean =
+            face[0][1] === face[1][1] && face[0][1] === face[2][1];
+        const z: boolean =
+            face[0][2] === face[1][2] && face[0][2] === face[2][2];
+        return x && y && z;
+    }
+
+    private static FlattenFace(
+        data: Float32Array,
+        face: GeometryFace<GeometryColor>,
+        offset: int
+    ): void {
+        const provoking: GeometryColor = face
+            .sort(
+                (a: GeometryColor, b: GeometryColor) =>
+                    a[0] + a[1] + a[2] - (b[0] + b[1] + b[2])
+            )
+            .reverse()[0];
+        for (let i: int = 0; i < 3; i++) {
+            data[offset * (3 * 3) + 3 * i + 0] = provoking[0];
+            data[offset * (3 * 3) + 3 * i + 1] = provoking[1];
+            data[offset * (3 * 3) + 3 * i + 2] = provoking[2];
+        }
     }
 }
