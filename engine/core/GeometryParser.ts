@@ -20,6 +20,8 @@ class GeometryParser {
             colors: baseColors,
         } as GeometryUnwrapData);
 
+        result.bounds = GeometryHelper.ComputeBounds(baseVertecies);
+
         for (let i: int = 0; i < Geometry.LodMatrix.length; i++) {
             const config: GeometryLodConfig = Geometry.LodMatrix[i];
             result.lods.set(

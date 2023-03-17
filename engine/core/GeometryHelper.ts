@@ -5,6 +5,25 @@
 */
 
 class GeometryHelper {
+    public static ComputeBounds(positions: Float32Array): GeometryBounds {
+        const min: Vec3 = new Vec3();
+        const max: Vec3 = new Vec3();
+        for (let i: int = 0; i < positions.length / 3; i++) {
+            const position: Vec3 = new Vec3(
+                positions[i * 3],
+                positions[i * 3 + 1],
+                positions[i * 3 + 2]
+            );
+            GeometryHelper.MinBound(min, position);
+            GeometryHelper.MaxBound(max, position);
+        }
+        return {
+            min: min,
+            max: max,
+            size: max.clone().sub(min).length(),
+        } as GeometryBounds;
+    }
+
     public static FlattenColors(colors: Float32Array): Float32Array {
         for (let i: int = 0; i < colors.length / (3 * 3); i++) {
             //@ts-ignore
@@ -50,6 +69,30 @@ class GeometryHelper {
             data[offset * (3 * 3) + 3 * i + 0] = provoking[0];
             data[offset * (3 * 3) + 3 * i + 1] = provoking[1];
             data[offset * (3 * 3) + 3 * i + 2] = provoking[2];
+        }
+    }
+
+    private static MinBound(min: Vec3, position: Vec3): void {
+        if (min.x > position.x) {
+            min.x = position.x;
+        }
+        if (min.y > position.y) {
+            min.y = position.y;
+        }
+        if (min.z > position.z) {
+            min.z = position.z;
+        }
+    }
+
+    private static MaxBound(max: Vec3, position: Vec3): void {
+        if (max.x < position.x) {
+            max.x = position.x;
+        }
+        if (max.y < position.y) {
+            max.y = position.y;
+        }
+        if (max.z < position.z) {
+            max.z = position.z;
         }
     }
 }
