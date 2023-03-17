@@ -20,6 +20,7 @@ class Stats {
 
     private drawCalls: int = 0;
     private activeVertecies: int = 0;
+    private totalVertecies: int = 0;
 
     private resolution: [int, int] = [
         document.body.clientWidth,
@@ -63,11 +64,16 @@ class Stats {
         this.drawThen = performance.now();
         this.drawCalls = 0;
         this.activeVertecies = 0;
+        this.totalVertecies = 0;
     }
 
     public incrementDrawCalls(vertecies: int): void {
         this.drawCalls += 1;
         this.activeVertecies += vertecies;
+    }
+
+    public incrementTotalVertecies(vertecies: int): void {
+        this.totalVertecies += vertecies;
     }
 
     public endDraw(): void {
@@ -111,8 +117,10 @@ class Stats {
             cpu inter time: ${(this.deltaMs - this.renderMs).toFixed(2)} ms <br>
             <br>
             gpu draw calls: ${this.drawCalls}<br>
-            gpu vertecies: ${this.activeVertecies.dotit()}<br>
-            gpu faces: ${(this.activeVertecies / 3).dotit()}<br>
+            gpu vertecies: ${this.activeVertecies.dotit()} / ${this.totalVertecies.dotit()}<br>
+            gpu faces: ${(this.activeVertecies / 3).dotit()} / ${(
+            this.totalVertecies / 3
+        ).dotit()}<br>
             <br>
             resolution: ${this.resolution[0]} px x ${this.resolution[1]} px<br>
             device pixel ratio: ${this.devicePixelRatio}<br>

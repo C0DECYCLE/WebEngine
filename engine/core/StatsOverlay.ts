@@ -23,7 +23,7 @@ class StatsOverlay {
         div.style.top = "0px";
         div.style.right = "0px";
         div.style.zIndex = "1";
-        div.style.minWidth = "30vh";
+        div.style.minWidth = "42vh";
         div.style.backgroundColor = "#000000";
         div.style.opacity = "0.75";
 

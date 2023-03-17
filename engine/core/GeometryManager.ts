@@ -70,7 +70,7 @@ class GeometryManager {
     private parseObjData(data: string): GeometryData {
         const result: GeometryData = GeometryParser.Obj(data);
         result.shader = "main"; //config
-        result.capacity = 10_000; //config
+        result.capacity = 50_000; //config
         if (!this.shaderManager.names.includes(result.shader)) {
             throw new Error(`Renderer: Shader unknown. (${result.shader})`);
         }

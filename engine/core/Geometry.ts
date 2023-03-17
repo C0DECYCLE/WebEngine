@@ -12,6 +12,8 @@ class Geometry {
     private readonly gl: WebGL2RenderingContext;
     private readonly lods: Map<int, GeometryLod> = new Map<int, GeometryLod>();
 
+    private instanceCount: int = 0;
+
     public constructor(
         gl: WebGL2RenderingContext,
         data: GeometryData,
@@ -35,10 +37,17 @@ class Geometry {
             );
         }
         this.lods.get(lod)?.storeInstance(mat);
+        this.instanceCount++;
     }
 
     public draw(): void {
         this.lods.forEach((lod: GeometryLod, _level: int) => lod.draw());
+        this.geometryManager
+            .getStats()
+            .incrementTotalVertecies(
+                this.data.lods[0].count * this.instanceCount
+            );
+        this.instanceCount = 0;
     }
 
     private create(): void {

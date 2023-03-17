@@ -45,6 +45,7 @@ type GeometryDataLod = {
     vertecies: Float32Array;
     colors: Float32Array;
     count: int;
+    percentage: float;
 };
 
 type GeometryData = {
