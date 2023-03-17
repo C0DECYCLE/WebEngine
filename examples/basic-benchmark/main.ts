@@ -15,7 +15,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     for (let i: int = 0; i < 10_000; i++) {
         const suzanne: Entity = new Entity(
-            Math.random() > 0.5 ? "suzanne" : "torus"
+            Math.random() > 0.0 ? "suzanne" : "torus"
         );
         suzanne.position
             .set(Math.random(), Math.random(), Math.random())
@@ -34,14 +34,14 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         camera.position
             .set(Math.cos(now * 0.0001), 0.5, Math.sin(now * 0.0001))
             .scale(30);
-        /*
+
         let i: int;
         for (i = 0; i < list.length; i++) {
             list[i].rotation.x += speed;
             list[i].rotation.y -= speed;
             list[i].rotation.z -= speed;
         }
-        */
+
         renderer.render(now);
 
         requestAnimationFrame(render);

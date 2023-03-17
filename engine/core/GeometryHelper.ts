@@ -24,6 +24,17 @@ class GeometryHelper {
         } as GeometryBounds;
     }
 
+    public static UnifyColors(
+        colors: Float32Array,
+        color: GeometryColor
+    ): void {
+        for (let i = 0; i < colors.length / 3; i++) {
+            colors[i * 3] = color[0];
+            colors[i * 3 + 1] = color[1];
+            colors[i * 3 + 2] = color[2];
+        }
+    }
+
     public static FlattenColors(colors: Float32Array): Float32Array {
         for (let i: int = 0; i < colors.length / (3 * 3); i++) {
             //@ts-ignore

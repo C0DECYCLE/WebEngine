@@ -18,11 +18,14 @@ class Entity {
     private isAwake: boolean = false;
 
     private targetLod: int = -1;
-    private tempLod: int;
     private tempDistance: float;
     private tempCoverage: float;
+    private tempLod: int;
 
-    public get distance(): float {
+    public get distance(): Nullable<float> {
+        if (!this.isAwake) {
+            return null;
+        }
         return this.tempDistance;
     }
 
