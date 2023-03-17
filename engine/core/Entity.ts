@@ -22,6 +22,10 @@ class Entity {
     private tempDistance: float;
     private tempCoverage: float;
 
+    public get distance(): float {
+        return this.tempDistance;
+    }
+
     public constructor(geometryName: string) {
         this.geometryName = geometryName;
     }
@@ -55,6 +59,11 @@ class Entity {
     }
 
     public staticLod(lod: int): void {
+        if (lod === -1) {
+            return warn(
+                `Entity: Static lod -1 not allowed. ${this.stringifyInfo()}`
+            );
+        }
         this.targetLod = lod;
     }
 
@@ -63,42 +72,55 @@ class Entity {
     }
 
     public prepare(geometry: Geometry): boolean {
-        //cull: frustum occlusion lod
+        //cull: frustum, occlusion
 
-        this.computeMatrix();
-        this.selectLod(geometry);
-        geometry.storeInstance(this.world, this.tempLod);
-
-        return true; //drawn
+        this.computeTranslation();
+        this.selectLod(geometry.data);
+        if (this.tempLod !== -1) {
+            this.computeRotation(
+                this.world.values[12],
+                this.world.values[13],
+                this.world.values[14]
+            );
+            geometry.storeInstance(this.world, this.tempLod);
+            return true;
+        }
+        return false;
     }
 
     public stringifyInfo(): string {
         return `(Geometry: ${this.geometryName}, Id: ${this.id})`;
     }
 
-    private computeMatrix(): void {
-        if (this.rotation.isDirty) {
-            this.world.reset();
-            this.world.rotate(this.rotation);
-            this.rotation.isDirty = false;
-        }
+    private computeTranslation(): void {
         this.world.values[12] = this.position.x - this.camera!.position.x;
         this.world.values[13] = this.position.y - this.camera!.position.y;
         this.world.values[14] = this.position.z - this.camera!.position.z;
     }
 
-    private selectLod(geometry: Geometry): void {
-        this.tempLod = this.targetLod;
-        if (this.targetLod === -1) {
-            this.tempDistance = this.computeDistance();
-            this.tempCoverage =
-                geometry.data.bounds.size /
-                (this.tempDistance + geometry.data.bounds.size);
-            this.tempLod = this.computeLod(
-                geometry.data.lods,
-                this.tempCoverage
-            );
+    private computeRotation(x: float, y: float, z: float): void {
+        if (!this.rotation.isDirty) {
+            return;
         }
+        this.world.reset();
+        this.world.rotate(this.rotation);
+        this.world.values[12] = x;
+        this.world.values[13] = y;
+        this.world.values[14] = z;
+        this.rotation.isDirty = false;
+    }
+
+    private selectLod(data: GeometryData): void {
+        this.tempLod = this.targetLod;
+        if (this.tempLod !== -1) {
+            return;
+        }
+        this.tempDistance = this.computeDistance();
+        this.tempCoverage = this.computeCoverage(
+            data.bounds,
+            this.tempDistance
+        );
+        this.tempLod = this.computeLod(data.lods, this.tempCoverage);
     }
 
     private computeDistance(): float {
@@ -109,18 +131,30 @@ class Entity {
         );
     }
 
+    private computeCoverage(bounds: GeometryBounds, distance: float): float {
+        return bounds.size / (distance + bounds.size);
+    }
+
     private computeLod(levels: GeometryDataLod[], coverage: float): int {
         for (let i: int = 0; i < levels.length; i++) {
-            if (
-                (i - 1 < 0
-                    ? coverage <= Infinity
-                    : coverage < levels[i - 1].minimum) &&
-                coverage >= levels[i].minimum
-            ) {
+            if (this.inLevelCoverage(levels, i, coverage)) {
                 return i;
             }
         }
         return -1;
+    }
+
+    private inLevelCoverage(
+        levels: GeometryDataLod[],
+        i: int,
+        coverage: float
+    ): boolean {
+        return (
+            (i - 1 < 0
+                ? coverage <= Infinity
+                : coverage < levels[i - 1].minimum) &&
+            coverage >= levels[i].minimum
+        );
     }
 
     private preventUnattached(): void {

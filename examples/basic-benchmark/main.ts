@@ -33,15 +33,15 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     function render(now: float): void {
         camera.position
             .set(Math.cos(now * 0.0001), 0.5, Math.sin(now * 0.0001))
-            .scale(40);
-
+            .scale(30);
+        /*
         let i: int;
         for (i = 0; i < list.length; i++) {
             list[i].rotation.x += speed;
             list[i].rotation.y -= speed;
             list[i].rotation.z -= speed;
         }
-
+        */
         renderer.render(now);
 
         requestAnimationFrame(render);
