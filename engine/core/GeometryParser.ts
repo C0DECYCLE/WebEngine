@@ -106,7 +106,10 @@ class GeometryParser {
         if (result.name) {
             throw new Error(`Renderer: Obj file with multiple objects.`);
         }
+        parts = parts[0].split("_");
         result.name = parts[0];
+        result.shader = parts[2] || "main";
+        result.capacity = parseInt(parts[1] || "10");
     }
 
     private static ParseKeywordV(

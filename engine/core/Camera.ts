@@ -19,7 +19,7 @@ class Camera {
 
     private readonly gl: WebGL2RenderingContext;
 
-    public constructor(gl: WebGL2RenderingContext, far: float) {
+    public constructor(gl: WebGL2RenderingContext, far: float = 1_000) {
         this.gl = gl;
         const ratio: float = this.gl.canvas.width / this.gl.canvas.height;
         this.projection = Mat4.Perspective(60 * toRadian, ratio, 1, far);

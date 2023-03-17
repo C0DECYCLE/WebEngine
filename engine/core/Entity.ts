@@ -76,7 +76,6 @@ class Entity {
 
     public prepare(geometry: Geometry): boolean {
         //cull: frustum, occlusion
-
         this.computeTranslation();
         this.selectLod(geometry.data);
         if (this.tempLod !== -1) {

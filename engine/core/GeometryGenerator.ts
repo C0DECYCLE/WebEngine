@@ -22,11 +22,6 @@ class GeometryGenerator {
         vertecies: Float32Array,
         colors: Float32Array
     ): GeometryDataLod {
-        GeometryHelper.UnifyColors(colors, [
-            Math.random(),
-            Math.random(),
-            Math.random(),
-        ] as GeometryColor);
         return {
             level: config[0],
             minimum: config[1],
@@ -44,11 +39,6 @@ class GeometryGenerator {
         const data: GeometryUnwrapData = GeometryWrapper.Unwrap(
             simplify(wrap)(Math.ceil(wrap.positions.length * config[2]))
         );
-        GeometryHelper.UnifyColors(data.colors, [
-            Math.random(),
-            Math.random(),
-            Math.random(),
-        ] as GeometryColor);
         return {
             level: config[0],
             minimum: config[1],
