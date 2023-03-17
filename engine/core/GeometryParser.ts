@@ -7,7 +7,7 @@
 class GeometryParser {
     public static Obj(raw: string): GeometryData {
         const result: GeometryData = {} as GeometryData;
-        result.lods = new Map<int, GeometryDataLod>();
+        result.lods = [];
 
         const vertecies: float[] = [];
         const colors: float[] = [];
@@ -24,9 +24,14 @@ class GeometryParser {
 
         for (let i: int = 0; i < Geometry.LodMatrix.length; i++) {
             const config: GeometryLodConfig = Geometry.LodMatrix[i];
-            result.lods.set(
-                config[0],
-                GeometryGenerator.Lod(config, baseVertecies, baseColors, wrap)
+            if (result.lods[config[0]]) {
+                warn("GeometryParser: Duplicate lod levels on geometry.");
+            }
+            result.lods[config[0]] = GeometryGenerator.Lod(
+                config,
+                baseVertecies,
+                baseColors,
+                wrap
             );
         }
         return result;

@@ -22,8 +22,17 @@ class GeometryGenerator {
         vertecies: Float32Array,
         colors: Float32Array
     ): GeometryDataLod {
+        /*
+        const c = [Math.random(), Math.random(), Math.random()];
+        for (let i = 0; i < colors.length; i += 3) {
+            colors[i] = c[0];
+            colors[i + 1] = c[1];
+            colors[i + 2] = c[2];
+        }
+        */
         return {
             level: config[0],
+            minimum: config[1],
             vertecies: vertecies,
             colors: GeometryHelper.FlattenColors(colors),
             count: vertecies.length / 3,
@@ -37,8 +46,17 @@ class GeometryGenerator {
         const data: GeometryUnwrapData = GeometryWrapper.Unwrap(
             simplify(wrap)(Math.ceil(wrap.positions.length * config[2]))
         );
+        /*
+        const c = [Math.random(), Math.random(), Math.random()];
+        for (let i = 0; i < data.colors.length; i += 3) {
+            data.colors[i] = c[0];
+            data.colors[i + 1] = c[1];
+            data.colors[i + 2] = c[2];
+        }
+        */
         return {
             level: config[0],
+            minimum: config[1],
             vertecies: data.positions,
             colors: GeometryHelper.FlattenColors(data.colors),
             count: data.positions.length / 3,

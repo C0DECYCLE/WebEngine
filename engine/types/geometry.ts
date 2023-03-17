@@ -51,6 +51,6 @@ type GeometryData = {
     name: string;
     shader: string;
     capacity: int;
-    lods: Map<int, GeometryDataLod>;
+    lods: GeometryDataLod[];
     bounds: GeometryBounds;
 };

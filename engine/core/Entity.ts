@@ -19,6 +19,8 @@ class Entity {
 
     private targetLod: int = -1;
     private tempLod: int;
+    private tempDistance: float;
+    private tempCoverage: float;
 
     public constructor(geometryName: string) {
         this.geometryName = geometryName;
@@ -34,7 +36,7 @@ class Entity {
         this.preventUnattached();
         if (this.isAwake === true) {
             return warn(
-                `Renderer: Entity already awake. ${this.stringifyInfo()}`
+                `Entity: Entity already awake. ${this.stringifyInfo()}`
             );
         }
         this.entityManager!.wakeUp(this);
@@ -45,7 +47,7 @@ class Entity {
         this.preventUnattached();
         if (this.isAwake === false) {
             return warn(
-                `Renderer: Entity already awake. ${this.stringifyInfo()}`
+                `Entity: Entity already awake. ${this.stringifyInfo()}`
             );
         }
         this.entityManager!.sleep(this);
@@ -63,16 +65,15 @@ class Entity {
     public prepare(geometry: Geometry): boolean {
         //cull: frustum occlusion lod
 
-        this.tempLod = this.targetLod;
-        if (this.targetLod === -1) {
-            //select: lod
-            this.tempLod = 0;
-        }
-
         this.computeMatrix();
+        this.selectLod(geometry);
         geometry.storeInstance(this.world, this.tempLod);
 
         return true; //drawn
+    }
+
+    public stringifyInfo(): string {
+        return `(Geometry: ${this.geometryName}, Id: ${this.id})`;
     }
 
     private computeMatrix(): void {
@@ -86,8 +87,40 @@ class Entity {
         this.world.values[14] = this.position.z - this.camera!.position.z;
     }
 
-    public stringifyInfo(): string {
-        return `(Geometry: ${this.geometryName}, Id: ${this.id})`;
+    private selectLod(geometry: Geometry): void {
+        this.tempLod = this.targetLod;
+        if (this.targetLod === -1) {
+            this.tempDistance = this.computeDistance();
+            this.tempCoverage =
+                geometry.data.bounds.size /
+                (this.tempDistance + geometry.data.bounds.size);
+            this.tempLod = this.computeLod(
+                geometry.data.lods,
+                this.tempCoverage
+            );
+        }
+    }
+
+    private computeDistance(): float {
+        return Math.sqrt(
+            this.world.values[12] * this.world.values[12] +
+                this.world.values[13] * this.world.values[13] +
+                this.world.values[14] * this.world.values[14]
+        );
+    }
+
+    private computeLod(levels: GeometryDataLod[], coverage: float): int {
+        for (let i: int = 0; i < levels.length; i++) {
+            if (
+                (i - 1 < 0
+                    ? coverage <= Infinity
+                    : coverage < levels[i - 1].minimum) &&
+                coverage >= levels[i].minimum
+            ) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private preventUnattached(): void {

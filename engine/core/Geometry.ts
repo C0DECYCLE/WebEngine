@@ -26,9 +26,12 @@ class Geometry {
     }
 
     public storeInstance(mat: Mat4, lod: int): void {
+        if (lod === -1) {
+            return;
+        }
         if (!this.lods.has(lod)) {
             return warn(
-                `Renderer: Lod level not available on geometry. (${this.data.name}, ${lod})`
+                `Geometry: Lod level not available on geometry. (${this.data.name}, ${lod})`
             );
         }
         this.lods.get(lod)?.storeInstance(mat);
@@ -39,7 +42,7 @@ class Geometry {
     }
 
     private create(): void {
-        this.data.lods.forEach((dataLod: GeometryDataLod, _level: int) =>
+        this.data.lods.forEach((dataLod: GeometryDataLod, _i: int) =>
             this.createLod(dataLod)
         );
     }
