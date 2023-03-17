@@ -33,6 +33,12 @@ type GeometryUnwrapData = {
     colors: Float32Array;
 };
 
+type GeometryBounds = {
+    min: Vec3;
+    max: Vec3;
+    size: float;
+};
+
 type GeometryDataLod = {
     level: int;
     minimum: float;
@@ -46,4 +52,5 @@ type GeometryData = {
     shader: string;
     capacity: int;
     lods: Map<int, GeometryDataLod>;
+    bounds: GeometryBounds;
 };
