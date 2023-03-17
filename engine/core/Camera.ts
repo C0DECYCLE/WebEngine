@@ -9,6 +9,8 @@ class Camera {
     public readonly target: Vec3 = new Vec3(0, 0, -1);
     public readonly up: Vec3 = new Vec3(0, 1, 0);
 
+    public readonly screenArea: float;
+
     private readonly origin: Vec3 = new Vec3(0, 0, 0);
     private readonly direction: Vec3 = new Vec3(0, 0, -1);
     private readonly world: Mat4 = new Mat4();
@@ -17,10 +19,12 @@ class Camera {
 
     private readonly gl: WebGL2RenderingContext;
 
-    public constructor(gl: WebGL2RenderingContext, far: float) {
+    public constructor(gl: WebGL2RenderingContext, far: float = 1_000) {
         this.gl = gl;
         const ratio: float = this.gl.canvas.width / this.gl.canvas.height;
         this.projection = Mat4.Perspective(60 * toRadian, ratio, 1, far);
+        this.screenArea =
+            document.body.clientWidth * document.body.clientHeight;
     }
 
     public update(): void {

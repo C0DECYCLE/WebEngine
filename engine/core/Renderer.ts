@@ -14,7 +14,7 @@ class Renderer {
     private camera: Camera;
     private stats: Stats;
 
-    public constructor(clearColor?: Vec3) {
+    public constructor(clearColor?: Vec3, far?: float) {
         this.clearColor = clearColor;
 
         this.createContext(this.createCanvas());
@@ -22,7 +22,7 @@ class Renderer {
         this.createShaderManager();
         this.createGeometryManager();
         this.createEntityManager();
-        this.createCamera();
+        this.createCamera(far);
     }
 
     public async initialize(
@@ -111,8 +111,8 @@ class Renderer {
         this.stats = new Stats();
     }
 
-    private createCamera(): void {
-        this.camera = new Camera(this.gl, 1_000); //config
+    private createCamera(far?: float): void {
+        this.camera = new Camera(this.gl, far);
     }
 
     private initializeContext(): void {

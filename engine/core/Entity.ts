@@ -18,7 +18,16 @@ class Entity {
     private isAwake: boolean = false;
 
     private targetLod: int = -1;
+    private tempDistance: float;
+    private tempCoverage: float;
     private tempLod: int;
+
+    public get distance(): Nullable<float> {
+        if (!this.isAwake) {
+            return null;
+        }
+        return this.tempDistance;
+    }
 
     public constructor(geometryName: string) {
         this.geometryName = geometryName;
@@ -34,7 +43,7 @@ class Entity {
         this.preventUnattached();
         if (this.isAwake === true) {
             return warn(
-                `Renderer: Entity already awake. ${this.stringifyInfo()}`
+                `Entity: Entity already awake. ${this.stringifyInfo()}`
             );
         }
         this.entityManager!.wakeUp(this);
@@ -45,7 +54,7 @@ class Entity {
         this.preventUnattached();
         if (this.isAwake === false) {
             return warn(
-                `Renderer: Entity already awake. ${this.stringifyInfo()}`
+                `Entity: Entity already awake. ${this.stringifyInfo()}`
             );
         }
         this.entityManager!.sleep(this);
@@ -53,6 +62,11 @@ class Entity {
     }
 
     public staticLod(lod: int): void {
+        if (lod === -1) {
+            return warn(
+                `Entity: Static lod -1 not allowed. ${this.stringifyInfo()}`
+            );
+        }
         this.targetLod = lod;
     }
 
@@ -61,33 +75,88 @@ class Entity {
     }
 
     public prepare(geometry: Geometry): boolean {
-        //cull: frustum occlusion lod
-
-        this.tempLod = this.targetLod;
-        if (this.targetLod === -1) {
-            //select: lod
-            this.tempLod = 0;
+        //cull: frustum, occlusion
+        this.computeTranslation();
+        this.selectLod(geometry.data);
+        if (this.tempLod !== -1) {
+            this.computeRotation(
+                this.world.values[12],
+                this.world.values[13],
+                this.world.values[14]
+            );
+            geometry.storeInstance(this.world, this.tempLod);
+            return true;
         }
-
-        this.computeMatrix();
-        geometry.storeInstance(this.world, this.tempLod);
-
-        return true; //drawn
+        return false;
     }
 
-    private computeMatrix(): void {
-        if (this.rotation.isDirty) {
-            this.world.reset();
-            this.world.rotate(this.rotation);
-            this.rotation.isDirty = false;
-        }
+    public stringifyInfo(): string {
+        return `(Geometry: ${this.geometryName}, Id: ${this.id})`;
+    }
+
+    private computeTranslation(): void {
         this.world.values[12] = this.position.x - this.camera!.position.x;
         this.world.values[13] = this.position.y - this.camera!.position.y;
         this.world.values[14] = this.position.z - this.camera!.position.z;
     }
 
-    public stringifyInfo(): string {
-        return `(Geometry: ${this.geometryName}, Id: ${this.id})`;
+    private computeRotation(x: float, y: float, z: float): void {
+        if (!this.rotation.isDirty) {
+            return;
+        }
+        this.world.reset();
+        this.world.rotate(this.rotation);
+        this.world.values[12] = x;
+        this.world.values[13] = y;
+        this.world.values[14] = z;
+        this.rotation.isDirty = false;
+    }
+
+    private selectLod(data: GeometryData): void {
+        this.tempLod = this.targetLod;
+        if (this.tempLod !== -1) {
+            return;
+        }
+        this.tempDistance = this.computeDistance();
+        this.tempCoverage = this.computeCoverage(
+            data.bounds,
+            this.tempDistance
+        );
+        this.tempLod = this.computeLod(data.lods, this.tempCoverage);
+    }
+
+    private computeDistance(): float {
+        return Math.sqrt(
+            this.world.values[12] * this.world.values[12] +
+                this.world.values[13] * this.world.values[13] +
+                this.world.values[14] * this.world.values[14]
+        );
+    }
+
+    private computeCoverage(bounds: GeometryBounds, distance: float): float {
+        return bounds.size / (distance + bounds.size);
+    }
+
+    private computeLod(levels: GeometryDataLod[], coverage: float): int {
+        for (let i: int = 0; i < levels.length; i++) {
+            if (this.inLevelCoverage(levels, i, coverage)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private inLevelCoverage(
+        levels: GeometryDataLod[],
+        i: int,
+        coverage: float
+    ): boolean {
+        return (
+            (i - 1 < 0
+                ? coverage <= Infinity
+                : coverage < levels[i - 1].minimum) &&
+            coverage >= levels[i].minimum
+        );
     }
 
     private preventUnattached(): void {

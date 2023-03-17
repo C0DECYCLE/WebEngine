@@ -32,7 +32,7 @@ class GeometryLod {
     public storeInstance(mat: Mat4): void {
         if (this.instanceStoreCount === this.geometry.data.capacity) {
             return warn(
-                `Renderer: Geometry capacity overflow. (${this.geometry.data.name})`
+                `GeometryLod: Geometry capacity overflow. (${this.geometry.data.name})`
             );
         }
         mat.store(this.instanceWorlds, this.instanceStoreCount * 16);

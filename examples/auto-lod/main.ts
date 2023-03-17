@@ -32,6 +32,8 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         bunny.rotation.add(speed, speed, speed);
         bunny2.rotation.add(speed, speed, speed);
 
+        //camera.position.z -= speed * 2.0;
+
         renderer.render(now);
 
         requestAnimationFrame(render);

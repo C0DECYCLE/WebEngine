@@ -45,12 +45,13 @@ type GeometryDataLod = {
     vertecies: Float32Array;
     colors: Float32Array;
     count: int;
+    percentage: float;
 };
 
 type GeometryData = {
     name: string;
     shader: string;
     capacity: int;
-    lods: Map<int, GeometryDataLod>;
+    lods: GeometryDataLod[];
     bounds: GeometryBounds;
 };

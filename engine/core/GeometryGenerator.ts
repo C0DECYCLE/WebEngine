@@ -24,9 +24,11 @@ class GeometryGenerator {
     ): GeometryDataLod {
         return {
             level: config[0],
+            minimum: config[1],
             vertecies: vertecies,
             colors: GeometryHelper.FlattenColors(colors),
             count: vertecies.length / 3,
+            percentage: config[2],
         } as GeometryDataLod;
     }
 
@@ -39,9 +41,11 @@ class GeometryGenerator {
         );
         return {
             level: config[0],
+            minimum: config[1],
             vertecies: data.positions,
             colors: GeometryHelper.FlattenColors(data.colors),
             count: data.positions.length / 3,
+            percentage: config[2],
         } as GeometryDataLod;
     }
 }

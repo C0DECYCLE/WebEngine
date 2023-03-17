@@ -12,6 +12,8 @@ class Geometry {
     private readonly gl: WebGL2RenderingContext;
     private readonly lods: Map<int, GeometryLod> = new Map<int, GeometryLod>();
 
+    private instanceCount: int = 0;
+
     public constructor(
         gl: WebGL2RenderingContext,
         data: GeometryData,
@@ -26,20 +28,30 @@ class Geometry {
     }
 
     public storeInstance(mat: Mat4, lod: int): void {
+        if (lod === -1) {
+            return;
+        }
         if (!this.lods.has(lod)) {
             return warn(
-                `Renderer: Lod level not available on geometry. (${this.data.name}, ${lod})`
+                `Geometry: Lod level not available on geometry. (${this.data.name}, ${lod})`
             );
         }
         this.lods.get(lod)?.storeInstance(mat);
+        this.instanceCount++;
     }
 
     public draw(): void {
         this.lods.forEach((lod: GeometryLod, _level: int) => lod.draw());
+        this.geometryManager
+            .getStats()
+            .incrementTotalVertecies(
+                this.data.lods[0].count * this.instanceCount
+            );
+        this.instanceCount = 0;
     }
 
     private create(): void {
-        this.data.lods.forEach((dataLod: GeometryDataLod, _level: int) =>
+        this.data.lods.forEach((dataLod: GeometryDataLod, _i: int) =>
             this.createLod(dataLod)
         );
     }
