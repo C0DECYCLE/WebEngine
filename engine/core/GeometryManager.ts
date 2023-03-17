@@ -12,6 +12,7 @@ class GeometryManager {
         "icosphere",
         "torus",
         "suzanne",
+        "tree",
     ];
 
     public readonly datas: MapS<GeometryData> = new MapS<GeometryData>();
