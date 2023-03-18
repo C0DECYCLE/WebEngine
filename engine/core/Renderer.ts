@@ -26,11 +26,11 @@ class Renderer {
     }
 
     public async initialize(
-        geometryNames: string[] = [],
-        shaderNames: string[] = []
+        geometryUrls: string[] = [],
+        shaderUrls: string[] = []
     ): Promise<void> {
-        await this.shaderManager.initialize(shaderNames);
-        await this.geometryManager.initialize(geometryNames);
+        await this.shaderManager.initialize(shaderUrls);
+        await this.geometryManager.initialize(geometryUrls);
         this.initializeContext();
     }
 

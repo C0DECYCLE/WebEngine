@@ -104,7 +104,7 @@ class GeometryParser {
 
     private static ParseKeywordO(parts: string[], result: GeometryData): void {
         if (result.name) {
-            throw new Error(`Renderer: Obj file with multiple objects.`);
+            throw new Error(`GeometryParser: Obj file with multiple objects.`);
         }
         parts = parts[0].split("_");
         result.name = parts[0];
@@ -117,7 +117,7 @@ class GeometryParser {
         polygons: GeometryPolygon[]
     ): void {
         if (parts.length < 3) {
-            throw new Error(`Renderer: Obj file missing vertex part.`);
+            throw new Error(`GeometryParser: Obj file missing vertex part.`);
         }
         polygons.push([
             parseFloat(parts[0]),

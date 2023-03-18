@@ -12,7 +12,6 @@ class GeometryManager {
         "icosphere",
         "torus",
         "suzanne",
-        "tree",
     ];
 
     public readonly datas: MapS<GeometryData> = new MapS<GeometryData>();
@@ -32,12 +31,8 @@ class GeometryManager {
         this.stats = stats;
     }
 
-    public async initialize(names: string[]): Promise<void> {
-        this.names.push(...names);
-        if (new Set(this.names).size !== this.names.length) {
-            throw new Error("Renderer: Duplicate geometry name.");
-        }
-        await this.fetchObjFiles();
+    public async initialize(urls: string[]): Promise<void> {
+        await this.fetchObjFiles(urls);
         this.createGeometries();
     }
 
@@ -45,33 +40,40 @@ class GeometryManager {
         return this.stats;
     }
 
-    private async fetchObjFiles(): Promise<void> {
+    private async fetchObjFiles(urls: string[]): Promise<void> {
         await Promise.all(
-            this.objFileUrls().map((fileUrl: string) =>
+            this.objFileUrls(urls).map((fileUrl: string) =>
                 this.fetchObjFile(fileUrl)
             )
         );
     }
 
-    private objFileUrls(): string[] {
+    private objFileUrls(urls: string[]): string[] {
         const objFileUrls: string[] = [];
         this.names.forEach((name, _i: int) =>
             objFileUrls.push(`${this.rootPath}${name}.obj`)
         );
+        objFileUrls.push(...urls);
         return objFileUrls;
     }
 
     private fetchObjFile(fileUrl: string): Promise<void | Response> {
         return fetch(fileUrl).then(async (response: Response) => {
-            const data = this.parseObjData(await response.text());
-            this.datas.set(this.getNameFromFileUrl(fileUrl), data);
+            const fileName: string = this.getNameFromFileUrl(fileUrl);
+            const data: GeometryData = this.parseObjData(await response.text());
+            if (this.datas.has(fileName)) {
+                throw new Error("GeometryManager: Duplicate geometry name.");
+            }
+            this.datas.set(fileName, data);
         });
     }
 
     private parseObjData(data: string): GeometryData {
         const result: GeometryData = GeometryParser.Obj(data);
         if (!this.shaderManager.names.includes(result.shader)) {
-            throw new Error(`Renderer: Shader unknown. (${result.shader})`);
+            throw new Error(
+                `GeometryManager: Shader unknown. (${result.shader})`
+            );
         }
         return result;
     }

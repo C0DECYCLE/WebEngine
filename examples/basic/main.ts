@@ -8,7 +8,7 @@ var renderer: Renderer;
 
 window.addEventListener("compile", async (_event: Event): Promise<void> => {
     renderer = new Renderer(new Vec3(0.9, 0.9, 0.9));
-    await renderer.initialize();
+    await renderer.initialize(["tree.obj"]);
 
     const camera: Camera = renderer.getCamera();
     camera.target.set(0, 0, 0);

@@ -162,7 +162,7 @@ class Entity {
     private preventUnattached(): void {
         if (!this.entityManager) {
             throw new Error(
-                `Renderer: Entity not attached. ${this.stringifyInfo()}`
+                `Entity: Entity not attached. ${this.stringifyInfo()}`
             );
         }
     }

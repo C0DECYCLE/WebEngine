@@ -75,7 +75,9 @@ class GeometryLod {
         const vao: Nullable<WebGLVertexArrayObject> =
             this.gl.createVertexArray();
         if (!vao) {
-            throw new Error("Renderer: Creating vertex array object failed.");
+            throw new Error(
+                "GeometryLod: Creating vertex array object failed."
+            );
         }
         return vao;
     }
@@ -83,7 +85,7 @@ class GeometryLod {
     private createBuffer(): WebGLBuffer {
         const buffer: Nullable<WebGLBuffer> = this.gl.createBuffer();
         if (!buffer) {
-            throw new Error("Renderer: Creating buffer failed.");
+            throw new Error("GeometryLod: Creating buffer failed.");
         }
         return buffer;
     }
