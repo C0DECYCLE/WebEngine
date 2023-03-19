@@ -14,10 +14,10 @@ class Renderer {
     private camera: Camera;
     private stats: Stats;
 
-    public constructor(clearColor?: Vec3, far?: float) {
+    public constructor(clearColor?: Vec3, far?: float, antialiase?: boolean) {
         this.clearColor = clearColor;
 
-        this.createContext(this.createCanvas());
+        this.createContext(this.createCanvas(), antialiase);
         this.createStats();
         this.createShaderManager();
         this.createGeometryManager();
@@ -67,12 +67,15 @@ class Renderer {
         return canvas;
     }
 
-    private createContext(canvas: HTMLCanvasElement): void {
+    private createContext(
+        canvas: HTMLCanvasElement,
+        antialias: boolean = false
+    ): void {
         const context: Nullable<WebGL2RenderingContext> = canvas.getContext(
             "webgl2",
             {
                 alpha: false,
-                antialias: false,
+                antialias: antialias,
                 depth: true,
                 failIfMajorPerformanceCaveat: false,
                 powerPreference: "high-performance",
