@@ -132,10 +132,8 @@ class Renderer {
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
-        /*
         this.gl.enable(this.gl.BLEND);
-        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-        */
+        this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
         if (this.clearColor !== undefined) {
             this.gl.clearColor(
                 this.clearColor.x,
