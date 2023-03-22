@@ -92,8 +92,9 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     function render(now: float): void {
         //camera.position.set(0, 1.5, -1.25).scale(now * 0.01);
+
         light.direction
-            .set(-Math.cos(now * 0.0005), Math.sin(now * 0.0005), 0.5)
+            .set(-Math.cos(2 + now * 0.0005), Math.sin(2 + now * 0.0005), 0.5)
             .normalize();
 
         renderer.render(now);
