@@ -5,8 +5,15 @@
 */
 
 enum ShaderVariables {
+    //uniforms
+    CAMERADIRECTION = "cameraDirection",
     VIEWPROJECTION = "viewProjection",
+    AMBIENTCOLOR = "ambientColor",
+    LIGHTDIRECTION = "lightDirection",
+    LIGHTCOLOR = "lightColor",
+    //instance uniforms
     OBJECTWORLD = "objectWorld",
+    //attributes
     VERTEXPOSITION = "vertexPosition",
     VERTEXCOLOR = "vertexColor",
 }

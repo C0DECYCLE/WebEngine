@@ -179,21 +179,28 @@ class ShaderManager {
     }
 
     private registerLocations(shaderProgram: ShaderProgram): void {
-        this.registerUniformLocation(
-            shaderProgram,
-            ShaderVariables.VIEWPROJECTION
-        );
-        this.registerInstanceUniformLocation(
-            shaderProgram,
-            ShaderVariables.OBJECTWORLD
-        );
-        this.registerAttributeLocation(
-            shaderProgram,
-            ShaderVariables.VERTEXPOSITION
-        );
-        this.registerAttributeLocation(
-            shaderProgram,
-            ShaderVariables.VERTEXCOLOR
+        this.registerUniformLocations(shaderProgram, [
+            ShaderVariables.CAMERADIRECTION,
+            ShaderVariables.VIEWPROJECTION,
+            ShaderVariables.AMBIENTCOLOR,
+            ShaderVariables.LIGHTDIRECTION,
+            ShaderVariables.LIGHTCOLOR,
+        ]);
+        this.registerInstanceUniformLocations(shaderProgram, [
+            ShaderVariables.OBJECTWORLD,
+        ]);
+        this.registerAttributeLocations(shaderProgram, [
+            ShaderVariables.VERTEXPOSITION,
+            ShaderVariables.VERTEXCOLOR,
+        ]);
+    }
+
+    private registerUniformLocations(
+        shaderProgram: ShaderProgram,
+        names: string[]
+    ): void {
+        names.forEach((name: string, _i: int) =>
+            this.registerUniformLocation(shaderProgram, name)
         );
     }
 
@@ -201,12 +208,23 @@ class ShaderManager {
         shaderProgram: ShaderProgram,
         name: string
     ): void {
+        log(name);
         const uniformLocation: Nullable<WebGLUniformLocation> =
             this.gl.getUniformLocation(shaderProgram.program, name);
+        log(uniformLocation);
         if (!uniformLocation) {
             throw new Error("ShaderManager: Fetching uniform location failed.");
         }
         shaderProgram.uniformLocations.set(name, uniformLocation);
+    }
+
+    private registerInstanceUniformLocations(
+        shaderProgram: ShaderProgram,
+        names: string[]
+    ): void {
+        names.forEach((name: string, _i: int) =>
+            this.registerInstanceUniformLocation(shaderProgram, name)
+        );
     }
 
     private registerInstanceUniformLocation(
@@ -216,6 +234,15 @@ class ShaderManager {
         shaderProgram.instanceUniformLocations.set(
             name,
             this.gl.getAttribLocation(shaderProgram.program, name)
+        );
+    }
+
+    private registerAttributeLocations(
+        shaderProgram: ShaderProgram,
+        names: string[]
+    ): void {
+        names.forEach((name: string, _i: int) =>
+            this.registerAttributeLocation(shaderProgram, name)
         );
     }
 
