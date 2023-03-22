@@ -19,12 +19,8 @@ class ShaderManager {
         this.gl = gl;
     }
 
-    public async initialize(names: string[]): Promise<void> {
-        this.names.push(...names);
-        if (new Set(this.names).size !== this.names.length) {
-            throw new Error("Renderer: Duplicate shader name.");
-        }
-        await this.fetchShaderSources();
+    public async initialize(urls: string[]): Promise<void> {
+        await this.fetchShaderSources(urls);
         this.createShaders();
         this.createPrograms();
     }
@@ -39,7 +35,7 @@ class ShaderManager {
                 : this.gl.FRAGMENT_SHADER
         );
         if (!shader) {
-            throw new Error("Renderer: Shader creation failed.");
+            throw new Error("ShaderManager: Shader creation failed.");
         }
         this.gl.shaderSource(shader, source);
         this.gl.compileShader(shader);
@@ -54,7 +50,7 @@ class ShaderManager {
             this.gl.getShaderInfoLog(shader);
         this.gl.deleteShader(shader);
         throw new Error(
-            `Renderer: Shader compilation failed. (${shaderInfoLog})`
+            `ShaderManager: Shader compilation failed. (${shaderInfoLog})`
         );
     }
 
@@ -64,7 +60,7 @@ class ShaderManager {
     ): Nullable<WebGLProgram> {
         const program: Nullable<WebGLProgram> = this.gl.createProgram();
         if (!program) {
-            throw new Error("Renderer: Program creation failed.");
+            throw new Error("ShaderManager: Program creation failed.");
         }
         this.gl.attachShader(program, vertexShader);
         this.gl.attachShader(program, fragmentShader);
@@ -76,24 +72,23 @@ class ShaderManager {
         if (success) {
             return program;
         }
-
         const programInfoLog: Nullable<string> =
             this.gl.getProgramInfoLog(program);
         this.gl.deleteProgram(program);
         throw new Error(
-            `Renderer: Program creation failed. (${programInfoLog})`
+            `ShaderManager: Program creation failed. (${programInfoLog})`
         );
     }
 
-    private async fetchShaderSources(): Promise<void> {
+    private async fetchShaderSources(urls: string[]): Promise<void> {
         await Promise.all(
-            this.shaderSourceUrls().map((sourceUrl: string) =>
+            this.shaderSourceUrls(urls).map((sourceUrl: string) =>
                 this.fetchShaderSourceUrls(sourceUrl)
             )
         );
     }
 
-    private shaderSourceUrls(): string[] {
+    private shaderSourceUrls(urls: string[]): string[] {
         const shaderSourceUrls: string[] = [];
         this.names.forEach((name, _i: int) =>
             shaderSourceUrls.push(
@@ -101,6 +96,7 @@ class ShaderManager {
                 `${this.rootPath}${name}.${ShaderTypes.FRAGMENT}.fx`
             )
         );
+        shaderSourceUrls.push(...urls);
         return shaderSourceUrls;
     }
 
@@ -108,9 +104,8 @@ class ShaderManager {
         return fetch(sourceUrl).then(async (response: Response) => {
             const shaderSourceInfo: Nullable<ShaderSourceInfo> =
                 this.getShaderSourceInfo(sourceUrl);
-
             if (!shaderSourceInfo) {
-                throw new Error("Renderer: Fetching ShaderInfo failed.");
+                throw new Error("ShaderManager: Fetching ShaderInfo failed.");
             }
             this.storeShaderSource(shaderSourceInfo, await response.text());
         });
@@ -119,7 +114,6 @@ class ShaderManager {
     private getShaderSourceInfo(sourceUrl: string): Nullable<ShaderSourceInfo> {
         const fileInfo: Nullable<string[]> =
             sourceUrl.split("/").at(-1)?.split(".") || null;
-
         if (!fileInfo) {
             return null;
         }
@@ -147,7 +141,10 @@ class ShaderManager {
     }
 
     private createShaders(): void {
-        this.sources.forEach((sourcePair: ShaderSourcePair, name: string) =>
+        this.sources.forEach((sourcePair: ShaderSourcePair, name: string) => {
+            if (this.pairs.has(name)) {
+                throw new Error("ShaderManager: Duplicate shader name.");
+            }
             this.pairs.set(name, {
                 [ShaderTypes.VERTEX]: this.createShader(
                     ShaderTypes.VERTEX,
@@ -157,8 +154,8 @@ class ShaderManager {
                     ShaderTypes.FRAGMENT,
                     sourcePair[ShaderTypes.FRAGMENT]
                 )!,
-            } as ShaderPair)
-        );
+            } as ShaderPair);
+        });
     }
 
     private createPrograms(): void {
@@ -207,7 +204,7 @@ class ShaderManager {
         const uniformLocation: Nullable<WebGLUniformLocation> =
             this.gl.getUniformLocation(shaderProgram.program, name);
         if (!uniformLocation) {
-            throw new Error("Renderer: Fetching uniform location failed.");
+            throw new Error("ShaderManager: Fetching uniform location failed.");
         }
         shaderProgram.uniformLocations.set(name, uniformLocation);
     }

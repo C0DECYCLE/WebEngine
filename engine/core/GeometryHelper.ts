@@ -70,12 +70,10 @@ class GeometryHelper {
         face: GeometryFace<GeometryColor>,
         offset: int
     ): void {
-        const provoking: GeometryColor = face
-            .sort(
-                (a: GeometryColor, b: GeometryColor) =>
-                    a[0] + a[1] + a[2] - (b[0] + b[1] + b[2])
-            )
-            .reverse()[0];
+        const provoking: GeometryColor = face.sort(
+            (a: GeometryColor, b: GeometryColor) =>
+                a[0] + a[1] + a[2] - (b[0] + b[1] + b[2])
+        )[0];
         for (let i: int = 0; i < 3; i++) {
             data[offset * (3 * 3) + 3 * i + 0] = provoking[0];
             data[offset * (3 * 3) + 3 * i + 1] = provoking[1];

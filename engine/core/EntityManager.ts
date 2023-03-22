@@ -23,7 +23,7 @@ class EntityManager {
     public attach(entity: Entity): void {
         if (!this.geometryManager.list.has(entity.geometryName)) {
             throw new Error(
-                `Renderer: Geometry name unknown. ${entity.stringifyInfo()}`
+                `EntityManager: Geometry name unknown. ${entity.stringifyInfo()}`
             );
         }
         this.list.add(entity);
