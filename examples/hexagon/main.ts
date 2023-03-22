@@ -19,30 +19,10 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     camera.target.set(0.1, 0, -0.2).scale(60);
     camera.position.set(0, 1.25, -1).scale(60).add(camera.target);
 
-    /*
-    for (let i: int = 0; i < 1000; i++) {
-        const tree: Entity = new Entity("tree");
-        tree.position
-            .set(Math.random(), 0, Math.random())
-            .scale(2)
-            .sub(1, 0, 1)
-            .scale(100);
-        tree.attach(renderer);
-        tree.wakeUp();
-    }
-    */
-    /*
-    for (let i: int = 0; i < 100; i++) {
-        const house: Entity = new Entity("house");
-        house.position
-            .set(Math.random(), 0, Math.random())
-            .scale(2)
-            .sub(1, 0, 1)
-            .scale(100);
-        house.attach(renderer);
-        house.wakeUp();
-    }
-    */
+    const light: Light = renderer.getLight();
+    light.ambient.set(0.05, 0.015, 0.1);
+    light.direction.set(1.0, -1.0, 0.5).normalize();
+    light.color.set(1.0, 0.8, 0.7);
 
     const map: int[][] = [
         [0, 0, 1, 1, 0, 0, 1, 1, 1, 0],
@@ -90,7 +70,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             house.position.copy(field.position);
             house.position.x += (Math.random() * 2 - 1) * 3;
             house.position.z += (Math.random() * 2 - 1) * 3;
-            house.rotation.y = 90 * toRadian;
+            house.rotation.y = Math.random() * 360 * toRadian;
             house.attach(renderer);
             house.staticLod(0);
             house.wakeUp();
@@ -112,6 +92,9 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     function render(now: float): void {
         //camera.position.set(0, 1.5, -1.25).scale(now * 0.01);
+        light.direction
+            .set(-Math.cos(now * 0.0005), Math.sin(now * 0.0005), 0.5)
+            .normalize();
 
         renderer.render(now);
 

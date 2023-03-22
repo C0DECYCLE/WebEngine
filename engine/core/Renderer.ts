@@ -36,12 +36,16 @@ class Renderer {
         this.initializeContext();
     }
 
+    public getEntityManager(): EntityManager {
+        return this.entityManager;
+    }
+
     public getCamera(): Camera {
         return this.camera;
     }
 
-    public getEntityManager(): EntityManager {
-        return this.entityManager;
+    public getLight(): Light {
+        return this.light;
     }
 
     public render(now: float): void {

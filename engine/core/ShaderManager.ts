@@ -208,10 +208,8 @@ class ShaderManager {
         shaderProgram: ShaderProgram,
         name: string
     ): void {
-        log(name);
         const uniformLocation: Nullable<WebGLUniformLocation> =
             this.gl.getUniformLocation(shaderProgram.program, name);
-        log(uniformLocation);
         if (!uniformLocation) {
             throw new Error("ShaderManager: Fetching uniform location failed.");
         }
