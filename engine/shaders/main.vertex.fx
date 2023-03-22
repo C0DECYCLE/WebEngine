@@ -18,10 +18,11 @@ in mat4 objectWorld;
 in vec3 vertexPosition;
 in vec3 vertexColor;
  
+//fragment shader
 out vec3 finalVertexPosition;
 out vec3 finalVertexColor;
-out float finalDepthValue;
 
+//main
 void main() {
     vec4 finalWorldPosition = objectWorld * vec4(vertexPosition, 1.0);
 
@@ -29,5 +30,4 @@ void main() {
     finalVertexColor = vertexColor.xyz;
 
     gl_Position = viewProjection * finalWorldPosition;
-    finalDepthValue = gl_Position.z;
 }

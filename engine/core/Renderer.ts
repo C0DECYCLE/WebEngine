@@ -12,6 +12,7 @@ class Renderer {
     private geometryManager: GeometryManager;
     private entityManager: EntityManager;
     private camera: Camera;
+    private light: Light;
     private stats: Stats;
 
     public constructor(clearColor?: Vec3, far?: float, antialiase?: boolean) {
@@ -23,6 +24,7 @@ class Renderer {
         this.createGeometryManager();
         this.createEntityManager();
         this.createCamera(far);
+        this.createLight();
     }
 
     public async initialize(
@@ -34,12 +36,16 @@ class Renderer {
         this.initializeContext();
     }
 
+    public getEntityManager(): EntityManager {
+        return this.entityManager;
+    }
+
     public getCamera(): Camera {
         return this.camera;
     }
 
-    public getEntityManager(): EntityManager {
-        return this.entityManager;
+    public getLight(): Light {
+        return this.light;
     }
 
     public render(now: float): void {
@@ -91,6 +97,10 @@ class Renderer {
         this.gl = context;
     }
 
+    private createStats(): void {
+        this.stats = new Stats();
+    }
+
     private createShaderManager(): void {
         this.shaderManager = new ShaderManager(this.gl);
     }
@@ -110,12 +120,12 @@ class Renderer {
         );
     }
 
-    private createStats(): void {
-        this.stats = new Stats();
-    }
-
     private createCamera(far?: float): void {
         this.camera = new Camera(this.gl, far);
+    }
+
+    private createLight(): void {
+        this.light = new Light(this.gl);
     }
 
     private initializeContext(): void {
@@ -138,6 +148,7 @@ class Renderer {
 
     private updateFrame(): void {
         this.camera.update();
+        this.light.update();
         this.entityManager.prepare();
     }
 
@@ -148,7 +159,9 @@ class Renderer {
 
         const program: ShaderProgram = this.bindProgram("main");
 
-        this.camera.bufferViewProjection(program);
+        this.camera.bufferUniforms(program);
+        this.light.bufferUniforms(program);
+
         this.entityManager.draw();
     }
 
