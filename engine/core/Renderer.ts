@@ -74,12 +74,12 @@ class Renderer {
         const context: Nullable<WebGL2RenderingContext> = canvas.getContext(
             "webgl2",
             {
-                alpha: false,
+                alpha: true,
                 antialias: antialias,
                 depth: true,
                 failIfMajorPerformanceCaveat: false,
                 powerPreference: "high-performance",
-                premultipliedAlpha: true,
+                premultipliedAlpha: false,
                 preserveDrawingBuffer: false,
                 stencil: false,
                 desynchronized: false,
@@ -122,6 +122,10 @@ class Renderer {
         this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
+        /*
+        this.gl.enable(this.gl.BLEND);
+        this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+        */
         if (this.clearColor !== undefined) {
             this.gl.clearColor(
                 this.clearColor.x,
