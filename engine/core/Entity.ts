@@ -75,7 +75,12 @@ class Entity {
     }
 
     public prepare(geometry: Geometry): boolean {
-        //cull: frustum, occlusion
+        /*
+        if (!this.camera!.inFrustum(this.position, geometry.data.bounds.size)) {
+            return false;
+        }
+        */
+
         this.computeTranslation();
         this.selectLod(geometry.data);
         if (this.tempLod !== -1) {

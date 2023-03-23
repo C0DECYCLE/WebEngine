@@ -416,7 +416,7 @@ class Mat4 {
         return new Mat4(this.isFloat64).copy(this);
     }
 
-    private static Cache: Mat4 = new Mat4();
+    public static Cache: Mat4 = new Mat4();
 
     public static Orthographic(
         left: float,
