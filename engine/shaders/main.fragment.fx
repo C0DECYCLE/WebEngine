@@ -30,8 +30,8 @@ vec3 getFaceNormal(vec3 vertexPosition) {
 }
 
 float getShading(vec3 faceNormal, vec3 lightDirection) {
-    float product = dot(faceNormal, -lightDirection); /* * 0.5 + 0.5;*/
-    return pow(max(0.0, product), 1.0 /*2.0*/);
+    float product = dot(faceNormal, -lightDirection) * 0.5 + 0.5;
+    return pow(max(0.0, product), 1.0);
 }
 
 vec3 getSpecular(vec3 faceNormal, float specularPower, float specularIntensity) {
