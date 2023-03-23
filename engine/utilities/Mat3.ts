@@ -186,7 +186,7 @@ class Mat3 {
         return new Mat3(this.isFloat64).copy(this);
     }
 
-    private static Cache: Mat3 = new Mat3();
+    public static Cache: Mat3 = new Mat3();
 
     public static Projection(
         width: float,

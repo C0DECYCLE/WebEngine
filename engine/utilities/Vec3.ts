@@ -130,6 +130,20 @@ class Vec3 {
         return this;
     }
 
+    public dot(b: Vec3): float {
+        return this.x * b.x + this.y * b.y + this.z * b.z;
+    }
+
+    public cross(b: Vec3, a: Vec3 = this): Vec3 {
+        Vec3.Cache.set(
+            a.y * b.z - a.z * b.y,
+            a.z * b.x - a.x * b.z,
+            a.x * b.y - a.y * b.x
+        );
+        this.copy(Vec3.Cache);
+        return this;
+    }
+
     public applyMat(mat: Mat4): Vec3 {
         const w =
             1 /
@@ -175,15 +189,13 @@ class Vec3 {
         return new Vec3(this.x, this.y, this.z);
     }
 
+    public static Cache: Vec3 = new Vec3();
+
     public static Dot(a: Vec3, b: Vec3): float {
-        return a.x * b.x + a.y * b.y + a.z * b.z;
+        return a.dot(b);
     }
 
     public static Cross(a: Vec3, b: Vec3): Vec3 {
-        return new Vec3(
-            a.y * b.z - a.z * b.y,
-            a.z * b.x - a.x * b.z,
-            a.x * b.y - a.y * b.x
-        );
+        return a.clone().cross(b);
     }
 }

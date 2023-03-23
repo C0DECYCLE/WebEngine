@@ -107,6 +107,10 @@ class Vec2 {
         return this;
     }
 
+    public dot(b: Vec2): float {
+        return this.x * b.x + this.y * b.y;
+    }
+
     public applyMat(mat: Mat3): Vec2 {
         this.x =
             mat.values[0] * this.x + mat.values[3] * this.y + mat.values[6];
@@ -130,7 +134,9 @@ class Vec2 {
         return new Vec2(this.x, this.y);
     }
 
+    public static Cache: Vec2 = new Vec2();
+
     public static Dot(a: Vec2, b: Vec2): float {
-        return a.x * b.x + a.y * b.y;
+        return a.dot(b);
     }
 }
