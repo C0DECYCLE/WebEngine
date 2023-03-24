@@ -24,9 +24,9 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     light.direction.set(1.5, -1.0, 0.0).normalize();
     light.color.set(1.0, 0.85, 0.75);
 
-    const shadow = light.setShadow(512);
+    const shadow = light.setShadow(1024);
     shadow.position.set(0, 0, 0);
-    shadow.radius = 40;
+    shadow.radius = 80;
     shadow.bias = 0.005;
     shadow.opcaity = 0.65;
 
@@ -53,7 +53,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             field.position.z += map.length * 0.5 * 17.4;
             if (Math.random() > 0.5) field.rotation.y = 180 * toRadian;
             field.attach(renderer);
-            field.staticLod(0);
+            //field.staticLod(0);
             field.shadow(false, true);
             field.wakeUp();
 
@@ -66,7 +66,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
                     tree.position.z += (Math.random() * 2 - 1) * 6;
                     tree.rotation.y = Math.random() * 360 * toRadian;
                     tree.attach(renderer);
-                    tree.staticLod(0);
+                    //tree.staticLod(0);
                     tree.shadow(true, true);
                     tree.wakeUp();
                 }
@@ -79,7 +79,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             house.position.z += (Math.random() * 2 - 1) * 3;
             house.rotation.y = Math.random() * 360 * toRadian;
             house.attach(renderer);
-            house.staticLod(0);
+            //house.staticLod(0);
             house.shadow(true, true);
             house.wakeUp();
         }
@@ -100,17 +100,17 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     }
 
     function render(now: float): void {
-        /*
         camera.position
             .set(0, 1.25, -1)
             .scale(now * 0.005)
             .add(camera.target);
-        shadow.position.copy(camera.position);
-        */
+        //shadow.position.copy(camera.position);
 
+        /*
         light.direction
             .set(-Math.cos(2 + now * 0.0005), -Math.sin(2 + now * 0.0005), 0.5)
             .normalize();
+        */
 
         renderer.render(now);
 

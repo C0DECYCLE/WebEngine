@@ -14,6 +14,19 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     camera.target.set(0, 0, 0);
     camera.position.set(0, 3, -3);
 
+    const light: Light = renderer.getLight();
+    light.ambient.set(0.2, 0.1, 0.3);
+    light.direction.set(1.5, -1.0, 0.0).normalize();
+    light.color.set(1.0, 0.9, 0.8);
+
+    /*
+    const shadow = light.setShadow(1024);
+    shadow.position.set(0, 0, 0);
+    shadow.radius = 256;
+    shadow.bias = 0.005;
+    shadow.opcaity = 0.65;
+    */
+
     const monkey: Entity = new Entity("suzanne");
     monkey.attach(renderer);
     monkey.position.set(0, 20, 0);
@@ -30,6 +43,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             .scale(500);
         tree.position.y = Math.random() * 10;
         tree.rotation.set(0, Math.random() * 360 * toRadian, 0);
+        //tree.shadow(true, true);
         tree.wakeUp();
     }
 
@@ -40,6 +54,8 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
         camera.position.z -= speed;
         camera.position.y += speed * 0.5;
+
+        //shadow.position.copy(camera.position);
 
         renderer.render(now);
 

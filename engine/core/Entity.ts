@@ -25,7 +25,7 @@ class Entity {
 
     private isShadowCasting: boolean = false;
     private isShadowReceiving: boolean = false;
-    private shadowCulling: boolean = true;
+    private doShadowCulling: boolean = true;
 
     public get distance(): Nullable<float> {
         if (!this.isAwake) {
@@ -71,7 +71,7 @@ class Entity {
     }
 
     public disableShadowCulling(): void {
-        this.shadowCulling = false;
+        this.doShadowCulling = false;
     }
 
     public wakeUp(): void {
@@ -122,15 +122,23 @@ class Entity {
     }
 
     public shadowify(geometry: Geometry, shadow: Shadow): void {
-        if (this.shadowCull(geometry, shadow)) {
-            geometry.storeInstance(this.world, this.tempLod);
+        if (!this.isRendering) {
+            return;
         }
+        if (this.shadowCull(geometry, shadow)) {
+            return;
+        }
+        geometry.storeInstance(
+            this.world,
+            geometry.hasLod(this.tempLod + 1) ? this.tempLod + 1 : this.tempLod
+        );
     }
 
     public store(geometry: Geometry): void {
-        if (this.isRendering) {
-            geometry.storeInstance(this.world, this.tempLod);
+        if (!this.isRendering) {
+            return;
         }
+        geometry.storeInstance(this.world, this.tempLod);
     }
 
     public stringifyInfo(): string {
@@ -203,13 +211,13 @@ class Entity {
     }
 
     private shadowCull(geometry: Geometry, shadow: Shadow): boolean {
-        if (!this.shadowCulling) {
-            return true;
+        if (!this.doShadowCulling) {
+            return false;
         }
         return (
             Vec3.Cache.copy(this.position)
                 .sub(shadow.position)
-                .lengthQuadratic() <
+                .lengthQuadratic() >
             (shadow.radius + geometry.data.bounds.size * 0.5) ** 2
         );
     }
