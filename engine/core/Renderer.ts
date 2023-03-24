@@ -151,7 +151,7 @@ class Renderer {
     private update(): void {
         this.camera.update();
         this.light.update();
-        this.entityManager.prepare(); //prepare shadow seperate if enabled
+        this.entityManager.prepare();
     }
 
     private draw(): void {
@@ -164,18 +164,22 @@ class Renderer {
         if (!shadow) {
             return;
         }
+        this.entityManager.shadowify(shadow);
+
         shadow.beginFrameBuffer();
 
         const shadowProgram: ShaderProgram = this.bindProgram("shadow");
 
         shadow.bufferShadowUniforms(shadowProgram);
 
-        this.entityManager.draw(false);
+        this.entityManager.draw();
 
         shadow.endFrameBuffer();
     }
 
     private drawMain(): void {
+        this.entityManager.store();
+
         this.clearContext();
 
         const program: ShaderProgram = this.bindProgram("main");
@@ -183,7 +187,7 @@ class Renderer {
         this.camera.bufferMainUniforms(program);
         this.light.bufferMainUniforms(program);
 
-        this.entityManager.draw(true);
+        this.entityManager.draw();
     }
 
     private bindProgram(name: string): ShaderProgram {

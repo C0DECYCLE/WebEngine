@@ -54,6 +54,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             if (Math.random() > 0.5) field.rotation.y = 180 * toRadian;
             field.attach(renderer);
             field.staticLod(0);
+            field.shadow(false, true);
             field.wakeUp();
 
             if (Math.random() > 0.5) {
@@ -66,6 +67,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
                     tree.rotation.y = Math.random() * 360 * toRadian;
                     tree.attach(renderer);
                     tree.staticLod(0);
+                    tree.shadow(true, true);
                     tree.wakeUp();
                 }
                 continue;
@@ -78,6 +80,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             house.rotation.y = Math.random() * 360 * toRadian;
             house.attach(renderer);
             house.staticLod(0);
+            house.shadow(true, true);
             house.wakeUp();
         }
     }
@@ -91,6 +94,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             if (Math.random() > 0.5) water.rotation.y = 180 * toRadian;
             water.attach(renderer);
             water.staticLod(0);
+            water.shadow(false, true);
             water.wakeUp();
         }
     }
@@ -103,11 +107,10 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             .add(camera.target);
         shadow.position.copy(camera.position);
         */
-        /*
+
         light.direction
             .set(-Math.cos(2 + now * 0.0005), -Math.sin(2 + now * 0.0005), 0.5)
             .normalize();
-        */
 
         renderer.render(now);
 

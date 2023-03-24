@@ -121,8 +121,12 @@ class Vec3 {
         return this;
     }
 
+    public lengthQuadratic(): float {
+        return this.x * this.x + this.y * this.y + this.z * this.z;
+    }
+
     public length(): float {
-        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+        return Math.sqrt(this.lengthQuadratic());
     }
 
     public normalize(): Vec3 {

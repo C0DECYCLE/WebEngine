@@ -16,11 +16,16 @@ class Entity {
     private camera: Nullable<Camera> = null;
     private entityManager: Nullable<EntityManager> = null;
     private isAwake: boolean = false;
+    private isRendering: boolean = false;
 
     private targetLod: int = -1;
     private tempDistance: float;
     private tempCoverage: float;
     private tempLod: int;
+
+    private isShadowCasting: boolean = false;
+    private isShadowReceiving: boolean = false;
+    private shadowCulling: boolean = true;
 
     public get distance(): Nullable<float> {
         if (!this.isAwake) {
@@ -39,28 +44,6 @@ class Entity {
         this.entityManager.attach(this);
     }
 
-    public wakeUp(): void {
-        this.preventUnattached();
-        if (this.isAwake === true) {
-            return warn(
-                `Entity: Entity already awake. ${this.stringifyInfo()}`
-            );
-        }
-        this.entityManager!.wakeUp(this);
-        this.isAwake = true;
-    }
-
-    public sleep(): void {
-        this.preventUnattached();
-        if (this.isAwake === false) {
-            return warn(
-                `Entity: Entity already awake. ${this.stringifyInfo()}`
-            );
-        }
-        this.entityManager!.sleep(this);
-        this.isAwake = false;
-    }
-
     public staticLod(lod: int): void {
         if (lod === -1) {
             return warn(
@@ -74,10 +57,55 @@ class Entity {
         this.targetLod = -1;
     }
 
+    public shadow(cast: boolean, receive: boolean): void {
+        this.preventUnattached();
+        if (this.isAwake) {
+            if (cast && !this.isShadowCasting) {
+                this.entityManager!.shadow(this, true);
+            } else if (!cast && this.isShadowCasting) {
+                this.entityManager!.shadow(this, false);
+            }
+        }
+        this.isShadowCasting = cast;
+        this.isShadowReceiving = receive;
+    }
+
+    public disableShadowCulling(): void {
+        this.shadowCulling = false;
+    }
+
+    public wakeUp(): void {
+        this.preventUnattached();
+        if (this.isAwake === true) {
+            return warn(
+                `Entity: Entity already awake. ${this.stringifyInfo()}`
+            );
+        }
+        this.entityManager!.wakeUp(this);
+        this.isAwake = true;
+        if (this.isShadowCasting) {
+            this.entityManager!.shadow(this, true);
+        }
+    }
+
+    public sleep(): void {
+        this.preventUnattached();
+        if (this.isAwake === false) {
+            return warn(
+                `Entity: Entity already awake. ${this.stringifyInfo()}`
+            );
+        }
+        this.entityManager!.sleep(this);
+        this.isAwake = false;
+        if (this.isShadowCasting) {
+            this.entityManager!.shadow(this, false);
+        }
+    }
+
     public prepare(geometry: Geometry): boolean {
         /*
         if (!this.camera!.inFrustum(this.position, geometry.data.bounds.size)) {
-            return false;
+            return (this.isRendering = true);
         }
         */
         this.computeTranslation();
@@ -88,10 +116,21 @@ class Entity {
                 this.world.values[13],
                 this.world.values[14]
             );
-            geometry.storeInstance(this.world, this.tempLod);
-            return true;
+            return (this.isRendering = true);
         }
-        return false;
+        return (this.isRendering = false);
+    }
+
+    public shadowify(geometry: Geometry, shadow: Shadow): void {
+        if (this.shadowCull(geometry, shadow)) {
+            geometry.storeInstance(this.world, this.tempLod);
+        }
+    }
+
+    public store(geometry: Geometry): void {
+        if (this.isRendering) {
+            geometry.storeInstance(this.world, this.tempLod);
+        }
     }
 
     public stringifyInfo(): string {
@@ -160,6 +199,18 @@ class Entity {
                 ? coverage <= Infinity
                 : coverage < levels[i - 1].minimum) &&
             coverage >= levels[i].minimum
+        );
+    }
+
+    private shadowCull(geometry: Geometry, shadow: Shadow): boolean {
+        if (!this.shadowCulling) {
+            return true;
+        }
+        return (
+            Vec3.Cache.copy(this.position)
+                .sub(shadow.position)
+                .lengthQuadratic() <
+            (shadow.radius + geometry.data.bounds.size * 0.5) ** 2
         );
     }
 

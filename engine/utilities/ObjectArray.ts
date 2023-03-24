@@ -68,8 +68,7 @@ class ObjectArray<T extends object> extends Array<T> {
     }
 
     public override clear(): void {
-        let i: int;
-        for (i = 0; i < this.length; i++) {
+        for (let i: int = 0; i < this.length; i++) {
             this.decommission(this[i]);
         }
         super.clear();

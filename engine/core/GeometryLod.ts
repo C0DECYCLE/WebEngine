@@ -39,7 +39,7 @@ class GeometryLod {
         this.instanceStoreCount++;
     }
 
-    public draw(flush: boolean): void {
+    public draw(): void {
         if (this.instanceStoreCount === 0) {
             return;
         }
@@ -54,9 +54,6 @@ class GeometryLod {
         this.geometry.geometryManager
             .getStats()
             .incrementDrawCalls(this.data.count * this.instanceStoreCount);
-        if (!flush) {
-            return;
-        }
         this.instanceStoreCount = 0;
     }
 

@@ -7,6 +7,7 @@
 class EntityManager {
     private readonly list: ObjectArray<Entity> = new ObjectArray<Entity>();
     private renderList: ObjectArray<Entity> = new ObjectArray<Entity>();
+    private shadowList: ObjectArray<Entity> = new ObjectArray<Entity>();
 
     private readonly geometryManager: GeometryManager;
     private readonly stats: Stats;
@@ -37,22 +38,49 @@ class EntityManager {
         this.renderList.delete(entity);
     }
 
+    public shadow(entity: Entity, value: boolean): void {
+        if (value) {
+            this.shadowList.add(entity);
+            return;
+        }
+        this.shadowList.delete(entity);
+    }
+
     public prepare(): void {
-        const geometryList: MapS<Geometry> = this.geometryManager.list;
-        let i: int;
-        let entity: Entity;
-        for (i = 0; i < this.renderList.length; i++) {
-            entity = this.renderList[i];
-            if (entity.prepare(geometryList.get(entity.geometryName)!)) {
+        for (let i: int = 0; i < this.renderList.length; i++) {
+            if (
+                this.renderList[i].prepare(
+                    this.geometryManager.list.get(
+                        this.renderList[i].geometryName
+                    )!
+                )
+            ) {
                 this.stats.incrementEntities();
             }
         }
         this.stats.setTotalEntities(this.list.length);
     }
 
-    public draw(flush: boolean): void {
+    public shadowify(shadow: Shadow): void {
+        for (let i: int = 0; i < this.shadowList.length; i++) {
+            this.shadowList[i].shadowify(
+                this.geometryManager.list.get(this.shadowList[i].geometryName)!,
+                shadow
+            );
+        }
+    }
+
+    public store(): void {
+        for (let i: int = 0; i < this.renderList.length; i++) {
+            this.renderList[i].store(
+                this.geometryManager.list.get(this.renderList[i].geometryName)!
+            );
+        }
+    }
+
+    public draw(): void {
         this.geometryManager.list.forEach((geometry: Geometry, _name: string) =>
-            geometry.draw(flush)
+            geometry.draw()
         );
     }
 }

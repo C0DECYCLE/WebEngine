@@ -40,16 +40,13 @@ class Geometry {
         this.instanceCount++;
     }
 
-    public draw(flush: boolean): void {
-        this.lods.forEach((lod: GeometryLod, _level: int) => lod.draw(flush));
+    public draw(): void {
+        this.lods.forEach((lod: GeometryLod, _level: int) => lod.draw());
         this.geometryManager
             .getStats()
             .incrementTotalVertecies(
                 this.data.lods[0].count * this.instanceCount
             );
-        if (!flush) {
-            return;
-        }
         this.instanceCount = 0;
     }
 
