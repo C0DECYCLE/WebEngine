@@ -39,22 +39,23 @@ class Camera {
     }
 
     public update(): void {
+        this.computeVectors();
         this.computeMatricies();
         //this.computeFrustum();
     }
 
     /*
-    public inFrustum(position: Vec3, radius: float): boolean {
-        return (
-            //this.inFrontOfPlane(this.frustum.left, position, radius); &&
-            //this.inFrontOfPlane(this.frustum.right, position, radius) &&
-            this.inFrontOfPlane(this.frustum.far, position, radius) &&
-            this.inFrontOfPlane(this.frustum.near, position, radius) &&
-            this.inFrontOfPlane(this.frustum.top, position, radius) &&
-            this.inFrontOfPlane(this.frustum.bottom, position, radius)
-        );
-    }
-    */
+        public inFrustum(position: Vec3, radius: float): boolean {
+            return (
+                //this.inFrontOfPlane(this.frustum.left, position, radius); &&
+                //this.inFrontOfPlane(this.frustum.right, position, radius) &&
+                this.inFrontOfPlane(this.frustum.far, position, radius) &&
+                this.inFrontOfPlane(this.frustum.near, position, radius) &&
+                this.inFrontOfPlane(this.frustum.top, position, radius) &&
+                this.inFrontOfPlane(this.frustum.bottom, position, radius)
+            );
+        }
+        */
 
     public bufferMainUniforms(program: ShaderProgram): void {
         this.bufferCameraDirectionUniform(program);
@@ -62,101 +63,104 @@ class Camera {
     }
 
     /*
-    private createFrustum(): void {
-        this.frustum = {
-            near: this.createPlane(),
-            far: this.createPlane(),
-            right: this.createPlane(),
-            left: this.createPlane(),
-            top: this.createPlane(),
-            bottom: this.createPlane(),
-        } as Frustum;
-        this.computeMatricies<s();
-        this.computeFrustum();
-    }
+        private createFrustum(): void {
+            this.frustum = {
+                near: this.createPlane(),
+                far: this.createPlane(),
+                right: this.createPlane(),
+                left: this.createPlane(),
+                top: this.createPlane(),
+                bottom: this.createPlane(),
+            } as Frustum;
+            this.computeVectors();
+            this.computeMatricies();
+            this.computeFrustum();
+        }
 
-    private createPlane(): Plane {
-        return {
-            position: new Vec3(),
-            normal: new Vec3(),
-        } as Plane;
-    }
-    */
+        private createPlane(): Plane {
+            return {
+                position: new Vec3(),
+                normal: new Vec3(),
+            } as Plane;
+        }
+        */
 
-    private computeMatricies(): void {
+    private computeVectors(): void {
         this.direction.copy(this.target).sub(this.position).normalize();
         this.up.normalize();
         this.right.copy(this.direction).cross(this.up);
-
-        this.world.lookAt(this.origin, this.direction, this.up);
-        this.viewProjection
-            .copy(this.world)
-            .invert()
-            .multiply(this.viewProjection, this.projection);
 
         this.cameraDirection[0] = this.direction.x;
         this.cameraDirection[1] = this.direction.y;
         this.cameraDirection[2] = this.direction.z;
     }
 
+    private computeMatricies(): void {
+        this.world.lookAt(this.origin, this.direction, this.up);
+        this.viewProjection
+            .copy(this.world)
+            .invert()
+            .multiply(this.viewProjection, this.projection);
+    }
+
     /*
-    private computeFrustum(): void {
-        const halfHeight: float = this.far * Math.tan(this.fov * 0.5);
-        const halfWidth: float = halfHeight * this.ratio;
-        const directionFar: Vec3 = this.direction.clone().scale(this.far);
+        private computeFrustum(): void {
+            const halfHeight: float = this.far * Math.tan(this.fov * 0.5);
+            const halfWidth: float = halfHeight * this.ratio;
+            const directionFar: Vec3 = this.direction.clone().scale(this.far);
 
-        this.frustum.near.position
-            .copy(this.direction)
-            .scale(this.near)
-            .add(this.position);
-        this.frustum.near.normal.copy(this.direction);
+            this.frustum.near.position
+                .copy(this.direction)
+                .scale(this.near)
+                .add(this.position);
+            this.frustum.near.normal.copy(this.direction);
 
-        this.frustum.far.position.copy(directionFar).add(this.position);
-        this.frustum.far.normal.copy(this.direction).scale(-1);
+            this.frustum.far.position.copy(directionFar).add(this.position);
+            this.frustum.far.normal.copy(this.direction).scale(-1);
 
-        this.frustum.right.position.copy(this.position);
-        this.frustum.right.normal
-            .copy(this.right)
-            .scale(halfWidth)
-            .sub(directionFar)
-            .scale(-1)
-            .cross(this.up);
+            this.frustum.right.position.copy(this.position);
+            this.frustum.right.normal
+                .copy(this.right)
+                .scale(halfWidth)
+                .sub(directionFar)
+                .scale(-1)
+                .cross(this.up);
 
-        this.frustum.left.position.copy(this.position);
-        this.frustum.left.normal
-            .copy(this.right)
-            .scale(halfWidth)
-            .add(directionFar)
-            .cross(this.frustum.left.normal, this.up);
+            this.frustum.left.position.copy(this.position);
+            this.frustum.left.normal
+                .copy(this.right)
+                .scale(halfWidth)
+                .add(directionFar)
+                .cross(this.frustum.left.normal, this.up);
 
-        this.frustum.top.position.copy(this.position);
-        this.frustum.top.normal
-            .copy(this.up)
-            .scale(halfHeight)
-            .sub(directionFar)
-            .scale(-1)
-            .cross(this.frustum.top.normal, this.right);
+            this.frustum.top.position.copy(this.position);
+            this.frustum.top.normal
+                .copy(this.up)
+                .scale(halfHeight)
+                .sub(directionFar)
+                .scale(-1)
+                .cross(this.frustum.top.normal, this.right);
 
-        this.frustum.bottom.position.copy(this.position);
-        this.frustum.bottom.normal
-            .copy(this.up)
-            .scale(halfHeight)
-            .add(directionFar)
-            .cross(this.right);
-    }
+            this.frustum.bottom.position.copy(this.position);
+            this.frustum.bottom.normal
+                .copy(this.up)
+                .scale(halfHeight)
+                .add(directionFar)
+                .cross(this.right);
+        }
 
-    private inFrontOfPlane(
-        plane: Plane,
-        position: Vec3,
-        radius: float
-    ): boolean {
-        return (
-            Vec3.Dot(plane.normal, position) -
-                Vec3.Dot(plane.normal, plane.position) >
-            -radius
-        );
-    }
-    */
+        private inFrontOfPlane(
+            plane: Plane,
+            position: Vec3,
+            radius: float
+        ): boolean {
+            return (
+                Vec3.Dot(plane.normal, position) -
+                    Vec3.Dot(plane.normal, plane.position) >
+                -radius
+            );
+        }
+        */
 
     private bufferCameraDirectionUniform(program: ShaderProgram): void {
         const loc: WebGLUniformLocation = program.uniformLocations.get(

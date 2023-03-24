@@ -14,6 +14,8 @@ uniform vec3 ambientColor;
 uniform vec3 lightDirection;
 uniform vec3 lightColor;
 uniform sampler2D shadowMap;
+uniform float shadowBias;
+uniform float shadowOpacity;
 
 //vertex shader
 in vec3 finalVertexPosition;
@@ -43,7 +45,7 @@ float getShadow() {
         shadowCoordinate.y >= 0.0 && shadowCoordinate.y <= 1.0 &&
         shadowCoordinate.z >= 0.0 && shadowCoordinate.z <= 1.0;
 
-    float currentDepth = shadowCoordinate.z - 0.005; //u_bias;
+    float currentDepth = shadowCoordinate.z - shadowBias;
     float shadowDepth = texture(shadowMap, shadowCoordinate.xy).r;
 
     float result = (inRange && shadowDepth <= currentDepth) ? 0.0 : 1.0;
@@ -66,7 +68,6 @@ void main() {
         float specularIntensity = 0.0;
 
         float shade = getShading(faceNormal, lightDirection);
-        float shadowOpacity = 0.75; //u_shadowOpacity;
         float shadow = getShadow() * shadowOpacity + (1.0 - shadowOpacity);
         vec3 specular = getSpecular(faceNormal, specularPower, specularIntensity);
         

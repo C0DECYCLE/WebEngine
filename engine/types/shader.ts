@@ -13,6 +13,8 @@ enum ShaderVariables {
     LIGHTDIRECTION = "lightDirection",
     LIGHTCOLOR = "lightColor",
     SHADOWMAP = "shadowMap",
+    SHADOWBIAS = "shadowBias",
+    SHADOWOPACITY = "shadowOpacity",
     //instance uniforms
     OBJECTWORLD = "objectWorld",
     //attributes

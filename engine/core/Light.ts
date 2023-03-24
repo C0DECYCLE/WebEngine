@@ -9,7 +9,7 @@ class Light {
     public readonly direction: Vec3 = new Vec3(0, -1, 0);
     public readonly color: Vec3 = new Vec3(1, 1, 1);
 
-    public readonly shadow: LightShadow; //nullable
+    public shadow: Nullable<LightShadow>;
 
     private readonly ambientColor: Float32Array = new Float32Array(3);
     private readonly lightDirection: Float32Array = new Float32Array(3);
@@ -19,19 +19,23 @@ class Light {
 
     private readonly camera: Camera;
 
-    public constructor(
-        gl: WebGL2RenderingContext,
-        camera: Camera,
-        shadowSize: int
-    ) {
+    public constructor(gl: WebGL2RenderingContext, camera: Camera) {
         this.gl = gl;
         this.camera = camera;
-        this.shadow = new LightShadow(this.gl, this.camera, shadowSize); //make not default, enablable
+    }
+
+    public enableShadow(size: int): void {
+        if (this.shadow) {
+            throw new Error("Light: Shadow already enabled.");
+        }
+        this.shadow = new LightShadow(this.gl, this.camera, size);
     }
 
     public update(): void {
         this.sync();
-        //if enabled:
+        if (!this.shadow) {
+            return;
+        }
         this.shadow.direction.copy(this.direction);
         this.shadow.update();
     }
@@ -40,7 +44,10 @@ class Light {
         this.bufferAmbientColorUniform(program);
         this.bufferLightDirectionUniform(program);
         this.bufferLightColorUniform(program);
-        this.shadow.bufferMainUniforms(program); //Only if enabled
+        if (!this.shadow) {
+            return;
+        }
+        this.shadow.bufferMainUniforms(program);
     }
 
     private sync(): void {

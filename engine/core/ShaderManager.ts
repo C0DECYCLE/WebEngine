@@ -190,6 +190,8 @@ class ShaderManager {
             ShaderVariables.LIGHTDIRECTION,
             ShaderVariables.LIGHTCOLOR,
             ShaderVariables.SHADOWMAP,
+            ShaderVariables.SHADOWBIAS,
+            ShaderVariables.SHADOWOPACITY,
         ]);
         this.registerInstanceUniformLocations(shaderProgram, ignore, [
             ShaderVariables.OBJECTWORLD,

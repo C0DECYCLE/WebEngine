@@ -8,6 +8,8 @@ class LightShadow {
     public readonly position: Vec3 = new Vec3(0, 0, 0);
     public readonly direction: Vec3 = new Vec3(0, -1, 0);
     public radius: float = 10;
+    public bias: int = 0.0;
+    public opcaity: int = 1.0;
 
     private readonly size: int;
 
@@ -18,9 +20,11 @@ class LightShadow {
     private readonly world: Mat4 = new Mat4();
     private readonly projection: Mat4 = new Mat4();
     private readonly viewProjection: Mat4 = new Mat4();
+    private readonly shadowProjection: Mat4 = new Mat4();
 
     private depthTexture: WebGLTexture;
     private depthFrameBuffer: WebGLFramebuffer;
+    private projectionBase: Mat4;
 
     private readonly gl: WebGL2RenderingContext;
 
@@ -32,10 +36,11 @@ class LightShadow {
         this.size = size;
         this.createDepthTexture(this.size);
         this.createDepthFrameBuffer();
-        this.computeMatricies();
+        this.createProjectionBase();
     }
 
     public update(): void {
+        this.computeVectors();
         this.computeMatricies();
     }
 
@@ -56,6 +61,8 @@ class LightShadow {
     public bufferMainUniforms(program: ShaderProgram): void {
         this.bufferWorldUniform(program);
         this.bufferMapUniform(program);
+        this.bufferBiasUniform(program);
+        this.bufferOpacityUniform(program);
     }
 
     private createDepthTexture(size: int): void {
@@ -117,14 +124,22 @@ class LightShadow {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
     }
 
-    private computeMatricies(): void {
+    private createProjectionBase(): void {
+        this.projectionBase = new Mat4();
+        this.projectionBase.translate(0.5, 0.5, 0.5);
+        this.projectionBase.scale(0.5, 0.5, 0.5);
+    }
+
+    private computeVectors(): void {
         this.origin
             .copy(this.direction)
             .scale(-this.radius)
             .add(this.position)
             .sub(this.camera.position);
         this.target.copy(this.origin).add(this.direction);
+    }
 
+    private computeMatricies(): void {
         this.world.lookAt(this.origin, this.target, this.up);
         this.projection.orthographic(
             -this.radius,
@@ -138,6 +153,9 @@ class LightShadow {
             .copy(this.world)
             .invert()
             .multiply(this.viewProjection, this.projection);
+        this.shadowProjection
+            .copy(this.projectionBase)
+            .multiply(this.viewProjection);
     }
 
     private bufferViewProjectionUniform(program: ShaderProgram): void {
@@ -151,12 +169,7 @@ class LightShadow {
         const loc: WebGLUniformLocation = program.uniformLocations.get(
             ShaderVariables.SHADOWPROJECTION
         )!;
-        const matrix: Mat4 = new Mat4();
-        matrix.translate(0.5, 0.5, 0.5);
-        matrix.scale(0.5, 0.5, 0.5);
-        matrix.multiply(this.projection);
-        matrix.multiply(this.world.clone().invert());
-        this.gl.uniformMatrix4fv(loc, false, matrix.values);
+        this.gl.uniformMatrix4fv(loc, false, this.shadowProjection.values);
     }
 
     private bufferMapUniform(program: ShaderProgram): void {
@@ -166,5 +179,19 @@ class LightShadow {
         //this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.depthTexture);
         this.gl.uniform1i(loc, 0);
+    }
+
+    private bufferBiasUniform(program: ShaderProgram): void {
+        const loc: WebGLUniformLocation = program.uniformLocations.get(
+            ShaderVariables.SHADOWBIAS
+        )!;
+        this.gl.uniform1f(loc, this.bias);
+    }
+
+    private bufferOpacityUniform(program: ShaderProgram): void {
+        const loc: WebGLUniformLocation = program.uniformLocations.get(
+            ShaderVariables.SHADOWOPACITY
+        )!;
+        this.gl.uniform1f(loc, this.opcaity);
     }
 }

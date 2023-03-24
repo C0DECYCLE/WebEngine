@@ -125,7 +125,7 @@ class Renderer {
     }
 
     private createLight(): void {
-        this.light = new Light(this.gl, this.camera, 512); //config
+        this.light = new Light(this.gl, this.camera);
     }
 
     private initializeContext(): void {
@@ -160,7 +160,9 @@ class Renderer {
     }
 
     private drawShadow(): void {
-        //only if enabled else return;
+        if (!this.light.shadow) {
+            return;
+        }
         this.light.shadow.beginFrameBuffer();
 
         const shadowProgram: ShaderProgram = this.bindProgram("shadow");
