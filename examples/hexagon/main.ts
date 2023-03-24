@@ -24,11 +24,11 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     light.direction.set(1.5, -1.0, 0.0).normalize();
     light.color.set(1.0, 0.85, 0.75);
 
-    light.enableShadow(512);
-    light.shadow!.position.set(0, 0, 0);
-    light.shadow!.radius = 40;
-    light.shadow!.bias = 0.005;
-    light.shadow!.opcaity = 0.65;
+    const shadow = light.setShadow(512);
+    shadow.position.set(0, 0, 0);
+    shadow.radius = 40;
+    shadow.bias = 0.005;
+    shadow.opcaity = 0.65;
 
     const map: int[][] = [
         [0, 0, 1, 1, 0, 0, 1, 1, 1, 0],
@@ -101,7 +101,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             .set(0, 1.25, -1)
             .scale(now * 0.005)
             .add(camera.target);
-        light.shadow!.position.copy(camera.position);
+        shadow.position.copy(camera.position);
         */
         /*
         light.direction

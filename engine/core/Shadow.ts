@@ -4,7 +4,7 @@
     2023
 */
 
-class LightShadow {
+class Shadow {
     public readonly position: Vec3 = new Vec3(0, 0, 0);
     public readonly direction: Vec3 = new Vec3(0, -1, 0);
     public radius: float = 10;
@@ -68,49 +68,42 @@ class LightShadow {
     private createDepthTexture(size: int): void {
         const depthTexture: Nullable<WebGLTexture> = this.gl.createTexture();
         if (!depthTexture) {
-            throw new Error("LightShadow: Creating depth texture failed.");
+            throw new Error("Shadow: Creating depth texture failed.");
         }
         this.depthTexture = depthTexture;
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.depthTexture);
-        this.gl.texImage2D(
-            this.gl.TEXTURE_2D,
-            0,
+        this.textureImage(
+            size,
             this.gl.DEPTH_COMPONENT32F,
-            size,
-            size,
-            0,
             this.gl.DEPTH_COMPONENT,
-            this.gl.FLOAT,
-            null
+            this.gl.FLOAT
         );
-        this.gl.texParameteri(
-            this.gl.TEXTURE_2D,
-            this.gl.TEXTURE_MAG_FILTER,
-            this.gl.NEAREST
-        );
-        this.gl.texParameteri(
-            this.gl.TEXTURE_2D,
-            this.gl.TEXTURE_MIN_FILTER,
-            this.gl.NEAREST
-        );
-        this.gl.texParameteri(
-            this.gl.TEXTURE_2D,
-            this.gl.TEXTURE_WRAP_S,
-            this.gl.CLAMP_TO_EDGE
-        );
-        this.gl.texParameteri(
-            this.gl.TEXTURE_2D,
-            this.gl.TEXTURE_WRAP_T,
-            this.gl.CLAMP_TO_EDGE
-        );
+        this.textureParameter(this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+        this.textureParameter(this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+        this.textureParameter(this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+        this.textureParameter(this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
         this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+    }
+
+    private textureImage(
+        size: int,
+        intern: GLenum,
+        format: GLenum,
+        type: GLenum
+    ): void {
+        const tar: GLenum = this.gl.TEXTURE_2D;
+        this.gl.texImage2D(tar, 0, intern, size, size, 0, format, type, null);
+    }
+
+    private textureParameter(name: GLenum, param: GLenum): void {
+        this.gl.texParameteri(this.gl.TEXTURE_2D, name, param);
     }
 
     private createDepthFrameBuffer(): void {
         const depthFrameBuffer: Nullable<WebGLFramebuffer> =
             this.gl.createFramebuffer();
         if (!depthFrameBuffer) {
-            throw new Error("LightShadow: Creating depth frame buffer failed.");
+            throw new Error("Shadow: Creating depth frame buffer failed.");
         }
         this.depthFrameBuffer = depthFrameBuffer;
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.depthFrameBuffer);

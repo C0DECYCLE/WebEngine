@@ -160,18 +160,19 @@ class Renderer {
     }
 
     private drawShadow(): void {
-        if (!this.light.shadow) {
+        const shadow = this.light.getShadow();
+        if (!shadow) {
             return;
         }
-        this.light.shadow.beginFrameBuffer();
+        shadow.beginFrameBuffer();
 
         const shadowProgram: ShaderProgram = this.bindProgram("shadow");
 
-        this.light.shadow.bufferShadowUniforms(shadowProgram);
+        shadow.bufferShadowUniforms(shadowProgram);
 
         this.entityManager.draw(false);
 
-        this.light.shadow.endFrameBuffer();
+        shadow.endFrameBuffer();
     }
 
     private drawMain(): void {

@@ -80,7 +80,6 @@ class Entity {
             return false;
         }
         */
-
         this.computeTranslation();
         this.selectLod(geometry.data);
         if (this.tempLod !== -1) {
