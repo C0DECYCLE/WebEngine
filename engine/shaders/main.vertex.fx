@@ -10,6 +10,7 @@ precision highp float;
 
 //uniforms
 uniform mat4 viewProjection;
+uniform mat4 shadowProjection;
 
 //instance uniforms
 in mat4 objectWorld;
@@ -21,13 +22,15 @@ in vec3 vertexColor;
 //fragment shader
 out vec3 finalVertexPosition;
 out vec3 finalVertexColor;
+out vec4 finalShadowCoordinate;
 
 //main
 void main() {
     vec4 finalWorldPosition = objectWorld * vec4(vertexPosition, 1.0);
 
-    finalVertexPosition = finalWorldPosition.xyz;
-    finalVertexColor = vertexColor.xyz;
-
     gl_Position = viewProjection * finalWorldPosition;
+
+    finalVertexPosition = finalWorldPosition.xyz;
+    finalVertexColor = vertexColor;
+    finalShadowCoordinate = shadowProjection * finalWorldPosition;
 }

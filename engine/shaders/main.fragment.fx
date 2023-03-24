@@ -13,15 +13,17 @@ uniform vec3 cameraDirection;
 uniform vec3 ambientColor;
 uniform vec3 lightDirection;
 uniform vec3 lightColor;
+uniform sampler2D shadowMap;
 
 //vertex shader
 in vec3 finalVertexPosition;
 in vec3 finalVertexColor;
+in vec4 finalShadowCoordinate;
 
-//webgl
+//gl
 out vec4 fragColor;
 
-//functions
+//methods
 vec3 getFaceNormal(vec3 vertexPosition) {
     return normalize(cross(
         vec3(dFdx(finalVertexPosition.x), dFdx(finalVertexPosition.y), dFdx(finalVertexPosition.z)), 
@@ -32,6 +34,20 @@ vec3 getFaceNormal(vec3 vertexPosition) {
 float getShading(vec3 faceNormal, vec3 lightDirection) {
     float product = dot(faceNormal, -lightDirection) * 0.5 + 0.5;
     return pow(max(0.0, product), 1.0);
+}
+
+float getShadow() {
+    vec3 shadowCoordinate = finalShadowCoordinate.xyz / finalShadowCoordinate.w;
+
+    bool inRange = shadowCoordinate.x >= 0.0 && shadowCoordinate.x <= 1.0 && 
+        shadowCoordinate.y >= 0.0 && shadowCoordinate.y <= 1.0 &&
+        shadowCoordinate.z >= 0.0 && shadowCoordinate.z <= 1.0;
+
+    float currentDepth = shadowCoordinate.z - 0.005; //u_bias;
+    float shadowDepth = texture(shadowMap, shadowCoordinate.xy).r;
+
+    float result = (inRange && shadowDepth <= currentDepth) ? 0.0 : 1.0;
+    return result;
 }
 
 vec3 getSpecular(vec3 faceNormal, float specularPower, float specularIntensity) {
@@ -50,13 +66,15 @@ void main() {
         float specularIntensity = 0.0;
 
         float shade = getShading(faceNormal, lightDirection);
+        float shadowOpacity = 0.75; //u_shadowOpacity;
+        float shadow = getShadow() * shadowOpacity + (1.0 - shadowOpacity);
         vec3 specular = getSpecular(faceNormal, specularPower, specularIntensity);
         
-        finalColor = ambientColor + finalVertexColor * shade * lightColor; // + specular;
+        finalColor = ambientColor + finalVertexColor * shade * shadow * lightColor; // + specular;
     }
     
     //finalColor = finalVertexColor;
     //finalColor = faceNormal * 0.5 + 0.5;
-    
+
     fragColor = vec4(finalColor, 1.0);
 }

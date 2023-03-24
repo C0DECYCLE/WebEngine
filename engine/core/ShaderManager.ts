@@ -6,7 +6,7 @@
 
 class ShaderManager {
     public readonly rootPath: string = "/engine/shaders/";
-    public readonly names: string[] = ["main"];
+    public readonly names: string[] = ["main", "shadow"];
 
     public readonly sources: MapS<ShaderSourcePair> =
         new MapS<ShaderSourcePair>();
@@ -160,11 +160,11 @@ class ShaderManager {
 
     private createPrograms(): void {
         this.pairs.forEach((pair: ShaderPair, name: string) =>
-            this.programs.set(name, this.createShaderProgram(pair))
+            this.programs.set(name, this.createShaderProgram(name, pair))
         );
     }
 
-    private createShaderProgram(pair: ShaderPair): ShaderProgram {
+    private createShaderProgram(name: string, pair: ShaderPair): ShaderProgram {
         const result: ShaderProgram = {} as ShaderProgram;
         result.program = this.createProgram(
             pair[ShaderTypes.VERTEX],
@@ -174,22 +174,27 @@ class ShaderManager {
         result.instanceUniformLocations =
             new MapS<WebGLInstanceUniformLocation>();
         result.attributeLocations = new MapS<WebGLAttributeLocation>();
-        this.registerLocations(result);
+        this.registerLocations(result, name === "shadow");
         return result;
     }
 
-    private registerLocations(shaderProgram: ShaderProgram): void {
-        this.registerUniformLocations(shaderProgram, [
+    private registerLocations(
+        shaderProgram: ShaderProgram,
+        ignore: boolean = false
+    ): void {
+        this.registerUniformLocations(shaderProgram, ignore, [
             ShaderVariables.CAMERADIRECTION,
             ShaderVariables.VIEWPROJECTION,
+            ShaderVariables.SHADOWPROJECTION,
             ShaderVariables.AMBIENTCOLOR,
             ShaderVariables.LIGHTDIRECTION,
             ShaderVariables.LIGHTCOLOR,
+            ShaderVariables.SHADOWMAP,
         ]);
-        this.registerInstanceUniformLocations(shaderProgram, [
+        this.registerInstanceUniformLocations(shaderProgram, ignore, [
             ShaderVariables.OBJECTWORLD,
         ]);
-        this.registerAttributeLocations(shaderProgram, [
+        this.registerAttributeLocations(shaderProgram, ignore, [
             ShaderVariables.VERTEXPOSITION,
             ShaderVariables.VERTEXCOLOR,
         ]);
@@ -197,60 +202,88 @@ class ShaderManager {
 
     private registerUniformLocations(
         shaderProgram: ShaderProgram,
+        ignore: boolean = false,
         names: string[]
     ): void {
         names.forEach((name: string, _i: int) =>
-            this.registerUniformLocation(shaderProgram, name)
+            this.registerUniformLocation(shaderProgram, name, ignore)
         );
     }
 
     private registerUniformLocation(
         shaderProgram: ShaderProgram,
-        name: string
+        name: string,
+        ignore: boolean = false
     ): void {
         const uniformLocation: Nullable<WebGLUniformLocation> =
             this.gl.getUniformLocation(shaderProgram.program, name);
+        if (!uniformLocation && ignore) {
+            return;
+        }
         if (!uniformLocation) {
-            throw new Error("ShaderManager: Fetching uniform location failed.");
+            throw new Error(
+                `ShaderManager: Fetching uniform location failed. (${name})`
+            );
         }
         shaderProgram.uniformLocations.set(name, uniformLocation);
     }
 
     private registerInstanceUniformLocations(
         shaderProgram: ShaderProgram,
+        ignore: boolean = false,
         names: string[]
     ): void {
         names.forEach((name: string, _i: int) =>
-            this.registerInstanceUniformLocation(shaderProgram, name)
+            this.registerInstanceUniformLocation(shaderProgram, name, ignore)
         );
     }
 
     private registerInstanceUniformLocation(
         shaderProgram: ShaderProgram,
-        name: string
+        name: string,
+        ignore: boolean = false
     ): void {
+        const instanceUniformLocation: WebGLInstanceUniformLocation =
+            this.gl.getAttribLocation(shaderProgram.program, name);
+        if (instanceUniformLocation === -1 && ignore) {
+            return;
+        }
+        if (instanceUniformLocation === -1) {
+            throw new Error(
+                `ShaderManager: Fetching instance uniform location failed. (${name})`
+            );
+        }
         shaderProgram.instanceUniformLocations.set(
             name,
-            this.gl.getAttribLocation(shaderProgram.program, name)
+            instanceUniformLocation
         );
     }
 
     private registerAttributeLocations(
         shaderProgram: ShaderProgram,
+        ignore: boolean = false,
         names: string[]
     ): void {
         names.forEach((name: string, _i: int) =>
-            this.registerAttributeLocation(shaderProgram, name)
+            this.registerAttributeLocation(shaderProgram, name, ignore)
         );
     }
 
     private registerAttributeLocation(
         shaderProgram: ShaderProgram,
-        name: string
+        name: string,
+        ignore: boolean = false
     ): void {
-        shaderProgram.attributeLocations.set(
-            name,
-            this.gl.getAttribLocation(shaderProgram.program, name)
-        );
+        const attributeLocation: WebGLAttributeLocation =
+            this.gl.getAttribLocation(shaderProgram.program, name);
+        if (attributeLocation === -1 && ignore) {
+            return;
+        }
+        if (attributeLocation === -1) {
+            throw new Error(
+                `ShaderManager: Fetching attribute location failed. (${name})`
+            );
+        }
+        shaderProgram.attributeLocations.set(name, attributeLocation);
     }
 }

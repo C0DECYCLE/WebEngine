@@ -20,7 +20,7 @@ class Camera {
     private readonly direction: Vec3 = new Vec3(0, 0, -1);
 
     private readonly world: Mat4 = new Mat4();
-    private readonly projection: Mat4;
+    private readonly projection: Mat4 = new Mat4();
     private readonly cameraDirection: Float32Array = new Float32Array(3);
     private readonly viewProjection: Mat4 = new Mat4();
 
@@ -34,17 +34,12 @@ class Camera {
         this.ratio = this.gl.canvas.width / this.gl.canvas.height;
         this.near = 1;
         this.far = far;
-        this.projection = Mat4.Perspective(
-            this.fov,
-            this.ratio,
-            this.near,
-            this.far
-        );
+        this.projection.perspective(this.fov, this.ratio, this.near, this.far);
         //this.createFrustum();
     }
 
     public update(): void {
-        this.computeMatrix();
+        this.computeMatricies();
         //this.computeFrustum();
     }
 
@@ -61,9 +56,9 @@ class Camera {
     }
     */
 
-    public bufferUniforms(program: ShaderProgram): void {
-        this.bufferCameraDirection(program);
-        this.bufferViewProjection(program);
+    public bufferMainUniforms(program: ShaderProgram): void {
+        this.bufferCameraDirectionUniform(program);
+        this.bufferViewProjectionUniform(program);
     }
 
     /*
@@ -76,7 +71,7 @@ class Camera {
             top: this.createPlane(),
             bottom: this.createPlane(),
         } as Frustum;
-        this.computeMatrix();
+        this.computeMatricies<s();
         this.computeFrustum();
     }
 
@@ -88,7 +83,7 @@ class Camera {
     }
     */
 
-    private computeMatrix(): void {
+    private computeMatricies(): void {
         this.direction.copy(this.target).sub(this.position).normalize();
         this.up.normalize();
         this.right.copy(this.direction).cross(this.up);
@@ -98,6 +93,7 @@ class Camera {
             .copy(this.world)
             .invert()
             .multiply(this.viewProjection, this.projection);
+
         this.cameraDirection[0] = this.direction.x;
         this.cameraDirection[1] = this.direction.y;
         this.cameraDirection[2] = this.direction.z;
@@ -162,14 +158,14 @@ class Camera {
     }
     */
 
-    private bufferCameraDirection(program: ShaderProgram): void {
+    private bufferCameraDirectionUniform(program: ShaderProgram): void {
         const loc: WebGLUniformLocation = program.uniformLocations.get(
             ShaderVariables.CAMERADIRECTION
         )!;
         this.gl.uniform3fv(loc, this.cameraDirection);
     }
 
-    private bufferViewProjection(program: ShaderProgram): void {
+    private bufferViewProjectionUniform(program: ShaderProgram): void {
         const loc: WebGLUniformLocation = program.uniformLocations.get(
             ShaderVariables.VIEWPROJECTION
         )!;

@@ -8,9 +8,11 @@ enum ShaderVariables {
     //uniforms
     CAMERADIRECTION = "cameraDirection",
     VIEWPROJECTION = "viewProjection",
+    SHADOWPROJECTION = "shadowProjection",
     AMBIENTCOLOR = "ambientColor",
     LIGHTDIRECTION = "lightDirection",
     LIGHTCOLOR = "lightColor",
+    SHADOWMAP = "shadowMap",
     //instance uniforms
     OBJECTWORLD = "objectWorld",
     //attributes

@@ -21,8 +21,12 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     const light: Light = renderer.getLight();
     light.ambient.set(0.15, 0.05, 0.2);
-    light.direction.set(1.5, -1.0, 0.5).normalize();
+    light.direction.set(1.5, -1.0, 0.0).normalize();
     light.color.set(1.0, 0.85, 0.75);
+
+    //here enable light shadow
+    light.shadow.position.set(0, 0, 0); //copy(camera.position);
+    light.shadow.radius = 40;
 
     const map: int[][] = [
         [0, 0, 1, 1, 0, 0, 1, 1, 1, 0],

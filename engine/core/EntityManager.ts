@@ -50,9 +50,9 @@ class EntityManager {
         this.stats.setTotalEntities(this.list.length);
     }
 
-    public draw(): void {
+    public draw(flush: boolean): void {
         this.geometryManager.list.forEach((geometry: Geometry, _name: string) =>
-            geometry.draw()
+            geometry.draw(flush)
         );
     }
 }

@@ -52,11 +52,11 @@ class Renderer {
         this.stats.begin(now);
 
         this.stats.beginUpdate();
-        this.updateFrame();
+        this.update();
         this.stats.endUpdate();
 
         this.stats.beginDraw();
-        this.drawFrame();
+        this.draw();
         this.stats.endDraw();
 
         this.stats.end(now);
@@ -125,15 +125,18 @@ class Renderer {
     }
 
     private createLight(): void {
-        this.light = new Light(this.gl);
+        this.light = new Light(this.gl, this.camera, 512); //config
     }
 
     private initializeContext(): void {
-        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.enable(this.gl.BLEND);
         this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+    }
+
+    private clearContext(): void {
+        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         if (this.clearColor !== undefined) {
             this.gl.clearColor(
                 this.clearColor.x,
@@ -141,26 +144,43 @@ class Renderer {
                 this.clearColor.z,
                 1.0
             );
-        }
-    }
-
-    private updateFrame(): void {
-        this.camera.update();
-        this.light.update();
-        this.entityManager.prepare();
-    }
-
-    private drawFrame(): void {
-        if (this.clearColor !== undefined) {
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         }
+    }
+
+    private update(): void {
+        this.camera.update();
+        this.light.update();
+        this.entityManager.prepare(); //prepare shadow seperate if enabled
+    }
+
+    private draw(): void {
+        this.drawShadow();
+        this.drawMain();
+    }
+
+    private drawShadow(): void {
+        //only if enabled else return;
+        this.light.shadow.beginFrameBuffer();
+
+        const shadowProgram: ShaderProgram = this.bindProgram("shadow");
+
+        this.light.shadow.bufferShadowUniforms(shadowProgram);
+
+        this.entityManager.draw(false);
+
+        this.light.shadow.endFrameBuffer();
+    }
+
+    private drawMain(): void {
+        this.clearContext();
 
         const program: ShaderProgram = this.bindProgram("main");
 
-        this.camera.bufferUniforms(program);
-        this.light.bufferUniforms(program);
+        this.camera.bufferMainUniforms(program);
+        this.light.bufferMainUniforms(program);
 
-        this.entityManager.draw();
+        this.entityManager.draw(true);
     }
 
     private bindProgram(name: string): ShaderProgram {
