@@ -48,19 +48,12 @@ class Geometry {
         this.lods.forEach((lod: GeometryLod, _level: int) =>
             lod.draw(isShadow)
         );
-        if (!isShadow) {
-            this.geometryManager
-                .getStats()
-                .incrementTotalVertecies(
-                    this.data.lods[0].count * this.instanceCount
-                );
-        } else {
-            this.geometryManager
-                .getStats()
-                .incrementTotalShadowVertecies(
-                    this.data.lods[0].count * this.instanceCount
-                );
-        }
+        this.geometryManager
+            .getStats()
+            .incrementTotalVertecies(
+                this.data.lods[0].count * this.instanceCount,
+                isShadow
+            );
         this.instanceCount = 0;
     }
 

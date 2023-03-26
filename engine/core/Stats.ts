@@ -89,22 +89,19 @@ class Stats {
         this.totalShadowVertecies = 0;
     }
 
-    public incrementDrawCalls(vertecies: int): void {
+    public incrementDrawCalls(vertecies: int, isShadow: boolean): void {
+        if (isShadow) {
+            return this.incrementShadowDrawCalls(vertecies);
+        }
         this.drawCalls += 1;
         this.activeVertecies += vertecies;
     }
 
-    public incrementShadowDrawCalls(vertecies: int): void {
-        this.shadowDrawCalls += 1;
-        this.activeShadowVertecies += vertecies;
-    }
-
-    public incrementTotalVertecies(vertecies: int): void {
+    public incrementTotalVertecies(vertecies: int, isShadow: boolean): void {
+        if (isShadow) {
+            return this.incrementTotalShadowVertecies(vertecies);
+        }
         this.totalVertecies += vertecies;
-    }
-
-    public incrementTotalShadowVertecies(vertecies: int): void {
-        this.totalShadowVertecies += vertecies;
     }
 
     public endDraw(): void {
@@ -121,6 +118,15 @@ class Stats {
 
     private createOverlay(): void {
         this.overlay = new StatsOverlay();
+    }
+
+    private incrementShadowDrawCalls(vertecies: int): void {
+        this.shadowDrawCalls += 1;
+        this.activeShadowVertecies += vertecies;
+    }
+
+    private incrementTotalShadowVertecies(vertecies: int): void {
+        this.totalShadowVertecies += vertecies;
     }
 
     private updateOverlay(): void {
