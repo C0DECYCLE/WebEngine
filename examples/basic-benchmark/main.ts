@@ -8,7 +8,13 @@ var renderer: Renderer;
 
 window.addEventListener("compile", async (_event: Event): Promise<void> => {
     renderer = new Renderer(new Vec3(0.9, 0.9, 0.9));
-    await renderer.initialize();
+    await renderer.initialize([], [], [
+        //level, coverage minimum, simplify percentage
+        [0, 0.25, 1.0] as GeometryLodConfig,
+        [1, 0.1, 0.5] as GeometryLodConfig,
+        [2, 0.05, 0.25] as GeometryLodConfig,
+        [3, 0.01, 0.1] as GeometryLodConfig,
+    ] as GeometryLodConfig[]);
 
     const camera: Camera = renderer.getCamera();
     camera.target.set(0, 0, 0);
@@ -33,8 +39,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             .set(Math.cos(now * 0.0001), 0.5, Math.sin(now * 0.0001))
             .scale(40);
 
-        let i: int;
-        for (i = 0; i < list.length; i++) {
+        for (let i: int = 0; i < list.length; i++) {
             list[i].rotation.x += speed;
             list[i].rotation.y -= speed;
             list[i].rotation.z -= speed;

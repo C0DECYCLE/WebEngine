@@ -16,11 +16,16 @@ class Entity {
     private camera: Nullable<Camera> = null;
     private entityManager: Nullable<EntityManager> = null;
     private isAwake: boolean = false;
+    private isRendering: boolean = false;
 
     private targetLod: int = -1;
     private tempDistance: float;
     private tempCoverage: float;
     private tempLod: int;
+
+    private isShadowCasting: boolean = false;
+    private isShadowReceiving: boolean = false;
+    private doShadowCulling: boolean = true;
 
     public get distance(): Nullable<float> {
         if (!this.isAwake) {
@@ -39,28 +44,6 @@ class Entity {
         this.entityManager.attach(this);
     }
 
-    public wakeUp(): void {
-        this.preventUnattached();
-        if (this.isAwake === true) {
-            return warn(
-                `Entity: Entity already awake. ${this.stringifyInfo()}`
-            );
-        }
-        this.entityManager!.wakeUp(this);
-        this.isAwake = true;
-    }
-
-    public sleep(): void {
-        this.preventUnattached();
-        if (this.isAwake === false) {
-            return warn(
-                `Entity: Entity already awake. ${this.stringifyInfo()}`
-            );
-        }
-        this.entityManager!.sleep(this);
-        this.isAwake = false;
-    }
-
     public staticLod(lod: int): void {
         if (lod === -1) {
             return warn(
@@ -74,13 +57,57 @@ class Entity {
         this.targetLod = -1;
     }
 
+    public shadow(cast: boolean, receive: boolean): void {
+        this.preventUnattached();
+        if (this.isAwake) {
+            if (cast && !this.isShadowCasting) {
+                this.entityManager!.shadow(this, true);
+            } else if (!cast && this.isShadowCasting) {
+                this.entityManager!.shadow(this, false);
+            }
+        }
+        this.isShadowCasting = cast;
+        this.isShadowReceiving = receive;
+    }
+
+    public disableShadowCulling(): void {
+        this.doShadowCulling = false;
+    }
+
+    public wakeUp(): void {
+        this.preventUnattached();
+        if (this.isAwake === true) {
+            return warn(
+                `Entity: Entity already awake. ${this.stringifyInfo()}`
+            );
+        }
+        this.entityManager!.wakeUp(this);
+        this.isAwake = true;
+        if (this.isShadowCasting) {
+            this.entityManager!.shadow(this, true);
+        }
+    }
+
+    public sleep(): void {
+        this.preventUnattached();
+        if (this.isAwake === false) {
+            return warn(
+                `Entity: Entity already awake. ${this.stringifyInfo()}`
+            );
+        }
+        this.entityManager!.sleep(this);
+        this.isAwake = false;
+        if (this.isShadowCasting) {
+            this.entityManager!.shadow(this, false);
+        }
+    }
+
     public prepare(geometry: Geometry): boolean {
         /*
         if (!this.camera!.inFrustum(this.position, geometry.data.bounds.size)) {
-            return false;
+            return (this.isRendering = true);
         }
         */
-
         this.computeTranslation();
         this.selectLod(geometry.data);
         if (this.tempLod !== -1) {
@@ -89,10 +116,34 @@ class Entity {
                 this.world.values[13],
                 this.world.values[14]
             );
-            geometry.storeInstance(this.world, this.tempLod);
-            return true;
+            this.passInstanceSubUniform(
+                ShaderVariables.SHADOWRECEIVE,
+                this.isShadowReceiving
+            );
+            return (this.isRendering = true);
         }
-        return false;
+        return (this.isRendering = false);
+    }
+
+    public shadowify(geometry: Geometry, shadow: Shadow): boolean {
+        if (!this.isRendering) {
+            return false;
+        }
+        if (this.shadowCull(geometry, shadow)) {
+            return false;
+        }
+        geometry.storeInstance(
+            this.world,
+            geometry.hasLod(this.tempLod + 1) ? this.tempLod + 1 : this.tempLod
+        );
+        return true;
+    }
+
+    public store(geometry: Geometry): void {
+        if (!this.isRendering) {
+            return;
+        }
+        geometry.storeInstance(this.world, this.tempLod);
     }
 
     public stringifyInfo(): string {
@@ -115,6 +166,13 @@ class Entity {
         this.world.values[13] = y;
         this.world.values[14] = z;
         this.rotation.isDirty = false;
+    }
+
+    private passInstanceSubUniform(
+        row: ShaderVariables,
+        value: float | boolean
+    ): void {
+        this.world.values[parseInt(row) * 4 + 3] = +value;
     }
 
     private selectLod(data: GeometryData): void {
@@ -161,6 +219,18 @@ class Entity {
                 ? coverage <= Infinity
                 : coverage < levels[i - 1].minimum) &&
             coverage >= levels[i].minimum
+        );
+    }
+
+    private shadowCull(geometry: Geometry, shadow: Shadow): boolean {
+        if (!this.doShadowCulling) {
+            return false;
+        }
+        return (
+            Vec3.Cache.copy(this.position)
+                .sub(shadow.position)
+                .lengthQuadratic() >
+            (shadow.radius + geometry.data.bounds.size * 0.5) ** 2
         );
     }
 

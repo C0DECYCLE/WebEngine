@@ -164,6 +164,15 @@ class Mat3 {
         return this;
     }
 
+    public projection(width: float, height: float): Mat3 {
+        // prettier-ignore
+        return this.set(
+            2 / width, 0, 0,
+            0, -2 / height, 0,
+            -1, 1, 1
+        );
+    }
+
     public copy(mat: Mat3): Mat3 {
         this.set(...mat.values);
         return this;
@@ -193,11 +202,6 @@ class Mat3 {
         height: float,
         isFloat64?: boolean
     ): Mat3 {
-        // prettier-ignore
-        return new Mat3(isFloat64).set(
-            2 / width, 0, 0,
-            0, -2 / height, 0,
-            -1, 1, 1
-        );
+        return new Mat3(isFloat64).projection(width, height);
     }
 }

@@ -29,10 +29,11 @@ class Renderer {
 
     public async initialize(
         geometryUrls: string[] = [],
-        shaderUrls: string[] = []
+        shaderUrls: string[] = [],
+        lodMatrix: GeometryLodConfig[] = Geometry.LodMatrix
     ): Promise<void> {
         await this.shaderManager.initialize(shaderUrls);
-        await this.geometryManager.initialize(geometryUrls);
+        await this.geometryManager.initialize(geometryUrls, lodMatrix);
         this.initializeContext();
     }
 
@@ -50,15 +51,12 @@ class Renderer {
 
     public render(now: float): void {
         this.stats.begin(now);
-
         this.stats.beginUpdate();
-        this.updateFrame();
+        this.update();
         this.stats.endUpdate();
-
         this.stats.beginDraw();
-        this.drawFrame();
+        this.draw();
         this.stats.endDraw();
-
         this.stats.end(now);
     }
 
@@ -125,15 +123,18 @@ class Renderer {
     }
 
     private createLight(): void {
-        this.light = new Light(this.gl);
+        this.light = new Light(this.gl, this.camera);
     }
 
     private initializeContext(): void {
-        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.enable(this.gl.BLEND);
         this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
+    }
+
+    private clearContext(): void {
+        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
         if (this.clearColor !== undefined) {
             this.gl.clearColor(
                 this.clearColor.x,
@@ -142,25 +143,53 @@ class Renderer {
                 1.0
             );
         }
+        this.gl.cullFace(this.gl.BACK);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
 
-    private updateFrame(): void {
+    private update(): void {
+        const shadow = this.light.getShadow();
         this.camera.update();
         this.light.update();
         this.entityManager.prepare();
+        if (shadow) {
+            this.entityManager.shadowify(shadow);
+        }
     }
 
-    private drawFrame(): void {
-        if (this.clearColor !== undefined) {
-            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    private draw(): void {
+        this.drawShadow();
+        this.stats.beginSubUpdate();
+        this.entityManager.store();
+        this.stats.endSubUpdate();
+        this.drawMain();
+    }
+
+    private drawShadow(): void {
+        const shadow = this.light.getShadow();
+        if (!shadow) {
+            return;
         }
+        shadow.beginFrameBuffer();
+
+        const shadowProgram: ShaderProgram = this.bindProgram("shadow");
+
+        shadow.bufferShadowUniforms(shadowProgram);
+
+        this.entityManager.draw(true);
+
+        shadow.endFrameBuffer();
+    }
+
+    private drawMain(): void {
+        this.clearContext();
 
         const program: ShaderProgram = this.bindProgram("main");
 
-        this.camera.bufferUniforms(program);
-        this.light.bufferUniforms(program);
+        this.camera.bufferMainUniforms(program);
+        this.light.bufferMainUniforms(program);
 
-        this.entityManager.draw();
+        this.entityManager.draw(false);
     }
 
     private bindProgram(name: string): ShaderProgram {

@@ -13,23 +13,49 @@ class Light {
     private readonly lightDirection: Float32Array = new Float32Array(3);
     private readonly lightColor: Float32Array = new Float32Array(3);
 
+    private shadow: Nullable<Shadow>;
+
     private readonly gl: WebGL2RenderingContext;
 
-    public constructor(gl: WebGL2RenderingContext) {
+    private readonly camera: Camera;
+
+    public constructor(gl: WebGL2RenderingContext, camera: Camera) {
         this.gl = gl;
+        this.camera = camera;
+    }
+
+    public setShadow(size: int): Shadow {
+        if (this.shadow) {
+            throw new Error("Light: Shadow already enabled.");
+        }
+        this.shadow = new Shadow(this.gl, this.camera, size);
+        return this.shadow;
+    }
+
+    public getShadow(): Nullable<Shadow> {
+        return this.shadow;
     }
 
     public update(): void {
-        this.compute();
+        this.sync();
+        if (!this.shadow) {
+            return;
+        }
+        this.shadow.direction.copy(this.direction);
+        this.shadow.update();
     }
 
-    public bufferUniforms(program: ShaderProgram): void {
-        this.bufferAmbientColor(program);
-        this.bufferLightDirection(program);
-        this.bufferLightColor(program);
+    public bufferMainUniforms(program: ShaderProgram): void {
+        this.bufferAmbientColorUniform(program);
+        this.bufferLightDirectionUniform(program);
+        this.bufferLightColorUniform(program);
+        if (!this.shadow) {
+            return;
+        }
+        this.shadow.bufferMainUniforms(program);
     }
 
-    private compute(): void {
+    private sync(): void {
         this.ambientColor[0] = this.ambient.x;
         this.ambientColor[1] = this.ambient.y;
         this.ambientColor[2] = this.ambient.z;
@@ -43,21 +69,21 @@ class Light {
         this.lightColor[2] = this.color.z;
     }
 
-    private bufferAmbientColor(program: ShaderProgram): void {
+    private bufferAmbientColorUniform(program: ShaderProgram): void {
         const loc: WebGLUniformLocation = program.uniformLocations.get(
             ShaderVariables.AMBIENTCOLOR
         )!;
         this.gl.uniform3fv(loc, this.ambientColor);
     }
 
-    private bufferLightDirection(program: ShaderProgram): void {
+    private bufferLightDirectionUniform(program: ShaderProgram): void {
         const loc: WebGLUniformLocation = program.uniformLocations.get(
             ShaderVariables.LIGHTDIRECTION
         )!;
         this.gl.uniform3fv(loc, this.lightDirection);
     }
 
-    private bufferLightColor(program: ShaderProgram): void {
+    private bufferLightColorUniform(program: ShaderProgram): void {
         const loc: WebGLUniformLocation = program.uniformLocations.get(
             ShaderVariables.LIGHTCOLOR
         )!;

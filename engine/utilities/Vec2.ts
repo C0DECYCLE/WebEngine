@@ -98,8 +98,12 @@ class Vec2 {
         return this;
     }
 
+    public lengthQuadratic(): float {
+        return this.x * this.x + this.y * this.y;
+    }
+
     public length(): float {
-        return Math.sqrt(this.x * this.x + this.y * this.y);
+        return Math.sqrt(this.lengthQuadratic());
     }
 
     public normalize(): Vec2 {
