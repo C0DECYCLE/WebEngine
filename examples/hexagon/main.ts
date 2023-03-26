@@ -24,11 +24,11 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     light.direction.set(1.5, -1.0, 0.0).normalize();
     light.color.set(1.0, 0.85, 0.75);
 
-    const shadow = light.setShadow(1024);
+    const shadow = light.setShadow(512);
     shadow.position.set(0, 0, 0);
     shadow.radius = 80;
     shadow.bias = 0.005;
-    shadow.opcaity = 0.65;
+    shadow.opcaity = 1.0; //0.65;
 
     const map: int[][] = [
         [0, 0, 1, 1, 0, 0, 1, 1, 1, 0],

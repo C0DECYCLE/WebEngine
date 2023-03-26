@@ -39,6 +39,11 @@ float getShading(vec3 faceNormal, vec3 lightDirection) {
     return pow(max(0.0, product), 1.0);
 }
 
+float offset_lookup(vec3 shadowCoordinate, vec2 offset) {
+    float texmapscale = 1.0 / 512.0;
+    return texture(shadowMap, shadowCoordinate.xy + offset * texmapscale).r;
+} 
+
 float getShadow() {
     vec3 shadowCoordinate = finalShadowCoordinate.xyz / finalShadowCoordinate.w;
 
@@ -47,10 +52,17 @@ float getShadow() {
         shadowCoordinate.z >= 0.0 && shadowCoordinate.z <= 1.0;
 
     float currentDepth = shadowCoordinate.z - shadowBias;
-    float shadowDepth = texture(shadowMap, shadowCoordinate.xy).r;
 
-    float result = (inRange && shadowDepth <= currentDepth) ? 0.0 : 1.0;
-    return result;
+    float shadowDepth = 0.0; 
+    for (float y = -1.5; y <= 1.5; y += 1.0) {
+        for (float x = -1.5; x <= 1.5; x += 1.0) {
+            shadowDepth += offset_lookup(shadowCoordinate, vec2(x, y)); 
+        }
+    }
+    shadowDepth /= 16.0; 
+    //float shadowDepth = texture(shadowMap, shadowCoordinate.xy).r;
+
+    return (inRange && shadowDepth <= currentDepth) ? 0.0 : 1.0;
 }
 
 vec3 getSpecular(vec3 faceNormal, float specularPower, float specularIntensity) {
