@@ -100,12 +100,13 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     }
 
     function render(now: float): void {
+        /*
         camera.position
             .set(0, 1.25, -1)
             .scale(now * 0.005)
             .add(camera.target);
         //shadow.position.copy(camera.position);
-
+        */
         /*
         light.direction
             .set(-Math.cos(2 + now * 0.0005), -Math.sin(2 + now * 0.0005), 0.5)

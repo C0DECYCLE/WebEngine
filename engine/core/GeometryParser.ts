@@ -5,7 +5,10 @@
 */
 
 class GeometryParser {
-    public static Obj(raw: string): GeometryData {
+    public static Obj(
+        raw: string,
+        lodMatrix: GeometryLodConfig[] = Geometry.LodMatrix
+    ): GeometryData {
         const result: GeometryData = {} as GeometryData;
         result.lods = [];
 
@@ -22,8 +25,8 @@ class GeometryParser {
 
         result.bounds = GeometryHelper.ComputeBounds(baseVertecies);
 
-        for (let i: int = 0; i < Geometry.LodMatrix.length; i++) {
-            const config: GeometryLodConfig = Geometry.LodMatrix[i];
+        for (let i: int = 0; i < lodMatrix.length; i++) {
+            const config: GeometryLodConfig = lodMatrix[i];
             if (result.lods[config[0]]) {
                 warn("GeometryParser: Duplicate lod levels on geometry.");
             }

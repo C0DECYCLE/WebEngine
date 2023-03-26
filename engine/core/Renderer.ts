@@ -29,10 +29,11 @@ class Renderer {
 
     public async initialize(
         geometryUrls: string[] = [],
-        shaderUrls: string[] = []
+        shaderUrls: string[] = [],
+        lodMatrix: GeometryLodConfig[] = Geometry.LodMatrix
     ): Promise<void> {
         await this.shaderManager.initialize(shaderUrls);
-        await this.geometryManager.initialize(geometryUrls);
+        await this.geometryManager.initialize(geometryUrls, lodMatrix);
         this.initializeContext();
     }
 

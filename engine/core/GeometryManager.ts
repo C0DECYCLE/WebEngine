@@ -31,8 +31,11 @@ class GeometryManager {
         this.stats = stats;
     }
 
-    public async initialize(urls: string[]): Promise<void> {
-        await this.fetchObjFiles(urls);
+    public async initialize(
+        urls: string[],
+        lodMatrix: GeometryLodConfig[]
+    ): Promise<void> {
+        await this.fetchObjFiles(urls, lodMatrix);
         this.createGeometries();
     }
 
@@ -40,10 +43,13 @@ class GeometryManager {
         return this.stats;
     }
 
-    private async fetchObjFiles(urls: string[]): Promise<void> {
+    private async fetchObjFiles(
+        urls: string[],
+        lodMatrix: GeometryLodConfig[]
+    ): Promise<void> {
         await Promise.all(
             this.objFileUrls(urls).map((fileUrl: string) =>
-                this.fetchObjFile(fileUrl)
+                this.fetchObjFile(fileUrl, lodMatrix)
             )
         );
     }
@@ -57,10 +63,16 @@ class GeometryManager {
         return objFileUrls;
     }
 
-    private fetchObjFile(fileUrl: string): Promise<void | Response> {
+    private fetchObjFile(
+        fileUrl: string,
+        lodMatrix: GeometryLodConfig[]
+    ): Promise<void | Response> {
         return fetch(fileUrl).then(async (response: Response) => {
             const fileName: string = this.getNameFromFileUrl(fileUrl);
-            const data: GeometryData = this.parseObjData(await response.text());
+            const data: GeometryData = this.parseObjData(
+                await response.text(),
+                lodMatrix
+            );
             if (this.datas.has(fileName)) {
                 throw new Error("GeometryManager: Duplicate geometry name.");
             }
@@ -68,8 +80,11 @@ class GeometryManager {
         });
     }
 
-    private parseObjData(data: string): GeometryData {
-        const result: GeometryData = GeometryParser.Obj(data);
+    private parseObjData(
+        data: string,
+        lodMatrix: GeometryLodConfig[]
+    ): GeometryData {
+        const result: GeometryData = GeometryParser.Obj(data, lodMatrix);
         if (!this.shaderManager.names.includes(result.shader)) {
             throw new Error(
                 `GeometryManager: Shader unknown. (${result.shader})`

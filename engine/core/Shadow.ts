@@ -169,7 +169,7 @@ class Shadow {
         const loc: WebGLUniformLocation = program.uniformLocations.get(
             ShaderVariables.SHADOWMAP
         )!;
-        //this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.depthTexture);
         this.gl.uniform1i(loc, 0);
     }
