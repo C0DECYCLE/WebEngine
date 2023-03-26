@@ -37,7 +37,6 @@ class StatsOverlay {
         p.style.color = "#FFFFFF";
         p.style.fontFamily = "system-ui";
         p.style.fontSize = "1.8vh";
-        p.style.lineHeight = "2.4vh";
 
         div.append(p);
         return p;
