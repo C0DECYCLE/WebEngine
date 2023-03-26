@@ -17,6 +17,8 @@ enum ShaderVariables {
     SHADOWOPACITY = "shadowOpacity",
     //instance uniforms
     OBJECTWORLD = "objectWorld",
+    //instance sub uniforms
+    SHADOWRECEIVE = 0,
     //attributes
     VERTEXPOSITION = "vertexPosition",
     VERTEXCOLOR = "vertexColor",

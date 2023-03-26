@@ -116,6 +116,10 @@ class Entity {
                 this.world.values[13],
                 this.world.values[14]
             );
+            this.passInstanceSubUniform(
+                ShaderVariables.SHADOWRECEIVE,
+                this.isShadowReceiving
+            );
             return (this.isRendering = true);
         }
         return (this.isRendering = false);
@@ -161,6 +165,10 @@ class Entity {
         this.world.values[13] = y;
         this.world.values[14] = z;
         this.rotation.isDirty = false;
+    }
+
+    private passInstanceSubUniform(row: int, value: float | boolean): void {
+        this.world.values[row * 4 + 3] = +value;
     }
 
     private selectLod(data: GeometryData): void {
