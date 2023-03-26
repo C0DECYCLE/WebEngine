@@ -51,15 +51,12 @@ class Renderer {
 
     public render(now: float): void {
         this.stats.begin(now);
-
         this.stats.beginUpdate();
         this.update();
         this.stats.endUpdate();
-
         this.stats.beginDraw();
         this.draw();
         this.stats.endDraw();
-
         this.stats.end(now);
     }
 
@@ -151,13 +148,20 @@ class Renderer {
     }
 
     private update(): void {
+        const shadow = this.light.getShadow();
         this.camera.update();
         this.light.update();
         this.entityManager.prepare();
+        if (shadow) {
+            this.entityManager.shadowify(shadow);
+        }
     }
 
     private draw(): void {
         this.drawShadow();
+        this.stats.beginSubUpdate();
+        this.entityManager.store();
+        this.stats.endSubUpdate();
         this.drawMain();
     }
 
@@ -166,22 +170,18 @@ class Renderer {
         if (!shadow) {
             return;
         }
-        this.entityManager.shadowify(shadow);
-
         shadow.beginFrameBuffer();
 
         const shadowProgram: ShaderProgram = this.bindProgram("shadow");
 
         shadow.bufferShadowUniforms(shadowProgram);
 
-        this.entityManager.draw();
+        this.entityManager.draw(true);
 
         shadow.endFrameBuffer();
     }
 
     private drawMain(): void {
-        this.entityManager.store();
-
         this.clearContext();
 
         const program: ShaderProgram = this.bindProgram("main");
@@ -189,7 +189,7 @@ class Renderer {
         this.camera.bufferMainUniforms(program);
         this.light.bufferMainUniforms(program);
 
-        this.entityManager.draw();
+        this.entityManager.draw(false);
     }
 
     private bindProgram(name: string): ShaderProgram {

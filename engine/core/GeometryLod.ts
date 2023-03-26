@@ -39,7 +39,7 @@ class GeometryLod {
         this.instanceStoreCount++;
     }
 
-    public draw(): void {
+    public draw(isShadow: boolean): void {
         if (this.instanceStoreCount === 0) {
             return;
         }
@@ -51,9 +51,17 @@ class GeometryLod {
             this.data.count,
             this.instanceStoreCount
         );
-        this.geometry.geometryManager
-            .getStats()
-            .incrementDrawCalls(this.data.count * this.instanceStoreCount);
+        if (!isShadow) {
+            this.geometry.geometryManager
+                .getStats()
+                .incrementDrawCalls(this.data.count * this.instanceStoreCount);
+        } else {
+            this.geometry.geometryManager
+                .getStats()
+                .incrementShadowDrawCalls(
+                    this.data.count * this.instanceStoreCount
+                );
+        }
         this.instanceStoreCount = 0;
     }
 

@@ -23,7 +23,7 @@ class StatsOverlay {
         div.style.top = "0px";
         div.style.right = "0px";
         div.style.zIndex = "1";
-        div.style.minWidth = "42vh";
+        div.style.minWidth = "40vh";
         div.style.backgroundColor = "#000000";
         div.style.opacity = "0.75";
 
@@ -36,7 +36,8 @@ class StatsOverlay {
         p.style.margin = "2vh";
         p.style.color = "#FFFFFF";
         p.style.fontFamily = "system-ui";
-        p.style.fontSize = "2vh";
+        p.style.fontSize = "1.8vh";
+        p.style.lineHeight = "2.4vh";
 
         div.append(p);
         return p;

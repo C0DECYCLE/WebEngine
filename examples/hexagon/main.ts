@@ -26,7 +26,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     const shadow = light.setShadow(512);
     shadow.position.set(0, 0, 0);
-    shadow.radius = 60;
+    shadow.radius = 40;
     shadow.bias = 0.001;
     shadow.opcaity = 0.75;
 

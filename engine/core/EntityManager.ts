@@ -63,10 +63,16 @@ class EntityManager {
 
     public shadowify(shadow: Shadow): void {
         for (let i: int = 0; i < this.shadowList.length; i++) {
-            this.shadowList[i].shadowify(
-                this.geometryManager.list.get(this.shadowList[i].geometryName)!,
-                shadow
-            );
+            if (
+                this.shadowList[i].shadowify(
+                    this.geometryManager.list.get(
+                        this.shadowList[i].geometryName
+                    )!,
+                    shadow
+                )
+            ) {
+                this.stats.incrementShadowEntities();
+            }
         }
     }
 
@@ -78,9 +84,9 @@ class EntityManager {
         }
     }
 
-    public draw(): void {
+    public draw(isShadow: boolean): void {
         this.geometryManager.list.forEach((geometry: Geometry, _name: string) =>
-            geometry.draw()
+            geometry.draw(isShadow)
         );
     }
 }

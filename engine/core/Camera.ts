@@ -28,7 +28,7 @@ class Camera {
 
     private readonly gl: WebGL2RenderingContext;
 
-    public constructor(gl: WebGL2RenderingContext, far: float = 1_000) {
+    public constructor(gl: WebGL2RenderingContext, far: float = 10_000) {
         this.gl = gl;
         this.fov = 60 * toRadian;
         this.ratio = this.gl.canvas.width / this.gl.canvas.height;

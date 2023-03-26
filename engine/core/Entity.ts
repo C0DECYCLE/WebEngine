@@ -125,17 +125,18 @@ class Entity {
         return (this.isRendering = false);
     }
 
-    public shadowify(geometry: Geometry, shadow: Shadow): void {
+    public shadowify(geometry: Geometry, shadow: Shadow): boolean {
         if (!this.isRendering) {
-            return;
+            return false;
         }
         if (this.shadowCull(geometry, shadow)) {
-            return;
+            return false;
         }
         geometry.storeInstance(
             this.world,
             geometry.hasLod(this.tempLod + 1) ? this.tempLod + 1 : this.tempLod
         );
+        return true;
     }
 
     public store(geometry: Geometry): void {
