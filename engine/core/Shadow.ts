@@ -47,6 +47,7 @@ class Shadow {
     public beginFrameBuffer(): void {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.depthFrameBuffer);
         this.gl.viewport(0, 0, this.size, this.size);
+        this.gl.cullFace(this.gl.FRONT);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
 
@@ -63,6 +64,7 @@ class Shadow {
         this.bufferMapUniform(program);
         this.bufferBiasUniform(program);
         this.bufferOpacityUniform(program);
+        this.bufferMapSizeUniform(program);
     }
 
     private createDepthTexture(size: int): void {
@@ -186,5 +188,12 @@ class Shadow {
             ShaderVariables.SHADOWOPACITY
         )!;
         this.gl.uniform1f(loc, this.opcaity);
+    }
+
+    private bufferMapSizeUniform(program: ShaderProgram): void {
+        const loc: WebGLUniformLocation = program.uniformLocations.get(
+            ShaderVariables.SHADOWMAPSIZE
+        )!;
+        this.gl.uniform1f(loc, this.size);
     }
 }

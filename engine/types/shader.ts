@@ -15,10 +15,11 @@ enum ShaderVariables {
     SHADOWMAP = "shadowMap",
     SHADOWBIAS = "shadowBias",
     SHADOWOPACITY = "shadowOpacity",
+    SHADOWMAPSIZE = "shadowMapSize",
     //instance uniforms
     OBJECTWORLD = "objectWorld",
     //instance sub uniforms
-    SHADOWRECEIVE = 0,
+    SHADOWRECEIVE = "0",
     //attributes
     VERTEXPOSITION = "vertexPosition",
     VERTEXCOLOR = "vertexColor",
@@ -44,9 +45,11 @@ type ShaderSourceInfo = {
     type: ShaderTypes;
 };
 
+class ShaderVariableMap<T> extends Map<ShaderVariables, T> {}
+
 type ShaderProgram = {
     program: WebGLProgram;
-    uniformLocations: MapS<WebGLUniformLocation>;
-    instanceUniformLocations: MapS<WebGLInstanceUniformLocation>;
-    attributeLocations: MapS<WebGLAttributeLocation>;
+    uniformLocations: ShaderVariableMap<WebGLUniformLocation>;
+    instanceUniformLocations: ShaderVariableMap<WebGLInstanceUniformLocation>;
+    attributeLocations: ShaderVariableMap<WebGLAttributeLocation>;
 };

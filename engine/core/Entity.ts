@@ -167,8 +167,11 @@ class Entity {
         this.rotation.isDirty = false;
     }
 
-    private passInstanceSubUniform(row: int, value: float | boolean): void {
-        this.world.values[row * 4 + 3] = +value;
+    private passInstanceSubUniform(
+        row: ShaderVariables,
+        value: float | boolean
+    ): void {
+        this.world.values[parseInt(row) * 4 + 3] = +value;
     }
 
     private selectLod(data: GeometryData): void {

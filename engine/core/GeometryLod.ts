@@ -122,7 +122,7 @@ class GeometryLod {
         this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, data);
     }
 
-    private enableInstanceUniform(name: string, stride: int): void {
+    private enableInstanceUniform(name: ShaderVariables, stride: int): void {
         const loc: WebGLInstanceUniformLocation =
             this.geometry.program.instanceUniformLocations.get(name)!;
 
@@ -145,7 +145,7 @@ class GeometryLod {
         this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
     }
 
-    private enableAttribute(name: string, stride: int): void {
+    private enableAttribute(name: ShaderVariables, stride: int): void {
         const loc: WebGLAttributeLocation =
             this.geometry.program.attributeLocations.get(name)!;
         this.gl.enableVertexAttribArray(loc);

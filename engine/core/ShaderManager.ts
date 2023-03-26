@@ -170,10 +170,11 @@ class ShaderManager {
             pair[ShaderTypes.VERTEX],
             pair[ShaderTypes.FRAGMENT]
         )!;
-        result.uniformLocations = new MapS<WebGLUniformLocation>();
+        result.uniformLocations = new ShaderVariableMap<WebGLUniformLocation>();
         result.instanceUniformLocations =
-            new MapS<WebGLInstanceUniformLocation>();
-        result.attributeLocations = new MapS<WebGLAttributeLocation>();
+            new ShaderVariableMap<WebGLInstanceUniformLocation>();
+        result.attributeLocations =
+            new ShaderVariableMap<WebGLAttributeLocation>();
         this.registerLocations(result, name === "shadow");
         return result;
     }
@@ -192,6 +193,7 @@ class ShaderManager {
             ShaderVariables.SHADOWMAP,
             ShaderVariables.SHADOWBIAS,
             ShaderVariables.SHADOWOPACITY,
+            ShaderVariables.SHADOWMAPSIZE,
         ]);
         this.registerInstanceUniformLocations(shaderProgram, ignore, [
             ShaderVariables.OBJECTWORLD,
@@ -205,16 +207,16 @@ class ShaderManager {
     private registerUniformLocations(
         shaderProgram: ShaderProgram,
         ignore: boolean = false,
-        names: string[]
+        names: ShaderVariables[]
     ): void {
-        names.forEach((name: string, _i: int) =>
+        names.forEach((name: ShaderVariables, _i: int) =>
             this.registerUniformLocation(shaderProgram, name, ignore)
         );
     }
 
     private registerUniformLocation(
         shaderProgram: ShaderProgram,
-        name: string,
+        name: ShaderVariables,
         ignore: boolean = false
     ): void {
         const uniformLocation: Nullable<WebGLUniformLocation> =
@@ -233,16 +235,16 @@ class ShaderManager {
     private registerInstanceUniformLocations(
         shaderProgram: ShaderProgram,
         ignore: boolean = false,
-        names: string[]
+        names: ShaderVariables[]
     ): void {
-        names.forEach((name: string, _i: int) =>
+        names.forEach((name: ShaderVariables, _i: int) =>
             this.registerInstanceUniformLocation(shaderProgram, name, ignore)
         );
     }
 
     private registerInstanceUniformLocation(
         shaderProgram: ShaderProgram,
-        name: string,
+        name: ShaderVariables,
         ignore: boolean = false
     ): void {
         const instanceUniformLocation: WebGLInstanceUniformLocation =
@@ -264,16 +266,16 @@ class ShaderManager {
     private registerAttributeLocations(
         shaderProgram: ShaderProgram,
         ignore: boolean = false,
-        names: string[]
+        names: ShaderVariables[]
     ): void {
-        names.forEach((name: string, _i: int) =>
+        names.forEach((name: ShaderVariables, _i: int) =>
             this.registerAttributeLocation(shaderProgram, name, ignore)
         );
     }
 
     private registerAttributeLocation(
         shaderProgram: ShaderProgram,
-        name: string,
+        name: ShaderVariables,
         ignore: boolean = false
     ): void {
         const attributeLocation: WebGLAttributeLocation =

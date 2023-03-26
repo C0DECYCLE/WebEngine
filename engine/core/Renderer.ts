@@ -145,8 +145,9 @@ class Renderer {
                 this.clearColor.z,
                 1.0
             );
-            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         }
+        this.gl.cullFace(this.gl.BACK);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
 
     private update(): void {
