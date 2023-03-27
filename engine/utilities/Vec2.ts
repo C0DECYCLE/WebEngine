@@ -111,8 +111,14 @@ class Vec2 {
         return this;
     }
 
-    public dot(b: Vec2): float {
-        return this.x * b.x + this.y * b.y;
+    public dot(x: Vec2 | float, y?: float): float {
+        if (x instanceof Vec2) {
+            y = x.y;
+            x = x.x;
+        } else if (y === undefined) {
+            y = x;
+        }
+        return this.x * x + this.y * y;
     }
 
     public applyMat(mat: Mat3): Vec2 {

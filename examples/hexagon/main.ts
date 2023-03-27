@@ -16,19 +16,19 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     ]);
 
     const camera: Camera = renderer.getCamera();
-    camera.target.set(-0.1, 0, -0.15).scale(80);
-    camera.position.set(0, 1.25, -1).scale(60).add(camera.target);
+    camera.target.set(-0.1, 0, -0.25).scale(80);
+    camera.position.set(0, 1.25, -0.75).scale(40).add(camera.target);
 
     const light: Light = renderer.getLight();
     light.ambient.set(0.15, 0.05, 0.2);
     light.direction.set(1.5, -1.0, 0.0).normalize();
     light.color.set(1.0, 0.85, 0.75);
 
-    const shadow = light.setShadow(512);
+    const shadow = light.setShadow(1024);
     shadow.position.set(0, 0, 0);
-    shadow.radius = 40;
+    shadow.radius = 50;
     shadow.bias = 0.001;
-    shadow.opcaity = 0.75;
+    shadow.opcaity = 0.65;
 
     const map: int[][] = [
         [0, 0, 1, 1, 0, 0, 1, 1, 1, 0],
@@ -93,6 +93,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             water.position.z += 4 * 52;
             if (Math.random() > 0.5) water.rotation.y = 180 * toRadian;
             water.attach(renderer);
+            water.setViewCulling(-0.15);
             water.staticLod(0);
             water.shadow(false, true);
             water.wakeUp();
