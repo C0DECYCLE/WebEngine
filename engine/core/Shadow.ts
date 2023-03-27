@@ -39,27 +39,27 @@ class Shadow {
         this.createProjectionBase();
     }
 
-    public eUpdate(): void {
+    public _update(): void {
         this.computeVectors();
         this.computeMatricies();
     }
 
-    public eBeginFrameBuffer(): void {
+    public _beginFrameBuffer(): void {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.depthFrameBuffer);
         this.gl.viewport(0, 0, this.size, this.size);
         this.gl.cullFace(this.gl.FRONT);
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     }
 
-    public eEndFrameBuffer(): void {
+    public _endFrameBuffer(): void {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
     }
 
-    public eBufferShadowUniforms(program: ShaderProgram): void {
+    public _bufferShadowUniforms(program: ShaderProgram): void {
         this.bufferViewProjectionUniform(program);
     }
 
-    public eBufferMainUniforms(program: ShaderProgram): void {
+    public _bufferMainUniforms(program: ShaderProgram): void {
         this.bufferWorldUniform(program);
         this.bufferMapUniform(program);
         this.bufferBiasUniform(program);

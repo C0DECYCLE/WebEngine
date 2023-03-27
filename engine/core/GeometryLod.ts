@@ -29,7 +29,7 @@ class GeometryLod {
         this.initialize();
     }
 
-    public eStoreInstance(mat: Mat4): void {
+    public _storeInstance(mat: Mat4): void {
         if (this.instanceStoreCount === this.geometry.data.capacity) {
             return warn(
                 `GeometryLod: Geometry capacity overflow. (${this.geometry.data.name})`
@@ -39,7 +39,7 @@ class GeometryLod {
         this.instanceStoreCount++;
     }
 
-    public eDraw(isShadow: boolean): void {
+    public _draw(isShadow: boolean): void {
         if (this.instanceStoreCount === 0) {
             return;
         }
@@ -52,8 +52,8 @@ class GeometryLod {
             this.instanceStoreCount
         );
         this.geometry.geometryManager
-            .eGetStats()
-            .eIncrementDrawCalls(
+            ._getStats()
+            ._incrementDrawCalls(
                 this.data.count * this.instanceStoreCount,
                 isShadow
             );

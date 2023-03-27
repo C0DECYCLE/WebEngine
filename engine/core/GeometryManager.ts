@@ -31,11 +31,11 @@ class GeometryManager {
         this.stats = stats;
     }
 
-    public eGetStats(): Stats {
+    public _getStats(): Stats {
         return this.stats;
     }
 
-    public async eInitialize(
+    public async _initialize(
         urls: string[],
         lodMatrix: GeometryLodConfig[]
     ): Promise<void> {

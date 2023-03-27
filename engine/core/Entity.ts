@@ -42,7 +42,7 @@ class Entity {
     public attach(renderer: Renderer): void {
         this.camera = renderer.getCamera();
         this.entityManager = renderer.getEntityManager();
-        this.entityManager.eAttach(this);
+        this.entityManager._attach(this);
     }
 
     public setViewCulling(minimum: float): void {
@@ -70,9 +70,9 @@ class Entity {
         this.preventUnattached();
         if (this.isAwake) {
             if (cast && !this.isShadowCasting) {
-                this.entityManager!.eShadow(this, true);
+                this.entityManager!._shadow(this, true);
             } else if (!cast && this.isShadowCasting) {
-                this.entityManager!.eShadow(this, false);
+                this.entityManager!._shadow(this, false);
             }
         }
         this.isShadowCasting = cast;
@@ -90,10 +90,10 @@ class Entity {
                 `Entity: Entity already awake. ${this.stringifyInfo()}`
             );
         }
-        this.entityManager!.eWakeUp(this);
+        this.entityManager!._wakeUp(this);
         this.isAwake = true;
         if (this.isShadowCasting) {
-            this.entityManager!.eShadow(this, true);
+            this.entityManager!._shadow(this, true);
         }
     }
 
@@ -104,10 +104,10 @@ class Entity {
                 `Entity: Entity already awake. ${this.stringifyInfo()}`
             );
         }
-        this.entityManager!.eSleep(this);
+        this.entityManager!._sleep(this);
         this.isAwake = false;
         if (this.isShadowCasting) {
-            this.entityManager!.eShadow(this, false);
+            this.entityManager!._shadow(this, false);
         }
     }
 
@@ -115,7 +115,7 @@ class Entity {
         return `(Geometry: ${this.geometryName}, Id: ${this.id})`;
     }
 
-    public ePrepare(geometry: Geometry): boolean {
+    public _prepare(geometry: Geometry): boolean {
         this.computeTranslation();
 
         if (!this.computeInView()) {
@@ -138,25 +138,25 @@ class Entity {
         return (this.isRendering = true);
     }
 
-    public eShadowify(geometry: Geometry, shadow: Shadow): boolean {
+    public _shadowify(geometry: Geometry, shadow: Shadow): boolean {
         if (!this.isRendering) {
             return false;
         }
         if (this.shadowCull(geometry, shadow)) {
             return false;
         }
-        geometry.eStoreInstance(
+        geometry._storeInstance(
             this.world,
             geometry.hasLod(this.tempLod + 1) ? this.tempLod + 1 : this.tempLod
         );
         return true;
     }
 
-    public eStore(geometry: Geometry): void {
+    public _store(geometry: Geometry): void {
         if (!this.isRendering) {
             return;
         }
-        geometry.eStoreInstance(this.world, this.tempLod);
+        geometry._storeInstance(this.world, this.tempLod);
     }
 
     private computeTranslation(): void {
