@@ -44,12 +44,16 @@ class Camera {
         return this.direction.dot(directionX, directionY, directionZ) > minimum;
     }
 
-    public _update(): void {
+    /** @internal */
+    public update(): void {
         this.computeVectors();
         this.computeMatricies();
     }
 
-    public _bufferMainUniforms(program: ShaderProgram): void {
+    /**
+     * @internal
+     */
+    public bufferMainUniforms(program: ShaderProgram): void {
         this.bufferCameraDirectionUniform(program);
         this.bufferViewProjectionUniform(program);
     }

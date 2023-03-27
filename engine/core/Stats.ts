@@ -41,45 +41,72 @@ class Stats {
         this.createOverlay();
     }
 
-    public _begin(now: float): void {
+    /**
+     * @internal
+     */
+    public begin(now: float): void {
         if (this.then === -1) {
             this.then = now;
         }
         this.renderThen = performance.now();
     }
 
-    public _beginUpdate(): void {
+    /**
+     * @internal
+     */
+    public beginUpdate(): void {
         this.updateThen = performance.now();
         this.activeEntities = 0;
         this.shadowEntities = 0;
         this.totalEntities = 0;
     }
 
-    public _incrementEntities(): void {
+    /**
+     * @internal
+     */
+    public incrementEntities(): void {
         this.activeEntities += 1;
     }
 
-    public _incrementShadowEntities(): void {
+    /**
+     * @internal
+     */
+    public incrementShadowEntities(): void {
         this.shadowEntities += 1;
     }
 
-    public _setTotalEntities(n: int): void {
+    /**
+     * @internal
+     */
+    public setTotalEntities(n: int): void {
         this.totalEntities = n;
     }
 
-    public _endUpdate(): void {
+    /**
+     * @internal
+     */
+    public endUpdate(): void {
         this.updateMs = performance.now() - this.updateThen;
     }
 
-    public _beginSubUpdate(): void {
+    /**
+     * @internal
+     */
+    public beginSubUpdate(): void {
         this.subUpdateThen = performance.now();
     }
 
-    public _endSubUpdate(): void {
+    /**
+     * @internal
+     */
+    public endSubUpdate(): void {
         this.subUpdateMs = performance.now() - this.subUpdateThen;
     }
 
-    public _beginDraw(): void {
+    /**
+     * @internal
+     */
+    public beginDraw(): void {
         this.drawThen = performance.now();
         this.drawCalls = 0;
         this.shadowDrawCalls = 0;
@@ -89,7 +116,10 @@ class Stats {
         this.totalShadowVertecies = 0;
     }
 
-    public _incrementDrawCalls(vertecies: int, isShadow: boolean): void {
+    /**
+     * @internal
+     */
+    public incrementDrawCalls(vertecies: int, isShadow: boolean): void {
         if (isShadow) {
             return this.incrementShadowDrawCalls(vertecies);
         }
@@ -97,18 +127,27 @@ class Stats {
         this.activeVertecies += vertecies;
     }
 
-    public _incrementTotalVertecies(vertecies: int, isShadow: boolean): void {
+    /**
+     * @internal
+     */
+    public incrementTotalVertecies(vertecies: int, isShadow: boolean): void {
         if (isShadow) {
             return this.incrementTotalShadowVertecies(vertecies);
         }
         this.totalVertecies += vertecies;
     }
 
-    public _endDraw(): void {
+    /**
+     * @internal
+     */
+    public endDraw(): void {
         this.drawMs = performance.now() - this.drawThen;
     }
 
-    public _end(now: float): void {
+    /**
+     * @internal
+     */
+    public end(now: float): void {
         this.deltaMs = now - this.then;
         this.then = now;
         this.renderMs = performance.now() - this.renderThen;
@@ -131,7 +170,7 @@ class Stats {
 
     private updateOverlay(): void {
         if (this.overlayUpdateCounter === 0) {
-            this.overlay._update(this.stringify());
+            this.overlay.update(this.stringify());
             this.overlayUpdateCounter++;
         } else if (this.overlayUpdateCounter === 3) {
             this.overlayUpdateCounter = 0;
