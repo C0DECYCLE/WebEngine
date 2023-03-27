@@ -41,45 +41,45 @@ class Stats {
         this.createOverlay();
     }
 
-    public begin(now: float): void {
+    public eBegin(now: float): void {
         if (this.then === -1) {
             this.then = now;
         }
         this.renderThen = performance.now();
     }
 
-    public beginUpdate(): void {
+    public eBeginUpdate(): void {
         this.updateThen = performance.now();
         this.activeEntities = 0;
         this.shadowEntities = 0;
         this.totalEntities = 0;
     }
 
-    public incrementEntities(): void {
+    public eIncrementEntities(): void {
         this.activeEntities += 1;
     }
 
-    public incrementShadowEntities(): void {
+    public eIncrementShadowEntities(): void {
         this.shadowEntities += 1;
     }
 
-    public setTotalEntities(n: int): void {
+    public eSetTotalEntities(n: int): void {
         this.totalEntities = n;
     }
 
-    public endUpdate(): void {
+    public eEndUpdate(): void {
         this.updateMs = performance.now() - this.updateThen;
     }
 
-    public beginSubUpdate(): void {
+    public eBeginSubUpdate(): void {
         this.subUpdateThen = performance.now();
     }
 
-    public endSubUpdate(): void {
+    public eEndSubUpdate(): void {
         this.subUpdateMs = performance.now() - this.subUpdateThen;
     }
 
-    public beginDraw(): void {
+    public eBeginDraw(): void {
         this.drawThen = performance.now();
         this.drawCalls = 0;
         this.shadowDrawCalls = 0;
@@ -89,7 +89,7 @@ class Stats {
         this.totalShadowVertecies = 0;
     }
 
-    public incrementDrawCalls(vertecies: int, isShadow: boolean): void {
+    public eIncrementDrawCalls(vertecies: int, isShadow: boolean): void {
         if (isShadow) {
             return this.incrementShadowDrawCalls(vertecies);
         }
@@ -97,18 +97,18 @@ class Stats {
         this.activeVertecies += vertecies;
     }
 
-    public incrementTotalVertecies(vertecies: int, isShadow: boolean): void {
+    public eIncrementTotalVertecies(vertecies: int, isShadow: boolean): void {
         if (isShadow) {
             return this.incrementTotalShadowVertecies(vertecies);
         }
         this.totalVertecies += vertecies;
     }
 
-    public endDraw(): void {
+    public eEndDraw(): void {
         this.drawMs = performance.now() - this.drawThen;
     }
 
-    public end(now: float): void {
+    public eEnd(now: float): void {
         this.deltaMs = now - this.then;
         this.then = now;
         this.renderMs = performance.now() - this.renderThen;
@@ -131,7 +131,7 @@ class Stats {
 
     private updateOverlay(): void {
         if (this.overlayUpdateCounter === 0) {
-            this.overlay.update(this.stringify());
+            this.overlay.eUpdate(this.stringify());
             this.overlayUpdateCounter++;
         } else if (this.overlayUpdateCounter === 3) {
             this.overlayUpdateCounter = 0;

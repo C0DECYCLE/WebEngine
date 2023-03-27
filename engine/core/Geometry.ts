@@ -31,7 +31,7 @@ class Geometry {
         return this.lods.has(lod);
     }
 
-    public storeInstance(mat: Mat4, lod: int): void {
+    public eStoreInstance(mat: Mat4, lod: int): void {
         if (lod === -1) {
             return;
         }
@@ -40,17 +40,17 @@ class Geometry {
                 `Geometry: Lod level not available on geometry. (${this.data.name}, ${lod})`
             );
         }
-        this.lods.get(lod)?.storeInstance(mat);
+        this.lods.get(lod)?.eStoreInstance(mat);
         this.instanceCount++;
     }
 
-    public draw(isShadow: boolean): void {
+    public eDraw(isShadow: boolean): void {
         this.lods.forEach((lod: GeometryLod, _level: int) =>
-            lod.draw(isShadow)
+            lod.eDraw(isShadow)
         );
         this.geometryManager
-            .getStats()
-            .incrementTotalVertecies(
+            .eGetStats()
+            .eIncrementTotalVertecies(
                 this.data.lods[0].count * this.instanceCount,
                 isShadow
             );

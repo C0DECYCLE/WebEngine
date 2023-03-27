@@ -31,16 +31,16 @@ class GeometryManager {
         this.stats = stats;
     }
 
-    public async initialize(
+    public eGetStats(): Stats {
+        return this.stats;
+    }
+
+    public async eInitialize(
         urls: string[],
         lodMatrix: GeometryLodConfig[]
     ): Promise<void> {
         await this.fetchObjFiles(urls, lodMatrix);
         this.createGeometries();
-    }
-
-    public getStats(): Stats {
-        return this.stats;
     }
 
     private async fetchObjFiles(

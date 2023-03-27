@@ -32,8 +32,8 @@ class Renderer {
         shaderUrls: string[] = [],
         lodMatrix: GeometryLodConfig[] = Geometry.LodMatrix
     ): Promise<void> {
-        await this.shaderManager.initialize(shaderUrls);
-        await this.geometryManager.initialize(geometryUrls, lodMatrix);
+        await this.shaderManager.eInitialize(shaderUrls);
+        await this.geometryManager.eInitialize(geometryUrls, lodMatrix);
         this.initializeContext();
     }
 
@@ -50,14 +50,14 @@ class Renderer {
     }
 
     public render(now: float): void {
-        this.stats.begin(now);
-        this.stats.beginUpdate();
+        this.stats.eBegin(now);
+        this.stats.eBeginUpdate();
         this.update();
-        this.stats.endUpdate();
-        this.stats.beginDraw();
+        this.stats.eEndUpdate();
+        this.stats.eBeginDraw();
         this.draw();
-        this.stats.endDraw();
-        this.stats.end(now);
+        this.stats.eEndDraw();
+        this.stats.eEnd(now);
     }
 
     private createCanvas(): HTMLCanvasElement {
@@ -149,19 +149,19 @@ class Renderer {
 
     private update(): void {
         const shadow = this.light.getShadow();
-        this.camera.update();
-        this.light.update();
-        this.entityManager.prepare();
+        this.camera.eUpdate();
+        this.light.eUpdate();
+        this.entityManager.ePrepare();
         if (shadow) {
-            this.entityManager.shadowify(shadow);
+            this.entityManager.eShadowify(shadow);
         }
     }
 
     private draw(): void {
         this.drawShadow();
-        this.stats.beginSubUpdate();
-        this.entityManager.store();
-        this.stats.endSubUpdate();
+        this.stats.eBeginSubUpdate();
+        this.entityManager.eStore();
+        this.stats.eEndSubUpdate();
         this.drawMain();
     }
 
@@ -170,15 +170,15 @@ class Renderer {
         if (!shadow) {
             return;
         }
-        shadow.beginFrameBuffer();
+        shadow.eBeginFrameBuffer();
 
         const shadowProgram: ShaderProgram = this.bindProgram("shadow");
 
-        shadow.bufferShadowUniforms(shadowProgram);
+        shadow.eBufferShadowUniforms(shadowProgram);
 
-        this.entityManager.draw(true);
+        this.entityManager.eDraw(true);
 
-        shadow.endFrameBuffer();
+        shadow.eEndFrameBuffer();
     }
 
     private drawMain(): void {
@@ -186,10 +186,10 @@ class Renderer {
 
         const program: ShaderProgram = this.bindProgram("main");
 
-        this.camera.bufferMainUniforms(program);
-        this.light.bufferMainUniforms(program);
+        this.camera.eBufferMainUniforms(program);
+        this.light.eBufferMainUniforms(program);
 
-        this.entityManager.draw(false);
+        this.entityManager.eDraw(false);
     }
 
     private bindProgram(name: string): ShaderProgram {

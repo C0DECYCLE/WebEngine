@@ -36,23 +36,23 @@ class Light {
         return this.shadow;
     }
 
-    public update(): void {
+    public eUpdate(): void {
         this.sync();
         if (!this.shadow) {
             return;
         }
         this.shadow.direction.copy(this.direction);
-        this.shadow.update();
+        this.shadow.eUpdate();
     }
 
-    public bufferMainUniforms(program: ShaderProgram): void {
+    public eBufferMainUniforms(program: ShaderProgram): void {
         this.bufferAmbientColorUniform(program);
         this.bufferLightDirectionUniform(program);
         this.bufferLightColorUniform(program);
         if (!this.shadow) {
             return;
         }
-        this.shadow.bufferMainUniforms(program);
+        this.shadow.eBufferMainUniforms(program);
     }
 
     private sync(): void {

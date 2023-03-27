@@ -35,11 +35,6 @@ class Camera {
         this.projection.perspective(this.fov, this.ratio, this.near, this.far);
     }
 
-    public update(): void {
-        this.computeVectors();
-        this.computeMatricies();
-    }
-
     public inView(
         directionX: float,
         directionY: float,
@@ -49,7 +44,12 @@ class Camera {
         return this.direction.dot(directionX, directionY, directionZ) > minimum;
     }
 
-    public bufferMainUniforms(program: ShaderProgram): void {
+    public eUpdate(): void {
+        this.computeVectors();
+        this.computeMatricies();
+    }
+
+    public eBufferMainUniforms(program: ShaderProgram): void {
         this.bufferCameraDirectionUniform(program);
         this.bufferViewProjectionUniform(program);
     }

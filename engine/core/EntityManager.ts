@@ -21,7 +21,7 @@ class EntityManager {
         return this.list;
     }
 
-    public attach(entity: Entity): void {
+    public eAttach(entity: Entity): void {
         if (!this.geometryManager.list.has(entity.geometryName)) {
             throw new Error(
                 `EntityManager: Geometry name unknown. ${entity.stringifyInfo()}`
@@ -30,15 +30,15 @@ class EntityManager {
         this.list.add(entity);
     }
 
-    public wakeUp(entity: Entity): void {
+    public eWakeUp(entity: Entity): void {
         this.renderList.add(entity);
     }
 
-    public sleep(entity: Entity): void {
+    public eSleep(entity: Entity): void {
         this.renderList.delete(entity);
     }
 
-    public shadow(entity: Entity, value: boolean): void {
+    public eShadow(entity: Entity, value: boolean): void {
         if (value) {
             this.shadowList.add(entity);
             return;
@@ -46,47 +46,47 @@ class EntityManager {
         this.shadowList.delete(entity);
     }
 
-    public prepare(): void {
+    public ePrepare(): void {
         for (let i: int = 0; i < this.renderList.length; i++) {
             if (
-                this.renderList[i].prepare(
+                this.renderList[i].ePrepare(
                     this.geometryManager.list.get(
                         this.renderList[i].geometryName
                     )!
                 )
             ) {
-                this.stats.incrementEntities();
+                this.stats.eIncrementEntities();
             }
         }
-        this.stats.setTotalEntities(this.list.length);
+        this.stats.eSetTotalEntities(this.list.length);
     }
 
-    public shadowify(shadow: Shadow): void {
+    public eShadowify(shadow: Shadow): void {
         for (let i: int = 0; i < this.shadowList.length; i++) {
             if (
-                this.shadowList[i].shadowify(
+                this.shadowList[i].eShadowify(
                     this.geometryManager.list.get(
                         this.shadowList[i].geometryName
                     )!,
                     shadow
                 )
             ) {
-                this.stats.incrementShadowEntities();
+                this.stats.eIncrementShadowEntities();
             }
         }
     }
 
-    public store(): void {
+    public eStore(): void {
         for (let i: int = 0; i < this.renderList.length; i++) {
-            this.renderList[i].store(
+            this.renderList[i].eStore(
                 this.geometryManager.list.get(this.renderList[i].geometryName)!
             );
         }
     }
 
-    public draw(isShadow: boolean): void {
+    public eDraw(isShadow: boolean): void {
         this.geometryManager.list.forEach((geometry: Geometry, _name: string) =>
-            geometry.draw(isShadow)
+            geometry.eDraw(isShadow)
         );
     }
 }
