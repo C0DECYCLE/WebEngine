@@ -13,9 +13,7 @@ class StatsOverlay {
         this.p = this.createP(this.div);
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public update(text: string): void {
         this.p.innerHTML = text;
     }

@@ -31,16 +31,12 @@ class GeometryManager {
         this.stats = stats;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public getStats(): Stats {
         return this.stats;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public async initialize(
         urls: string[],
         lodMatrix: GeometryLodConfig[]

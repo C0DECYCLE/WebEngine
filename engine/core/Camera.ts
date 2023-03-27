@@ -50,9 +50,7 @@ class Camera {
         this.computeMatricies();
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public bufferMainUniforms(program: ShaderProgram): void {
         this.bufferCameraDirectionUniform(program);
         this.bufferViewProjectionUniform(program);

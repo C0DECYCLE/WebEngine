@@ -21,9 +21,7 @@ class EntityManager {
         return this.list;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public attach(entity: Entity): void {
         if (!this.geometryManager.list.has(entity.geometryName)) {
             throw new Error(
@@ -33,23 +31,17 @@ class EntityManager {
         this.list.add(entity);
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public wakeUp(entity: Entity): void {
         this.renderList.add(entity);
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public sleep(entity: Entity): void {
         this.renderList.delete(entity);
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public shadow(entity: Entity, value: boolean): void {
         if (value) {
             this.shadowList.add(entity);
@@ -58,9 +50,7 @@ class EntityManager {
         this.shadowList.delete(entity);
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public prepare(): void {
         for (let i: int = 0; i < this.renderList.length; i++) {
             if (
@@ -76,9 +66,7 @@ class EntityManager {
         this.stats.setTotalEntities(this.list.length);
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public shadowify(shadow: Shadow): void {
         for (let i: int = 0; i < this.shadowList.length; i++) {
             if (
@@ -94,9 +82,7 @@ class EntityManager {
         }
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public store(): void {
         for (let i: int = 0; i < this.renderList.length; i++) {
             this.renderList[i].store(
@@ -105,9 +91,7 @@ class EntityManager {
         }
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public draw(isShadow: boolean): void {
         this.geometryManager.list.forEach((geometry: Geometry, _name: string) =>
             geometry.draw(isShadow)

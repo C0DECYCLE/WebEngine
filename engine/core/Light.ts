@@ -36,9 +36,7 @@ class Light {
         return this.shadow;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public update(): void {
         this.sync();
         if (!this.shadow) {
@@ -48,9 +46,7 @@ class Light {
         this.shadow.update();
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public bufferMainUniforms(program: ShaderProgram): void {
         this.bufferAmbientColorUniform(program);
         this.bufferLightDirectionUniform(program);

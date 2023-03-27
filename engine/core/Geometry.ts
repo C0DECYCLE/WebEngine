@@ -31,9 +31,7 @@ class Geometry {
         return this.lods.has(lod);
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public storeInstance(mat: Mat4, lod: int): void {
         if (lod === -1) {
             return;
@@ -47,9 +45,7 @@ class Geometry {
         this.instanceCount++;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public draw(isShadow: boolean): void {
         this.lods.forEach((lod: GeometryLod, _level: int) =>
             lod.draw(isShadow)

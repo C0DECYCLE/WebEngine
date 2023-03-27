@@ -115,9 +115,7 @@ class Entity {
         return `(Geometry: ${this.geometryName}, Id: ${this.id})`;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public prepare(geometry: Geometry): boolean {
         this.computeTranslation();
 
@@ -141,9 +139,7 @@ class Entity {
         return (this.isRendering = true);
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public shadowify(geometry: Geometry, shadow: Shadow): boolean {
         if (!this.isRendering) {
             return false;
@@ -158,9 +154,7 @@ class Entity {
         return true;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public store(geometry: Geometry): void {
         if (!this.isRendering) {
             return;

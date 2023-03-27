@@ -41,9 +41,7 @@ class Stats {
         this.createOverlay();
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public begin(now: float): void {
         if (this.then === -1) {
             this.then = now;
@@ -51,9 +49,7 @@ class Stats {
         this.renderThen = performance.now();
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public beginUpdate(): void {
         this.updateThen = performance.now();
         this.activeEntities = 0;
@@ -61,51 +57,37 @@ class Stats {
         this.totalEntities = 0;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public incrementEntities(): void {
         this.activeEntities += 1;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public incrementShadowEntities(): void {
         this.shadowEntities += 1;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public setTotalEntities(n: int): void {
         this.totalEntities = n;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public endUpdate(): void {
         this.updateMs = performance.now() - this.updateThen;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public beginSubUpdate(): void {
         this.subUpdateThen = performance.now();
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public endSubUpdate(): void {
         this.subUpdateMs = performance.now() - this.subUpdateThen;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public beginDraw(): void {
         this.drawThen = performance.now();
         this.drawCalls = 0;
@@ -116,9 +98,7 @@ class Stats {
         this.totalShadowVertecies = 0;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public incrementDrawCalls(vertecies: int, isShadow: boolean): void {
         if (isShadow) {
             return this.incrementShadowDrawCalls(vertecies);
@@ -127,9 +107,7 @@ class Stats {
         this.activeVertecies += vertecies;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public incrementTotalVertecies(vertecies: int, isShadow: boolean): void {
         if (isShadow) {
             return this.incrementTotalShadowVertecies(vertecies);
@@ -137,16 +115,12 @@ class Stats {
         this.totalVertecies += vertecies;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public endDraw(): void {
         this.drawMs = performance.now() - this.drawThen;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public end(now: float): void {
         this.deltaMs = now - this.then;
         this.then = now;

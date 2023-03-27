@@ -29,9 +29,7 @@ class GeometryLod {
         this.initialize();
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public storeInstance(mat: Mat4): void {
         if (this.instanceStoreCount === this.geometry.data.capacity) {
             return warn(
@@ -42,9 +40,7 @@ class GeometryLod {
         this.instanceStoreCount++;
     }
 
-    /**
-     * @internal
-     */
+    /** @internal */
     public draw(isShadow: boolean): void {
         if (this.instanceStoreCount === 0) {
             return;
