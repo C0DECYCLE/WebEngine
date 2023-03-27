@@ -159,12 +159,11 @@ class Stats {
 
     private stringifyCpu(): string {
         return `
-            cpu frame rate: ${(1_000 / this.renderMs).toFixed(1)} fps<br>
-
             <b>cpu frame time: ${this.renderMs.toFixed(2)} ms</b><br>
             |_ update: ${(this.updateMs + this.subUpdateMs).toFixed(2)} ms<br>
             |_ draw: ${(this.drawMs - this.subUpdateMs).toFixed(2)} ms<br>
-
+            <br>
+            cpu frame rate: ${(1_000 / this.renderMs).toFixed(1)} fps<br>
             cpu inter time: ${(this.deltaMs - this.renderMs).toFixed(2)} ms<br>
         `;
     }
@@ -174,7 +173,7 @@ class Stats {
             <b>gpu draw calls: ${this.drawCalls + this.shadowDrawCalls}</b><br>
             |_ main: ${this.drawCalls}<br>
             |_ shadow: ${this.shadowDrawCalls}<br>
-
+            <br>
             <b>gpu vertecies: ${(
                 this.activeVertecies + this.activeShadowVertecies
             ).dotit()} / ${(
@@ -182,7 +181,7 @@ class Stats {
         ).dotit()}</b><br>
             |_ main: ${this.activeVertecies.dotit()} / ${this.totalVertecies.dotit()}<br>
             |_ shadow: ${this.activeShadowVertecies.dotit()} / ${this.totalShadowVertecies.dotit()}<br>
-
+            <br>
             <b>gpu faces: ${(
                 this.activeVertecies / 3 +
                 this.activeShadowVertecies / 3

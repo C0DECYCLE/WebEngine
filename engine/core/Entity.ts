@@ -19,6 +19,7 @@ class Entity {
     private isRendering: boolean = false;
 
     private targetLod: int = -1;
+    private inViewMinimum: float = 0.5;
     private tempDistance: float;
     private tempCoverage: float;
     private tempLod: int;
@@ -42,6 +43,14 @@ class Entity {
         this.camera = renderer.getCamera();
         this.entityManager = renderer.getEntityManager();
         this.entityManager.attach(this);
+    }
+
+    public setViewCulling(minimum: float): void {
+        this.inViewMinimum = minimum;
+    }
+
+    public disableViewCulling(): void {
+        this.inViewMinimum = -1;
     }
 
     public staticLod(lod: int): void {
@@ -103,26 +112,26 @@ class Entity {
     }
 
     public prepare(geometry: Geometry): boolean {
-        /*
-        if (!this.camera!.inFrustum(this.position, geometry.data.bounds.size)) {
-            return (this.isRendering = true);
-        }
-        */
         this.computeTranslation();
-        this.selectLod(geometry.data);
-        if (this.tempLod !== -1) {
-            this.computeRotation(
-                this.world.values[12],
-                this.world.values[13],
-                this.world.values[14]
-            );
-            this.passInstanceSubUniform(
-                ShaderVariables.SHADOWRECEIVE,
-                this.isShadowReceiving
-            );
-            return (this.isRendering = true);
+
+        if (!this.computeInView()) {
+            return (this.isRendering = false);
         }
-        return (this.isRendering = false);
+
+        this.selectLod(geometry.data);
+        if (this.tempLod === -1) {
+            return (this.isRendering = false);
+        }
+        this.computeRotation(
+            this.world.values[12],
+            this.world.values[13],
+            this.world.values[14]
+        );
+        this.passInstanceSubUniform(
+            ShaderVariables.SHADOWRECEIVE,
+            this.isShadowReceiving
+        );
+        return (this.isRendering = true);
     }
 
     public shadowify(geometry: Geometry, shadow: Shadow): boolean {
@@ -154,38 +163,7 @@ class Entity {
         this.world.values[12] = this.position.x - this.camera!.position.x;
         this.world.values[13] = this.position.y - this.camera!.position.y;
         this.world.values[14] = this.position.z - this.camera!.position.z;
-    }
-
-    private computeRotation(x: float, y: float, z: float): void {
-        if (!this.rotation.isDirty) {
-            return;
-        }
-        this.world.reset();
-        this.world.rotate(this.rotation);
-        this.world.values[12] = x;
-        this.world.values[13] = y;
-        this.world.values[14] = z;
-        this.rotation.isDirty = false;
-    }
-
-    private passInstanceSubUniform(
-        row: ShaderVariables,
-        value: float | boolean
-    ): void {
-        this.world.values[parseInt(row) * 4 + 3] = +value;
-    }
-
-    private selectLod(data: GeometryData): void {
-        this.tempLod = this.targetLod;
-        if (this.tempLod !== -1) {
-            return;
-        }
         this.tempDistance = this.computeDistance();
-        this.tempCoverage = this.computeCoverage(
-            data.bounds,
-            this.tempDistance
-        );
-        this.tempLod = this.computeLod(data.lods, this.tempCoverage);
     }
 
     private computeDistance(): float {
@@ -194,6 +172,30 @@ class Entity {
                 this.world.values[13] * this.world.values[13] +
                 this.world.values[14] * this.world.values[14]
         );
+    }
+
+    private computeInView(): boolean {
+        if (this.inViewMinimum <= -1) {
+            return true;
+        }
+        return this.camera!.inView(
+            this.world.values[12] / this.tempDistance,
+            this.world.values[13] / this.tempDistance,
+            this.world.values[14] / this.tempDistance,
+            this.inViewMinimum
+        );
+    }
+
+    private selectLod(data: GeometryData): void {
+        this.tempLod = this.targetLod;
+        if (this.tempLod !== -1) {
+            return;
+        }
+        this.tempCoverage = this.computeCoverage(
+            data.bounds,
+            this.tempDistance
+        );
+        this.tempLod = this.computeLod(data.lods, this.tempCoverage);
     }
 
     private computeCoverage(bounds: GeometryBounds, distance: float): float {
@@ -220,6 +222,25 @@ class Entity {
                 : coverage < levels[i - 1].minimum) &&
             coverage >= levels[i].minimum
         );
+    }
+
+    private computeRotation(x: float, y: float, z: float): void {
+        if (!this.rotation.isDirty) {
+            return;
+        }
+        this.world.reset();
+        this.world.rotate(this.rotation);
+        this.world.values[12] = x;
+        this.world.values[13] = y;
+        this.world.values[14] = z;
+        this.rotation.isDirty = false;
+    }
+
+    private passInstanceSubUniform(
+        row: ShaderVariables,
+        value: float | boolean
+    ): void {
+        this.world.values[parseInt(row) * 4 + 3] = +value;
     }
 
     private shadowCull(geometry: Geometry, shadow: Shadow): boolean {

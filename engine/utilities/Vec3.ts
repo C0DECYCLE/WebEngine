@@ -134,8 +134,16 @@ class Vec3 {
         return this;
     }
 
-    public dot(b: Vec3): float {
-        return this.x * b.x + this.y * b.y + this.z * b.z;
+    public dot(x: Vec3 | float, y?: float, z?: float): float {
+        if (x instanceof Vec3) {
+            z = x.z;
+            y = x.y;
+            x = x.x;
+        } else if (y === undefined || z === undefined) {
+            z = x;
+            y = x;
+        }
+        return this.x * x + this.y * y + this.z * z;
     }
 
     public cross(b: Vec3, a: Vec3 = this): Vec3 {
