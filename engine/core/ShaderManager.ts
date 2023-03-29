@@ -7,7 +7,18 @@
 class ShaderManager {
     public readonly rootPath: string = "/engine/shaders/";
     public readonly names: string[] = ["main", "shadow"];
+    public readonly includes: string[] = [
+        "vertexVariables",
+        "vertexMethods",
+        "vertexPre",
+        "vertexPost",
+        "fragmentVariables",
+        "fragmentMethods",
+        "fragmentPre",
+        "fragmentPost",
+    ];
 
+    public readonly includeSources: MapS<string> = new MapS<string>();
     public readonly sources: MapS<ShaderSourcePair> =
         new MapS<ShaderSourcePair>();
     public readonly pairs: MapS<ShaderPair> = new MapS<ShaderPair>();
@@ -21,6 +32,7 @@ class ShaderManager {
 
     /** @internal */
     public async initialize(urls: string[]): Promise<void> {
+        await this.fetchIncludeSources();
         await this.fetchShaderSources(urls);
         this.createShaders();
         this.createPrograms();
@@ -37,59 +49,36 @@ class ShaderManager {
         return program;
     }
 
-    private createShader(
-        type: ShaderTypes,
-        source: string
-    ): Nullable<WebGLShader> {
-        const shader: Nullable<WebGLShader> = this.gl.createShader(
-            type === ShaderTypes.VERTEX
-                ? this.gl.VERTEX_SHADER
-                : this.gl.FRAGMENT_SHADER
-        );
-        if (!shader) {
-            throw new Error("ShaderManager: Shader creation failed.");
-        }
-        this.gl.shaderSource(shader, source);
-        this.gl.compileShader(shader);
-        const success: any = this.gl.getShaderParameter(
-            shader,
-            this.gl.COMPILE_STATUS
-        );
-        if (success) {
-            return shader;
-        }
-        const shaderInfoLog: Nullable<string> =
-            this.gl.getShaderInfoLog(shader);
-        this.gl.deleteShader(shader);
-        throw new Error(
-            `ShaderManager: Shader compilation failed. (${shaderInfoLog})`
+    private async fetchIncludeSources(): Promise<void> {
+        await Promise.all(
+            this.includeSourceUrls().map((includeSourceUrl: string) =>
+                this.fetchIncludeSourceUrls(includeSourceUrl)
+            )
         );
     }
 
-    private createProgram(
-        vertexShader: WebGLShader,
-        fragmentShader: WebGLShader
-    ): Nullable<WebGLProgram> {
-        const program: Nullable<WebGLProgram> = this.gl.createProgram();
-        if (!program) {
-            throw new Error("ShaderManager: Program creation failed.");
-        }
-        this.gl.attachShader(program, vertexShader);
-        this.gl.attachShader(program, fragmentShader);
-        this.gl.linkProgram(program);
-        const success: any = this.gl.getProgramParameter(
-            program,
-            this.gl.LINK_STATUS
+    private includeSourceUrls(): string[] {
+        const includeSourceUrls: string[] = [];
+        this.includes.forEach((name, _i: int) =>
+            includeSourceUrls.push(`${this.rootPath}includes/${name}.fx`)
         );
-        if (success) {
-            return program;
-        }
-        const programInfoLog: Nullable<string> =
-            this.gl.getProgramInfoLog(program);
-        this.gl.deleteProgram(program);
-        throw new Error(
-            `ShaderManager: Program creation failed. (${programInfoLog})`
+        return includeSourceUrls;
+    }
+
+    private fetchIncludeSourceUrls(
+        includeSourceUrl: string
+    ): Promise<void | Response> {
+        return fetch(includeSourceUrl).then(async (response: Response) =>
+            this.storeIncludeSource(includeSourceUrl, await response.text())
         );
+    }
+
+    private storeIncludeSource(includeSourceUrl: string, source: string): void {
+        const include: string = includeSourceUrl
+            .split("/")
+            .at(-1)!
+            .split(".")[0];
+        this.includeSources.set(include, source);
     }
 
     private async fetchShaderSources(urls: string[]): Promise<void> {
@@ -154,8 +143,25 @@ class ShaderManager {
                 [ShaderTypes.VERTEX]: "",
                 [ShaderTypes.FRAGMENT]: "",
             } as ShaderSourcePair);
-        sourcePair[shaderSourceInfo.type] = source;
+        sourcePair[shaderSourceInfo.type] = this.preProcessSource(source);
         this.sources.set(shaderSourceInfo.name, sourcePair);
+    }
+
+    private preProcessSource(source: string): string {
+        const seperator: string = "#include";
+        source.split("\n").forEach((line: string, _i: int) => {
+            if (line.includes(seperator)) {
+                const include: string = line.split(seperator)[1].split(" ")[1];
+                if (!this.includeSources.has(include)) {
+                    throw new Error(
+                        `ShaderManager: Include unknown. (${include})`
+                    );
+                }
+                const includeSource: string = this.includeSources.get(include)!;
+                source = source.replace(line, includeSource);
+            }
+        });
+        return source;
     }
 
     private createShaders(): void {
@@ -195,6 +201,61 @@ class ShaderManager {
             new ShaderVariableMap<WebGLAttributeLocation>();
         this.registerLocations(result, name === "shadow");
         return result;
+    }
+
+    private createShader(
+        type: ShaderTypes,
+        source: string
+    ): Nullable<WebGLShader> {
+        const shader: Nullable<WebGLShader> = this.gl.createShader(
+            type === ShaderTypes.VERTEX
+                ? this.gl.VERTEX_SHADER
+                : this.gl.FRAGMENT_SHADER
+        );
+        if (!shader) {
+            throw new Error("ShaderManager: Shader creation failed.");
+        }
+        this.gl.shaderSource(shader, source);
+        this.gl.compileShader(shader);
+        const success: any = this.gl.getShaderParameter(
+            shader,
+            this.gl.COMPILE_STATUS
+        );
+        if (success) {
+            return shader;
+        }
+        const shaderInfoLog: Nullable<string> =
+            this.gl.getShaderInfoLog(shader);
+        this.gl.deleteShader(shader);
+        throw new Error(
+            `ShaderManager: Shader compilation failed. (${shaderInfoLog})`
+        );
+    }
+
+    private createProgram(
+        vertexShader: WebGLShader,
+        fragmentShader: WebGLShader
+    ): Nullable<WebGLProgram> {
+        const program: Nullable<WebGLProgram> = this.gl.createProgram();
+        if (!program) {
+            throw new Error("ShaderManager: Program creation failed.");
+        }
+        this.gl.attachShader(program, vertexShader);
+        this.gl.attachShader(program, fragmentShader);
+        this.gl.linkProgram(program);
+        const success: any = this.gl.getProgramParameter(
+            program,
+            this.gl.LINK_STATUS
+        );
+        if (success) {
+            return program;
+        }
+        const programInfoLog: Nullable<string> =
+            this.gl.getProgramInfoLog(program);
+        this.gl.deleteProgram(program);
+        throw new Error(
+            `ShaderManager: Program creation failed. (${programInfoLog})`
+        );
     }
 
     private registerLocations(

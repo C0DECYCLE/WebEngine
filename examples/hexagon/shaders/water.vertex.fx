@@ -8,46 +8,14 @@
 
 precision highp float;
 
-//uniforms
-uniform float time;
-uniform vec3 cameraPosition;
-uniform mat4 viewProjection;
-uniform mat4 shadowProjection;
+#include vertexVariables
+#include vertexMethods
 
-//instance uniforms
-in mat4 objectWorld;
-
-//attributes
-in vec3 vertexPosition;
-in vec3 vertexColor;
- 
-//fragment shader
-out vec3 finalVertexPosition;
-out vec3 finalVertexColor;
-out vec4 finalShadowCoordinate;
-out float finalShadowReceive;
-
-//methods
-mat4 cleanWorld() {
-    mat4 world = objectWorld;
-    world[0][3] = 0.0;
-    world[1][3] = 0.0;
-    world[2][3] = 0.0;
-    world[3][3] = 1.0;
-    return world;
-}
-
-//main
 void main() {
-    vec4 finalWorldPosition = cleanWorld() * vec4(vertexPosition, 1.0);
+    #include vertexPre
 
     vec2 c = (finalWorldPosition.xz + cameraPosition.xz) * 1000.0 + time * 0.001;
     finalWorldPosition.y += cos(c.x) * sin(c.y) * 0.5;
 
-    gl_Position = viewProjection * finalWorldPosition;
-
-    finalVertexPosition = finalWorldPosition.xyz + time * 0.0;
-    finalVertexColor = vertexColor + cameraPosition * 0.0;
-    finalShadowCoordinate = shadowProjection * finalWorldPosition;
-    finalShadowReceive = objectWorld[0][3];
+    #include vertexPost
 }
