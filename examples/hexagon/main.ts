@@ -21,7 +21,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     const camera: Camera = renderer.getCamera();
     camera.target.set(-0.1, 0, -0.25).scale(80);
-    camera.position.set(0, 1.25, -1.0).scale(60).add(camera.target);
+    camera.position.set(0, 1.25, -1.0).scale(50).add(camera.target);
 
     const light: Light = renderer.getLight();
     light.ambient.set(0.15, 0.05, 0.2);
