@@ -9,16 +9,10 @@ class EntityManager {
     private renderList: ObjectArray<Entity> = new ObjectArray<Entity>();
     private shadowList: ObjectArray<Entity> = new ObjectArray<Entity>();
 
-    private readonly shaderManager: ShaderManager;
     private readonly geometryManager: GeometryManager;
     private readonly stats: Stats;
 
-    public constructor(
-        shaderManager: ShaderManager,
-        geometryManager: GeometryManager,
-        stats: Stats
-    ) {
-        this.shaderManager = shaderManager;
+    public constructor(geometryManager: GeometryManager, stats: Stats) {
         this.geometryManager = geometryManager;
         this.stats = stats;
     }
@@ -66,10 +60,10 @@ class EntityManager {
                     )!
                 )
             ) {
-                this.stats.incrementEntities();
+                this.stats.add("activeEntities", 1);
             }
         }
-        this.stats.setTotalEntities(this.list.length);
+        this.stats.set("totalEntities", this.list.length);
     }
 
     /** @internal */
@@ -83,7 +77,7 @@ class EntityManager {
                     shadow
                 )
             ) {
-                this.stats.incrementShadowEntities();
+                this.stats.add("shadowEntities", 1);
             }
         }
     }

@@ -113,7 +113,6 @@ class Renderer {
 
     private createEntityManager(): void {
         this.entityManager = new EntityManager(
-            this.shaderManager,
             this.geometryManager,
             this.stats
         );

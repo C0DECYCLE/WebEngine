@@ -53,12 +53,7 @@ class GeometryLod {
             this.data.count,
             this.instanceStoreCount
         );
-        this.geometry.geometryManager
-            .getStats()
-            .incrementDrawCalls(
-                this.data.count * this.instanceStoreCount,
-                isShadow
-            );
+        this.registerStats(isShadow, this.data.count * this.instanceStoreCount);
         this.instanceStoreCount = 0;
     }
 
@@ -155,5 +150,17 @@ class GeometryLod {
             this.geometry.program.attributeLocations.get(name)!;
         this.gl.enableVertexAttribArray(loc);
         this.gl.vertexAttribPointer(loc, stride, this.gl.FLOAT, false, 0, 0);
+    }
+
+    private registerStats(isShadow: boolean, n: int): void {
+        if (isShadow) {
+            this.geometry.geometryManager.getStats().add("shadowDrawCalls", 1);
+            this.geometry.geometryManager
+                .getStats()
+                .add("activeShadowVertecies", n);
+        } else {
+            this.geometry.geometryManager.getStats().add("drawCalls", 1);
+            this.geometry.geometryManager.getStats().add("activeVertecies", n);
+        }
     }
 }
