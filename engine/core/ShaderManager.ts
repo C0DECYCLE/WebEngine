@@ -26,6 +26,17 @@ class ShaderManager {
         this.createPrograms();
     }
 
+    /** @internal */
+    public use(name: string): ShaderProgram {
+        const program: Nullable<ShaderProgram> =
+            this.programs.get(name) || null;
+        if (!program) {
+            throw new Error("ShaderManager: Try to use unkown program.");
+        }
+        this.gl.useProgram(program.program);
+        return program;
+    }
+
     private createShader(
         type: ShaderTypes,
         source: string
@@ -97,7 +108,13 @@ class ShaderManager {
                 `${this.rootPath}${name}.${ShaderTypes.FRAGMENT}.fx`
             )
         );
-        shaderSourceUrls.push(...urls);
+        urls.forEach((url, _i: int) => {
+            shaderSourceUrls.push(
+                `${url}.${ShaderTypes.VERTEX}.fx`,
+                `${url}.${ShaderTypes.FRAGMENT}.fx`
+            );
+            this.names.push(url.split("/").at(-1)!);
+        });
         return shaderSourceUrls;
     }
 
@@ -185,6 +202,8 @@ class ShaderManager {
         ignore: boolean = false
     ): void {
         this.registerUniformLocations(shaderProgram, ignore, [
+            ShaderVariables.TIME,
+            ShaderVariables.CAMERAPOSITION,
             ShaderVariables.CAMERADIRECTION,
             ShaderVariables.VIEWPROJECTION,
             ShaderVariables.SHADOWPROJECTION,

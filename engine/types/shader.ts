@@ -6,6 +6,8 @@
 
 enum ShaderVariables {
     //uniforms
+    TIME = "time",
+    CAMERAPOSITION = "cameraPosition",
     CAMERADIRECTION = "cameraDirection",
     VIEWPROJECTION = "viewProjection",
     SHADOWPROJECTION = "shadowProjection",

@@ -8,16 +8,19 @@ var renderer: Renderer;
 
 window.addEventListener("compile", async (_event: Event): Promise<void> => {
     renderer = new Renderer(new Vec3(0.9, 0.9, 0.9), undefined, true);
-    await renderer.initialize([
-        "tree.obj",
-        "house.obj",
-        "field.obj",
-        "water.obj",
-    ]);
+    await renderer.initialize(
+        [
+            "models/tree.obj",
+            "models/house.obj",
+            "models/field.obj",
+            "models/water.obj",
+        ],
+        ["shaders/water"]
+    );
 
     const camera: Camera = renderer.getCamera();
     camera.target.set(-0.1, 0, -0.25).scale(80);
-    camera.position.set(0, 1.25, -0.75).scale(40).add(camera.target);
+    camera.position.set(0, 1.25, -1.0).scale(50).add(camera.target);
 
     const light: Light = renderer.getLight();
     light.ambient.set(0.15, 0.05, 0.2);
@@ -88,10 +91,10 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     for (let z: int = 0; z < 8; z++) {
         for (let x: int = 0; x < 8; x++) {
             const water: Entity = new Entity("water");
-            water.position.set(-x * 52, -0.1, -z * 52);
-            water.position.x += 4 * 52;
-            water.position.z += 4 * 52;
-            if (Math.random() > 0.5) water.rotation.y = 180 * toRadian;
+            water.position.set(-x * 60, -2.0, -z * 60);
+            water.position.x += 4 * 60;
+            water.position.z += 4 * 60;
+            if (x % 2 == 0) water.rotation.y = 180 * toRadian;
             water.attach(renderer);
             water.setViewCulling(-0.15);
             water.staticLod(0);

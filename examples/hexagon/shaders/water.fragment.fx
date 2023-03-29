@@ -76,12 +76,12 @@ vec3 getSpecular(vec3 faceNormal, float specularPower, float specularIntensity) 
 void main() {
     vec3 faceNormal = getFaceNormal(finalVertexPosition);
     vec3 finalColor = faceNormal * 0.5 + 0.5;
-    float alpha = 1.0;
+    float alpha = 0.75;
 
     if (finalVertexColor.x >= 0.0 && finalVertexColor.y >= 0.0 && finalVertexColor.z >= 0.0) {
         
         float specularPower = 1.0;
-        float specularIntensity = 0.0;
+        float specularIntensity = 2.0;
         
         float theta = dot(faceNormal, -lightDirection);
         float shade = getShading(theta);

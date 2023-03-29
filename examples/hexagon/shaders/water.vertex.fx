@@ -41,6 +41,9 @@ mat4 cleanWorld() {
 void main() {
     vec4 finalWorldPosition = cleanWorld() * vec4(vertexPosition, 1.0);
 
+    vec2 c = (finalWorldPosition.xz + cameraPosition.xz) * 1000.0 + time * 0.001;
+    finalWorldPosition.y += cos(c.x) * sin(c.y) * 0.5;
+
     gl_Position = viewProjection * finalWorldPosition;
 
     finalVertexPosition = finalWorldPosition.xyz + time * 0.0;

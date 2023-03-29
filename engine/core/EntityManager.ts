@@ -9,10 +9,16 @@ class EntityManager {
     private renderList: ObjectArray<Entity> = new ObjectArray<Entity>();
     private shadowList: ObjectArray<Entity> = new ObjectArray<Entity>();
 
+    private readonly shaderManager: ShaderManager;
     private readonly geometryManager: GeometryManager;
     private readonly stats: Stats;
 
-    public constructor(geometryManager: GeometryManager, stats: Stats) {
+    public constructor(
+        shaderManager: ShaderManager,
+        geometryManager: GeometryManager,
+        stats: Stats
+    ) {
+        this.shaderManager = shaderManager;
         this.geometryManager = geometryManager;
         this.stats = stats;
     }
@@ -92,9 +98,14 @@ class EntityManager {
     }
 
     /** @internal */
-    public draw(isShadow: boolean): void {
-        this.geometryManager.list.forEach((geometry: Geometry, _name: string) =>
-            geometry.draw(isShadow)
+    public draw(isShadow: boolean, equipShader?: (name: string) => void): void {
+        this.geometryManager.list.forEach(
+            (geometry: Geometry, _name: string) => {
+                if (!isShadow && equipShader) {
+                    equipShader(geometry.data.shader);
+                }
+                geometry.draw(isShadow);
+            }
         );
     }
 }

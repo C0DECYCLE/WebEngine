@@ -15,7 +15,7 @@ class GeometryManager {
     ];
 
     public readonly datas: MapS<GeometryData> = new MapS<GeometryData>();
-    public readonly list: MapS<Geometry> = new MapS<Geometry>();
+    public list: MapS<Geometry> = new MapS<Geometry>();
 
     private readonly gl: WebGL2RenderingContext;
     private readonly shaderManager: ShaderManager;
@@ -102,6 +102,15 @@ class GeometryManager {
     private createGeometries(): void {
         this.datas.forEach((data: GeometryData, name: string) =>
             this.list.set(name, this.createGeometry(data))
+        );
+        this.list = new Map(
+            [...this.list].sort(
+                (a: [string, Geometry], b: [string, Geometry]) => {
+                    const shaderA: string = a[1].data.shader;
+                    const shaderB: string = b[1].data.shader;
+                    return shaderA < shaderB ? -1 : shaderA > shaderB ? 1 : 0;
+                }
+            )
         );
     }
 

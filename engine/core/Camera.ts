@@ -18,10 +18,11 @@ class Camera {
 
     private readonly origin: Vec3 = new Vec3(0, 0, 0);
     private readonly direction: Vec3 = new Vec3(0, 0, -1);
+    private readonly cameraPosition: Float32Array = new Float32Array(3);
+    private readonly cameraDirection: Float32Array = new Float32Array(3);
 
     private readonly world: Mat4 = new Mat4();
     private readonly projection: Mat4 = new Mat4();
-    private readonly cameraDirection: Float32Array = new Float32Array(3);
     private readonly viewProjection: Mat4 = new Mat4();
 
     private readonly gl: WebGL2RenderingContext;
@@ -52,6 +53,7 @@ class Camera {
 
     /** @internal */
     public bufferMainUniforms(program: ShaderProgram): void {
+        this.bufferCameraPositionUniform(program);
         this.bufferCameraDirectionUniform(program);
         this.bufferViewProjectionUniform(program);
     }
@@ -60,6 +62,10 @@ class Camera {
         this.direction.copy(this.target).sub(this.position).normalize();
         this.up.normalize();
         this.right.copy(this.direction).cross(this.up);
+
+        this.cameraPosition[0] = this.position.x;
+        this.cameraPosition[1] = this.position.y;
+        this.cameraPosition[2] = this.position.z;
 
         this.cameraDirection[0] = this.direction.x;
         this.cameraDirection[1] = this.direction.y;
@@ -72,6 +78,13 @@ class Camera {
             .copy(this.world)
             .invert()
             .multiply(this.viewProjection, this.projection);
+    }
+
+    private bufferCameraPositionUniform(program: ShaderProgram): void {
+        const loc: WebGLUniformLocation = program.uniformLocations.get(
+            ShaderVariables.CAMERAPOSITION
+        )!;
+        this.gl.uniform3fv(loc, this.cameraPosition);
     }
 
     private bufferCameraDirectionUniform(program: ShaderProgram): void {
