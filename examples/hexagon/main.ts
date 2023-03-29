@@ -7,7 +7,7 @@
 var renderer: Renderer;
 
 window.addEventListener("compile", async (_event: Event): Promise<void> => {
-    renderer = new Renderer(new Vec3(0.9, 0.9, 0.9), undefined, false);
+    renderer = new Renderer(new Vec3(0.9, 0.9, 0.9));
     await renderer.initialize(
         [
             "models/tree.obj",
