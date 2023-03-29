@@ -41,6 +41,7 @@ class Stats {
         this.createOverlay();
     }
 
+    /** @internal */
     public begin(now: float): void {
         if (this.then === -1) {
             this.then = now;
@@ -48,6 +49,7 @@ class Stats {
         this.renderThen = performance.now();
     }
 
+    /** @internal */
     public beginUpdate(): void {
         this.updateThen = performance.now();
         this.activeEntities = 0;
@@ -55,30 +57,37 @@ class Stats {
         this.totalEntities = 0;
     }
 
+    /** @internal */
     public incrementEntities(): void {
         this.activeEntities += 1;
     }
 
+    /** @internal */
     public incrementShadowEntities(): void {
         this.shadowEntities += 1;
     }
 
+    /** @internal */
     public setTotalEntities(n: int): void {
         this.totalEntities = n;
     }
 
+    /** @internal */
     public endUpdate(): void {
         this.updateMs = performance.now() - this.updateThen;
     }
 
+    /** @internal */
     public beginSubUpdate(): void {
         this.subUpdateThen = performance.now();
     }
 
+    /** @internal */
     public endSubUpdate(): void {
         this.subUpdateMs = performance.now() - this.subUpdateThen;
     }
 
+    /** @internal */
     public beginDraw(): void {
         this.drawThen = performance.now();
         this.drawCalls = 0;
@@ -89,6 +98,7 @@ class Stats {
         this.totalShadowVertecies = 0;
     }
 
+    /** @internal */
     public incrementDrawCalls(vertecies: int, isShadow: boolean): void {
         if (isShadow) {
             return this.incrementShadowDrawCalls(vertecies);
@@ -97,6 +107,7 @@ class Stats {
         this.activeVertecies += vertecies;
     }
 
+    /** @internal */
     public incrementTotalVertecies(vertecies: int, isShadow: boolean): void {
         if (isShadow) {
             return this.incrementTotalShadowVertecies(vertecies);
@@ -104,10 +115,12 @@ class Stats {
         this.totalVertecies += vertecies;
     }
 
+    /** @internal */
     public endDraw(): void {
         this.drawMs = performance.now() - this.drawThen;
     }
 
+    /** @internal */
     public end(now: float): void {
         this.deltaMs = now - this.then;
         this.then = now;

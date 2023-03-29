@@ -6,5 +6,4 @@
     2023
 */
 
-//main
 void main() {}

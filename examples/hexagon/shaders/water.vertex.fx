@@ -13,5 +13,9 @@ precision highp float;
 
 void main() {
     #include vertexPre
+
+    vec2 c = (finalWorldPosition.xz + cameraPosition.xz) * 1000.0 + time * 0.001;
+    finalWorldPosition.y += cos(c.x) * sin(c.y) * 0.5;
+
     #include vertexPost
 }

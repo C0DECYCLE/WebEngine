@@ -8,25 +8,29 @@ var renderer: Renderer;
 
 window.addEventListener("compile", async (_event: Event): Promise<void> => {
     renderer = new Renderer(new Vec3(0.9, 0.9, 0.9), undefined, true);
-    await renderer.initialize([
-        "tree.obj",
-        "house.obj",
-        "field.obj",
-        "water.obj",
-    ]);
+    await renderer.initialize(
+        [
+            "models/tree.obj",
+            "models/house.obj",
+            "models/field.obj",
+            "models/water.obj",
+            "models/sand.obj",
+        ],
+        ["shaders/water"]
+    );
 
     const camera: Camera = renderer.getCamera();
     camera.target.set(-0.1, 0, -0.25).scale(80);
-    camera.position.set(0, 1.25, -0.75).scale(40).add(camera.target);
+    camera.position.set(0, 1.25, -1.0).scale(60).add(camera.target);
 
     const light: Light = renderer.getLight();
     light.ambient.set(0.15, 0.05, 0.2);
-    light.direction.set(1.5, -1.0, 0.0).normalize();
+    light.direction.set(1.5, -0.75, 0.25).normalize();
     light.color.set(1.0, 0.85, 0.75);
 
     const shadow = light.setShadow(1024);
-    shadow.position.set(0, 0, 0);
-    shadow.radius = 50;
+    shadow.position.set(0.15, 0, 0.3).scale(80);
+    shadow.radius = 85;
     shadow.bias = 0.001;
     shadow.opcaity = 0.65;
 
@@ -54,16 +58,16 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             if (Math.random() > 0.5) field.rotation.y = 180 * toRadian;
             field.attach(renderer);
             //field.staticLod(0);
-            field.shadow(false, true);
+            field.shadow(true, true);
             field.wakeUp();
 
             if (Math.random() > 0.5) {
-                for (let i: int = 0; i < 10; i++) {
+                for (let i: int = 0; i < 8; i++) {
                     const tree: Entity = new Entity("tree");
                     tree.position.copy(field.position);
-                    tree.position.x += (Math.random() * 2 - 1) * 6;
+                    tree.position.x += (Math.random() * 2 - 1) * 8;
                     tree.position.y += 0.5;
-                    tree.position.z += (Math.random() * 2 - 1) * 6;
+                    tree.position.z += (Math.random() * 2 - 1) * 8;
                     tree.rotation.y = Math.random() * 360 * toRadian;
                     tree.attach(renderer);
                     //tree.staticLod(0);
@@ -88,15 +92,25 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     for (let z: int = 0; z < 8; z++) {
         for (let x: int = 0; x < 8; x++) {
             const water: Entity = new Entity("water");
-            water.position.set(-x * 52, -0.1, -z * 52);
-            water.position.x += 4 * 52;
-            water.position.z += 4 * 52;
-            if (Math.random() > 0.5) water.rotation.y = 180 * toRadian;
+            water.position.set(-x * 60, -2.0, -z * 60);
+            water.position.x += 4 * 60;
+            water.position.z += 4 * 60;
+            if (x % 2 == 0) water.rotation.y = 180 * toRadian;
             water.attach(renderer);
             water.setViewCulling(-0.15);
             water.staticLod(0);
             water.shadow(false, true);
             water.wakeUp();
+
+            const sand: Entity = new Entity("sand");
+            sand.position.set(-x * 60, 0.0, -z * 60);
+            sand.position.x += 4 * 60;
+            sand.position.z += 4 * 60;
+            sand.attach(renderer);
+            sand.setViewCulling(-0.15);
+            //sand.staticLod(0);
+            sand.shadow(false, false);
+            sand.wakeUp();
         }
     }
 

@@ -9,10 +9,16 @@ class EntityManager {
     private renderList: ObjectArray<Entity> = new ObjectArray<Entity>();
     private shadowList: ObjectArray<Entity> = new ObjectArray<Entity>();
 
+    private readonly shaderManager: ShaderManager;
     private readonly geometryManager: GeometryManager;
     private readonly stats: Stats;
 
-    public constructor(geometryManager: GeometryManager, stats: Stats) {
+    public constructor(
+        shaderManager: ShaderManager,
+        geometryManager: GeometryManager,
+        stats: Stats
+    ) {
+        this.shaderManager = shaderManager;
         this.geometryManager = geometryManager;
         this.stats = stats;
     }
@@ -21,6 +27,7 @@ class EntityManager {
         return this.list;
     }
 
+    /** @internal */
     public attach(entity: Entity): void {
         if (!this.geometryManager.list.has(entity.geometryName)) {
             throw new Error(
@@ -30,14 +37,17 @@ class EntityManager {
         this.list.add(entity);
     }
 
+    /** @internal */
     public wakeUp(entity: Entity): void {
         this.renderList.add(entity);
     }
 
+    /** @internal */
     public sleep(entity: Entity): void {
         this.renderList.delete(entity);
     }
 
+    /** @internal */
     public shadow(entity: Entity, value: boolean): void {
         if (value) {
             this.shadowList.add(entity);
@@ -46,6 +56,7 @@ class EntityManager {
         this.shadowList.delete(entity);
     }
 
+    /** @internal */
     public prepare(): void {
         for (let i: int = 0; i < this.renderList.length; i++) {
             if (
@@ -61,6 +72,7 @@ class EntityManager {
         this.stats.setTotalEntities(this.list.length);
     }
 
+    /** @internal */
     public shadowify(shadow: Shadow): void {
         for (let i: int = 0; i < this.shadowList.length; i++) {
             if (
@@ -76,6 +88,7 @@ class EntityManager {
         }
     }
 
+    /** @internal */
     public store(): void {
         for (let i: int = 0; i < this.renderList.length; i++) {
             this.renderList[i].store(
@@ -84,9 +97,15 @@ class EntityManager {
         }
     }
 
-    public draw(isShadow: boolean): void {
-        this.geometryManager.list.forEach((geometry: Geometry, _name: string) =>
-            geometry.draw(isShadow)
+    /** @internal */
+    public draw(isShadow: boolean, equipShader?: (name: string) => void): void {
+        this.geometryManager.list.forEach(
+            (geometry: Geometry, _name: string) => {
+                if (!isShadow && equipShader) {
+                    equipShader(geometry.data.shader);
+                }
+                geometry.draw(isShadow);
+            }
         );
     }
 }

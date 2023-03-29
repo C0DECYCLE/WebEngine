@@ -111,6 +111,11 @@ class Entity {
         }
     }
 
+    public stringifyInfo(): string {
+        return `(Geometry: ${this.geometryName}, Id: ${this.id})`;
+    }
+
+    /** @internal */
     public prepare(geometry: Geometry): boolean {
         this.computeTranslation();
 
@@ -134,6 +139,7 @@ class Entity {
         return (this.isRendering = true);
     }
 
+    /** @internal */
     public shadowify(geometry: Geometry, shadow: Shadow): boolean {
         if (!this.isRendering) {
             return false;
@@ -148,15 +154,12 @@ class Entity {
         return true;
     }
 
+    /** @internal */
     public store(geometry: Geometry): void {
         if (!this.isRendering) {
             return;
         }
         geometry.storeInstance(this.world, this.tempLod);
-    }
-
-    public stringifyInfo(): string {
-        return `(Geometry: ${this.geometryName}, Id: ${this.id})`;
     }
 
     private computeTranslation(): void {

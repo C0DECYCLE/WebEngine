@@ -113,6 +113,7 @@ class Renderer {
 
     private createEntityManager(): void {
         this.entityManager = new EntityManager(
+            this.shaderManager,
             this.geometryManager,
             this.stats
         );
@@ -172,7 +173,7 @@ class Renderer {
         }
         shadow.beginFrameBuffer();
 
-        const shadowProgram: ShaderProgram = this.bindProgram("shadow");
+        const shadowProgram: ShaderProgram = this.shaderManager.use("shadow");
 
         shadow.bufferShadowUniforms(shadowProgram);
 
@@ -184,17 +185,27 @@ class Renderer {
     private drawMain(): void {
         this.clearContext();
 
-        const program: ShaderProgram = this.bindProgram("main");
+        let current: string = "";
 
-        this.camera.bufferMainUniforms(program);
-        this.light.bufferMainUniforms(program);
-
-        this.entityManager.draw(false);
+        this.entityManager.draw(false, (name: string) => {
+            if (name !== current) {
+                this.mainEquipShader(name);
+                current = name;
+            }
+        });
     }
 
-    private bindProgram(name: string): ShaderProgram {
-        const program: ShaderProgram = this.shaderManager.programs.get(name)!;
-        this.gl.useProgram(program.program);
-        return program;
+    private mainEquipShader(name: string): void {
+        const program: ShaderProgram = this.shaderManager.use(name);
+        this.bufferMainTime(program);
+        this.camera.bufferMainUniforms(program);
+        this.light.bufferMainUniforms(program);
+    }
+
+    private bufferMainTime(program: ShaderProgram): void {
+        const loc: WebGLUniformLocation = program.uniformLocations.get(
+            ShaderVariables.TIME
+        )!;
+        this.gl.uniform1f(loc, performance.now());
     }
 }
