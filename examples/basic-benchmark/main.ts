@@ -28,7 +28,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             .scale(20);
         suzanne.rotation.add(Math.random(), Math.random(), Math.random());
         suzanne.attach(renderer);
-        //suzanne.disableFrustumCulling();
+        suzanne.disableFrustumCulling();
         suzanne.wakeUp();
     }
 

@@ -64,6 +64,22 @@ class Camera {
         this.bufferViewProjectionUniform(program);
     }
 
+    private createFrustum(): void {
+        this.frustum = {
+            left: this.createPlane(),
+            right: this.createPlane(),
+            top: this.createPlane(),
+            bottom: this.createPlane(),
+        } as Frustum;
+    }
+
+    private createPlane(): Plane {
+        return {
+            position: new Vec3(),
+            normal: new Vec3(),
+        } as Plane;
+    }
+
     private computeVectors(): void {
         this.direction.copy(this.target).sub(this.position).normalize();
         this.up.normalize();
@@ -87,6 +103,51 @@ class Camera {
             .multiply(this.viewProjection, this.projection);
     }
 
+    private computeFrustum(): void {
+        const hHeight: float = this.far * Math.tan(this.fov * 0.55);
+        const hWidth: float = hHeight * this.ratio;
+
+        const right: Vec3 = this.right;
+        const rUp: Vec3 = this.relativeUp;
+        const dirFar: Vec3 = this.direction.clone().scale(this.far);
+
+        this.computePlane(this.frustum.left, right, hWidth, dirFar, rUp, -1);
+        this.computePlane(this.frustum.right, right, -hWidth, dirFar, rUp, 1);
+        this.computePlane(this.frustum.bottom, rUp, hHeight, dirFar, right, 1);
+        this.computePlane(this.frustum.top, rUp, -hHeight, dirFar, right, -1);
+    }
+
+    private computePlane(
+        plane: Plane,
+        right: Vec3,
+        half: float,
+        directionFar: Vec3,
+        up: Vec3,
+        flip: float
+    ): void {
+        plane.position.copy(this.position);
+        plane.normal
+            .copy(right)
+            .scale(half)
+            .sub(directionFar)
+            .scale(-1)
+            .normalize()
+            .cross(up)
+            .scale(flip);
+    }
+
+    private inFrontOfPlane(
+        plane: Plane,
+        position: Vec3,
+        radius: float
+    ): boolean {
+        return (
+            Vec3.Dot(plane.normal, position) -
+                Vec3.Dot(plane.normal, plane.position) >
+            -radius
+        );
+    }
+
     private bufferCameraPositionUniform(program: ShaderProgram): void {
         const loc: WebGLUniformLocation = program.uniformLocations.get(
             ShaderVariables.CAMERAPOSITION
@@ -106,101 +167,5 @@ class Camera {
             ShaderVariables.VIEWPROJECTION
         )!;
         this.gl.uniformMatrix4fv(loc, false, this.viewProjection.values);
-    }
-
-    private createFrustum(): void {
-        this.frustum = {
-            left: this.createPlane(),
-            right: this.createPlane(),
-            top: this.createPlane(),
-            bottom: this.createPlane(),
-        } as Frustum;
-    }
-
-    private createPlane(): Plane {
-        return {
-            position: new Vec3(),
-            normal: new Vec3(),
-        } as Plane;
-    }
-
-    private computeFrustum(): void {
-        const halfHeight: float = this.far * Math.tan(this.fov * 0.5);
-        const halfWidth: float = halfHeight * this.ratio;
-        const directionFar: Vec3 = this.direction.clone().scale(this.far);
-
-        this.frustum.left.position.copy(this.position);
-        this.frustum.left.normal
-            .copy(this.right)
-            .scale(halfWidth)
-            .sub(directionFar)
-            .scale(-1)
-            .cross(this.relativeUp)
-            .scale(-1);
-
-        this.frustum.right.position.copy(this.position);
-        this.frustum.right.normal
-            .copy(this.right)
-            .scale(-halfWidth)
-            .sub(directionFar)
-            .scale(-1)
-            .cross(this.relativeUp);
-
-        this.frustum.bottom.position.copy(this.position);
-        this.frustum.bottom.normal
-            .copy(this.relativeUp)
-            .scale(halfHeight)
-            .sub(directionFar)
-            .scale(-1)
-            .cross(this.right);
-
-        this.frustum.top.position.copy(this.position);
-        this.frustum.top.normal
-            .copy(this.relativeUp)
-            .scale(-halfHeight)
-            .sub(directionFar)
-            .scale(-1)
-            .cross(this.right)
-            .scale(-1);
-        /*
-        this.computePlane(
-            this.frustum.top,
-            this.relativeUp,
-            -halfHeight,
-            directionFar,
-            this.right,
-            -1
-        );
-        */
-    }
-
-    private computePlane(
-        plane: Plane,
-        right: Vec3,
-        half: float,
-        directionFar: Vec3,
-        up: Vec3,
-        flip: float
-    ): void {
-        plane.position.copy(this.position);
-        plane.normal
-            .copy(right)
-            .scale(half)
-            .sub(directionFar)
-            .scale(-1)
-            .cross(up)
-            .scale(flip);
-    }
-
-    private inFrontOfPlane(
-        plane: Plane,
-        position: Vec3,
-        radius: float
-    ): boolean {
-        return (
-            Vec3.Dot(plane.normal, position) -
-                Vec3.Dot(plane.normal, plane.position) >
-            -radius
-        );
     }
 }

@@ -114,11 +114,9 @@ class Entity {
     /** @internal */
     public prepare(geometry: Geometry): boolean {
         this.computeTranslation();
-
         if (!this.computeInView(geometry)) {
             return (this.isRendering = false);
         }
-
         this.selectLod(geometry.data);
         if (this.tempLod === -1) {
             return (this.isRendering = false);
@@ -179,7 +177,7 @@ class Entity {
         }
         return this.camera!.inFrustum(
             this.position,
-            geometry.data.bounds.size * 0.5
+            geometry.data.bounds.size * 1.5
         );
     }
 
