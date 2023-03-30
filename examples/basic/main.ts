@@ -43,7 +43,6 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             .scale(500);
         tree.position.y = Math.random() * 10;
         tree.rotation.set(0, Math.random() * 360 * toRadian, 0);
-        tree.setViewCulling(0.65);
         tree.wakeUp();
     }
 

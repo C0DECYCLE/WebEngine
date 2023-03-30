@@ -19,7 +19,7 @@ class Entity {
     private isRendering: boolean = false;
 
     private targetLod: int = -1;
-    private inViewMinimum: float = 0.5;
+    private frustumCull: boolean = true;
     private tempDistance: float;
     private tempCoverage: float;
     private tempLod: int;
@@ -45,12 +45,8 @@ class Entity {
         this.entityManager.attach(this);
     }
 
-    public setViewCulling(minimum: float): void {
-        this.inViewMinimum = minimum;
-    }
-
-    public disableViewCulling(): void {
-        this.inViewMinimum = -1;
+    public disableFrustumCulling(): void {
+        this.frustumCull = false;
     }
 
     public staticLod(lod: int): void {
@@ -119,7 +115,7 @@ class Entity {
     public prepare(geometry: Geometry): boolean {
         this.computeTranslation();
 
-        if (!this.computeInView()) {
+        if (!this.computeInView(geometry)) {
             return (this.isRendering = false);
         }
 
@@ -177,15 +173,13 @@ class Entity {
         );
     }
 
-    private computeInView(): boolean {
-        if (this.inViewMinimum <= -1) {
+    private computeInView(geometry: Geometry): boolean {
+        if (!this.frustumCull) {
             return true;
         }
-        return this.camera!.inView(
-            this.world.values[12] / this.tempDistance,
-            this.world.values[13] / this.tempDistance,
-            this.world.values[14] / this.tempDistance,
-            this.inViewMinimum
+        return this.camera!.inFrustum(
+            this.position,
+            geometry.data.bounds.size * 0.5
         );
     }
 

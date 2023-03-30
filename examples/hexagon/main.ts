@@ -120,7 +120,6 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             water.position.z += 4 * 60;
             if (x % 2 == 0) water.rotation.y = 180 * toRadian;
             water.attach(renderer);
-            water.setViewCulling(-0.15);
             water.staticLod(0);
             water.shadow(false, true);
             water.wakeUp();
@@ -130,7 +129,6 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             sand.position.x += 5 * 60;
             sand.position.z += 4 * 60;
             sand.attach(renderer);
-            sand.setViewCulling(-0.15);
             sand.shadow(false, false);
             sand.wakeUp();
         }
