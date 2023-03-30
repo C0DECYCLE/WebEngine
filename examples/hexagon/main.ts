@@ -18,13 +18,17 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         ],
         ["shaders/water"]
     );
+    //renderer.getStats().show();
+
+    const ui: Interface = renderer.getInterface();
 
     const camera: Camera = renderer.getCamera();
     camera.target.set(-0.1, 0, -0.25).scale(80);
 
     const zoomSpeed: float = 0.025;
     let zoom: float = 40;
-    addEventListener("wheel", (event: WheelEvent) => {
+    ui.addEventListener("wheel", (event: WheelEvent) => {
+        event.preventDefault();
         zoom += event.deltaY * zoomSpeed;
         zoom = zoom.clamp(20, 60);
         camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
@@ -33,9 +37,16 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     const dragSpeed: float = 0.15;
     let dragging: boolean = false;
-    addEventListener("mousedown", (_event: MouseEvent) => (dragging = true));
-    addEventListener("mouseup", (_event: MouseEvent) => (dragging = false));
-    addEventListener("mousemove", (event: MouseEvent) => {
+    const dragStart = (event: PointerEvent) => {
+        event.preventDefault();
+        dragging = true;
+    };
+    const dragStop = (event: PointerEvent) => {
+        event.preventDefault();
+        dragging = false;
+    };
+    const dragMove = (event: PointerEvent) => {
+        event.preventDefault();
         if (!dragging) {
             return;
         }
@@ -47,14 +58,19 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         camera.target.x = camera.target.x.clamp(-80, 140);
         camera.target.z = camera.target.z.clamp(-140, 100);
         camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
-    });
+    };
+    ui.addEventListener("pointerdown", dragStart);
+    ui.addEventListener("pointermove", dragMove);
+    ui.addEventListener("pointerup", dragStop);
+    ui.addEventListener("pointerout", dragStop);
+    ui.addEventListener("pointercancel", dragStop);
 
     const light: Light = renderer.getLight();
     light.ambient.set(0.15, 0.05, 0.2);
     light.direction.set(1.5, -0.75, 0.25).normalize();
     light.color.set(1.0, 0.85, 0.75);
 
-    const shadow = light.setShadow(1024);
+    const shadow: Shadow = light.setShadow(1024);
     shadow.position.set(0.15, 0, 0.3).scale(80);
     shadow.radius = 85;
     shadow.bias = 0.001;
@@ -133,6 +149,20 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             sand.wakeUp();
         }
     }
+
+    /*
+    const rect: InterfaceRectangle = new InterfaceRectangle("rect");
+    rect.position.set(50, 50);
+    rect.size.set(200, 100);
+    rect.color = "#FF0000";
+    ui.add(rect);
+    */
+
+    const img: InterfaceImage = new InterfaceImage("img");
+    img.position.set(1500 - 460 - 40, 900 - 240 - 40);
+    img.size.set(460, 240);
+    img.source = "images/test.png";
+    ui.add(img);
 
     function render(now: float): void {
         shadow.position.copy(camera.target).add(0.0, 0.0, zoom);

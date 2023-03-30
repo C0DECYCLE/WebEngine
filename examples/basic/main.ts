@@ -9,6 +9,7 @@ var renderer: Renderer;
 window.addEventListener("compile", async (_event: Event): Promise<void> => {
     renderer = new Renderer(new Vec3(0.9, 0.9, 0.9));
     await renderer.initialize(["tree.obj"]);
+    renderer.getStats().show();
 
     const camera: Camera = renderer.getCamera();
     camera.target.set(0, 0, 0);
@@ -20,7 +21,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     light.color.set(1.0, 0.9, 0.8);
 
     /*
-    const shadow = light.setShadow(1024);
+    const shadow: Shadow = light.setShadow(1024);
     shadow.position.set(0, 0, 0);
     shadow.radius = 256;
     shadow.bias = 0.005;

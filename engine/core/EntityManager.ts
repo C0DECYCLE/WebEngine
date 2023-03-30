@@ -6,8 +6,10 @@
 
 class EntityManager {
     private readonly list: ObjectArray<Entity> = new ObjectArray<Entity>();
-    private renderList: ObjectArray<Entity> = new ObjectArray<Entity>();
-    private shadowList: ObjectArray<Entity> = new ObjectArray<Entity>();
+    private readonly renderList: ObjectArray<Entity> =
+        new ObjectArray<Entity>();
+    private readonly shadowList: ObjectArray<Entity> =
+        new ObjectArray<Entity>();
 
     private readonly geometryManager: GeometryManager;
     private readonly stats: Stats;

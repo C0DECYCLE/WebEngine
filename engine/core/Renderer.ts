@@ -8,12 +8,13 @@ class Renderer {
     private readonly clearColor?: Vec3;
 
     private gl: WebGL2RenderingContext;
+    private stats: Stats;
     private shaderManager: ShaderManager;
     private geometryManager: GeometryManager;
     private entityManager: EntityManager;
     private camera: Camera;
     private light: Light;
-    private stats: Stats;
+    private interface: Interface;
 
     public constructor(clearColor?: Vec3, far?: float, antialiase?: boolean) {
         this.clearColor = clearColor;
@@ -25,6 +26,7 @@ class Renderer {
         this.createEntityManager();
         this.createCamera(far);
         this.createLight();
+        this.createInterface();
     }
 
     public async initialize(
@@ -37,6 +39,10 @@ class Renderer {
         this.initializeContext();
     }
 
+    public getStats(): Stats {
+        return this.stats;
+    }
+
     public getEntityManager(): EntityManager {
         return this.entityManager;
     }
@@ -47,6 +53,10 @@ class Renderer {
 
     public getLight(): Light {
         return this.light;
+    }
+
+    public getInterface(): Interface {
+        return this.interface;
     }
 
     public render(now: float): void {
@@ -64,10 +74,12 @@ class Renderer {
         const canvas: HTMLCanvasElement = document.createElement("canvas");
         canvas.width = document.body.clientWidth * devicePixelRatio;
         canvas.height = document.body.clientHeight * devicePixelRatio;
+        canvas.style.position = "absolute";
+        canvas.style.top = "0px";
+        canvas.style.left = "0px";
         canvas.style.width = "100%";
         canvas.style.height = "100%";
-
-        document.body.appendChild(canvas);
+        document.body.append(canvas);
         return canvas;
     }
 
@@ -126,6 +138,10 @@ class Renderer {
         this.light = new Light(this.gl, this.camera);
     }
 
+    private createInterface(): void {
+        this.interface = new Interface();
+    }
+
     private initializeContext(): void {
         this.gl.enable(this.gl.CULL_FACE);
         this.gl.enable(this.gl.DEPTH_TEST);
@@ -155,6 +171,7 @@ class Renderer {
         if (shadow) {
             this.entityManager.shadowify(shadow);
         }
+        this.interface.update();
     }
 
     private draw(): void {

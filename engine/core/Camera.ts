@@ -83,8 +83,8 @@ class Camera {
     private computeVectors(): void {
         this.direction.copy(this.target).sub(this.position).normalize();
         this.up.normalize();
-        this.right.copy(this.direction).cross(this.up);
-        this.relativeUp.copy(this.direction).cross(this.right);
+        this.right.copy(this.direction).cross(this.up).normalize();
+        this.relativeUp.copy(this.direction).cross(this.right).normalize();
 
         this.cameraPosition[0] = this.position.x;
         this.cameraPosition[1] = this.position.y;

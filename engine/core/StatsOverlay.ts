@@ -14,6 +14,11 @@ class StatsOverlay {
     }
 
     /** @internal */
+    public show(): void {
+        document.body.append(this.div);
+    }
+
+    /** @internal */
     public update(text: string): void {
         this.p.innerHTML = text;
     }
@@ -23,12 +28,9 @@ class StatsOverlay {
         div.style.position = "absolute";
         div.style.top = "0px";
         div.style.right = "0px";
-        div.style.zIndex = "1";
         div.style.minWidth = "40vh";
         div.style.backgroundColor = "#000000";
         div.style.opacity = "0.75";
-
-        document.body.append(div);
         return div;
     }
 
@@ -38,7 +40,6 @@ class StatsOverlay {
         p.style.color = "#FFFFFF";
         p.style.fontFamily = "system-ui";
         p.style.fontSize = "1.8vh";
-
         div.append(p);
         return p;
     }

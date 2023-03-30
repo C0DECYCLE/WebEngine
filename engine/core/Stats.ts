@@ -41,6 +41,10 @@ class Stats {
         this.createOverlay();
     }
 
+    public show(): void {
+        this.overlay.show();
+    }
+
     /** @internal */
     public get(key: string): any {
         return this.list.get(key);
