@@ -17,6 +17,11 @@ class InterfaceRectangle extends InterfaceNode {
     }
 
     /** @internal */
+    public getElement(): HTMLElement {
+        return this.div;
+    }
+
+    /** @internal */
     public append(root: HTMLDivElement): void {
         root.append(this.div);
     }

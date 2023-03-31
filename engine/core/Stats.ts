@@ -30,7 +30,7 @@ class Stats {
         ["totalVertecies", 0],
         ["totalShadowVertecies", 0],
 
-        ["resolution", [document.body.clientWidth, document.body.clientHeight]],
+        ["resolution", [Renderer.Width, Renderer.Height]],
         ["devicePixelRatio", devicePixelRatio],
     ]);
 

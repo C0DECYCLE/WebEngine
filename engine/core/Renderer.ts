@@ -72,8 +72,8 @@ class Renderer {
 
     private createCanvas(): HTMLCanvasElement {
         const canvas: HTMLCanvasElement = document.createElement("canvas");
-        canvas.width = document.body.clientWidth * devicePixelRatio;
-        canvas.height = document.body.clientHeight * devicePixelRatio;
+        canvas.width = Renderer.Width * devicePixelRatio;
+        canvas.height = Renderer.Height * devicePixelRatio;
         canvas.style.position = "absolute";
         canvas.style.top = "0px";
         canvas.style.left = "0px";
@@ -224,4 +224,7 @@ class Renderer {
         )!;
         this.gl.uniform1f(loc, performance.now());
     }
+
+    public static readonly Width: int = document.body.clientWidth;
+    public static readonly Height: int = document.body.clientHeight;
 }

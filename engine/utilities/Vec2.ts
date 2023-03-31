@@ -75,9 +75,6 @@ class Vec2 {
         } else if (y === undefined) {
             y = x;
         }
-        if (x === 0 && y === 0) {
-            return this;
-        }
         this.x *= x;
         this.y *= y;
         return this;
@@ -89,9 +86,6 @@ class Vec2 {
             x = x.x;
         } else if (y === undefined) {
             y = x;
-        }
-        if (x === 0 && y === 0) {
-            return this;
         }
         this.x /= x;
         this.y /= y;

@@ -17,6 +17,11 @@ class InterfaceImage extends InterfaceNode {
     }
 
     /** @internal */
+    public getElement(): HTMLElement {
+        return this.image;
+    }
+
+    /** @internal */
     public append(root: HTMLDivElement): void {
         root.append(this.image);
     }

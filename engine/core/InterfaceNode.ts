@@ -13,6 +13,9 @@ abstract class InterfaceNode {
     }
 
     /** @internal */
+    public abstract getElement(): HTMLElement;
+
+    /** @internal */
     public abstract append(root: HTMLDivElement): void;
 
     /** @internal */

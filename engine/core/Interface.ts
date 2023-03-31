@@ -5,14 +5,20 @@
 */
 
 class Interface {
-    public addEventListener: typeof addEventListener;
-
     private readonly root: HTMLDivElement;
+    private readonly input: HTMLDivElement;
     private readonly list: ObjectArray<InterfaceNode> =
         new ObjectArray<InterfaceNode>();
 
     public constructor() {
-        this.root = this.createRoot();
+        this.root = this.createBlank();
+        this.input = this.createBlank();
+        this.root.append(this.input);
+        document.body.append(this.root);
+    }
+
+    public getInput(): HTMLDivElement {
+        return this.input;
     }
 
     public add(node: InterfaceNode): void {
@@ -32,7 +38,7 @@ class Interface {
         }
     }
 
-    private createRoot(): HTMLDivElement {
+    private createBlank(): HTMLDivElement {
         const root: HTMLDivElement = document.createElement("div");
         root.style.position = "absolute";
         root.style.top = "0px";
@@ -40,20 +46,35 @@ class Interface {
         root.style.width = "100%";
         root.style.height = "100%";
         root.style.backgroundColor = "transparent";
-        document.body.append(root);
-        const input: HTMLDivElement = document.createElement("div");
-        input.style.position = "absolute";
-        input.style.top = "0px";
-        input.style.left = "0px";
-        input.style.width = "100%";
-        input.style.height = "100%";
-        input.style.backgroundColor = "transparent";
-        root.append(input);
-        this.addEventListener = (
-            type: string,
-            listener: EventListenerOrEventListenerObject,
-            options?: boolean | AddEventListenerOptions
-        ) => input.addEventListener.call(input, type, listener, options);
         return root;
+    }
+
+    public static GetImageSize(
+        source: string,
+        callback: (result: Vec2) => void
+    ): void {
+        let image: Nullable<HTMLImageElement> = new Image();
+        image.onload = (): void => {
+            callback(new Vec2(image!.naturalWidth, image!.naturalHeight));
+            image = null;
+        };
+        image.src = source;
+    }
+
+    public static Event<T extends Event>(
+        element: Interface | InterfaceNode | HTMLElement,
+        name: string,
+        callback: (event: T) => void
+    ): void {
+        if (element instanceof Interface) {
+            element = element.getInput();
+        } else if (element instanceof InterfaceNode) {
+            element = element.getElement();
+        }
+        element.addEventListener(name, (event: Event) => {
+            event.stopPropagation();
+            event.preventDefault();
+            callback(event as T);
+        });
     }
 }

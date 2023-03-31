@@ -27,26 +27,27 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     const zoomSpeed: float = 0.025;
     let zoom: float = 40;
-    ui.addEventListener("wheel", (event: WheelEvent) => {
-        event.preventDefault();
+
+    Interface.Event<WheelEvent>(ui, "wheel", (event: WheelEvent) => {
         zoom += event.deltaY * zoomSpeed;
         zoom = zoom.clamp(20, 60);
         camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
     });
+
     camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
 
     const dragSpeed: float = 0.15;
     let dragging: boolean = false;
+
     const dragStart = (event: PointerEvent) => {
-        event.preventDefault();
         dragging = true;
     };
+
     const dragStop = (event: PointerEvent) => {
-        event.preventDefault();
         dragging = false;
     };
+
     const dragMove = (event: PointerEvent) => {
-        event.preventDefault();
         if (!dragging) {
             return;
         }
@@ -59,11 +60,12 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         camera.target.z = camera.target.z.clamp(-140, 100);
         camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
     };
-    ui.addEventListener("pointerdown", dragStart);
-    ui.addEventListener("pointermove", dragMove);
-    ui.addEventListener("pointerup", dragStop);
-    ui.addEventListener("pointerout", dragStop);
-    ui.addEventListener("pointercancel", dragStop);
+
+    Interface.Event<PointerEvent>(ui, "pointerdown", dragStart);
+    Interface.Event<PointerEvent>(ui, "pointermove", dragMove);
+    Interface.Event<PointerEvent>(ui, "pointerup", dragStop);
+    Interface.Event<PointerEvent>(ui, "pointerout", dragStop);
+    Interface.Event<PointerEvent>(ui, "pointercancel", dragStop);
 
     const light: Light = renderer.getLight();
     light.ambient.set(0.15, 0.05, 0.2);
@@ -158,11 +160,76 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     ui.add(rect);
     */
 
-    const img: InterfaceImage = new InterfaceImage("img");
-    img.position.set(1500 - 460 - 40, 900 - 240 - 40);
-    img.size.set(460, 240);
-    img.source = "images/test.png";
-    ui.add(img);
+    const offset: float = 20;
+    const scale: float = Renderer.Height / (450 * devicePixelRatio);
+
+    const img1: InterfaceImage = new InterfaceImage("img");
+    img1.source = "images/test1.png";
+
+    Interface.GetImageSize(img1.source, (result: Vec2) => {
+        img1.size.copy(result).scale(scale);
+        img1.position
+            .set(Renderer.Width as float, Renderer.Height as float)
+            .sub(img1.size)
+            .sub(offset, offset);
+        ui.add(img1);
+    });
+
+    Interface.Event<PointerEvent>(img1, "pointerdown", (_event: Event) => {});
+
+    const img2: InterfaceImage = new InterfaceImage("img");
+    img2.source = "images/test2.png";
+
+    Interface.GetImageSize(img2.source, (result: Vec2) => {
+        img2.size.copy(result).scale(scale);
+        img2.position.set(Renderer.Width - img2.size.x - offset, offset);
+        ui.add(img2);
+    });
+
+    Interface.Event<PointerEvent>(img2, "pointerdown", (_event: Event) => {});
+
+    const img3: InterfaceImage = new InterfaceImage("img");
+    img3.source = "images/test3.png";
+
+    Interface.GetImageSize(img3.source, (result: Vec2) => {
+        img3.size.copy(result).scale(scale);
+        img3.position.set(offset, offset);
+        ui.add(img3);
+    });
+
+    Interface.Event<PointerEvent>(img3, "pointerdown", (_event: Event) => {});
+
+    const btn: InterfaceImage = new InterfaceImage("img");
+    btn.source = "images/button.png";
+
+    let fixedSize: Vec2 = new Vec2();
+    let fixedPosition: Vec2 = new Vec2();
+
+    Interface.GetImageSize(btn.source, (result: Vec2) => {
+        btn.size.copy(result).scale(scale);
+        fixedSize.copy(btn.size);
+        btn.position
+            .set(230 - result.x * 0.5, 100)
+            .scale(scale)
+            .add(img1.position);
+        fixedPosition.copy(btn.position);
+        ui.add(btn);
+    });
+
+    const down = (_event: PointerEvent) => {
+        btn.size.copy(fixedSize).scale(0.8);
+        btn.position.add(fixedSize.x * 0.5 - btn.size.x * 0.5, 0);
+    };
+
+    const up = (_event: PointerEvent) => {
+        btn.size.copy(fixedSize);
+        btn.position.copy(fixedPosition);
+    };
+
+    Interface.Event<PointerEvent>(btn, "pointerdown", down);
+    Interface.Event<PointerEvent>(btn, "pointerup", up);
+    Interface.Event<PointerEvent>(btn, "pointerout", up);
+    Interface.Event<PointerEvent>(btn, "pointercancel", up);
 
     function render(now: float): void {
         shadow.position.copy(camera.target).add(0.0, 0.0, zoom);
