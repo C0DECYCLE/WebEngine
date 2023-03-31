@@ -151,7 +151,10 @@ class ShaderManager {
         const seperator: string = "#include";
         source.split("\n").forEach((line: string, _i: int) => {
             if (line.includes(seperator)) {
-                const include: string = line.split(seperator)[1].split(" ")[1];
+                const include: string = line
+                    .split(seperator)[1]
+                    .split(" ")[1]
+                    .trim();
                 if (!this.includeSources.has(include)) {
                     throw new Error(
                         `ShaderManager: Include unknown. (${include})`
