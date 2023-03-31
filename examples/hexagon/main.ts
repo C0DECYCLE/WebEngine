@@ -172,7 +172,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             .set(Renderer.Width as float, Renderer.Height as float)
             .sub(img1.size)
             .sub(offset, offset);
-        ui.add(img1);
+        ui.attach(img1);
     });
 
     Interface.Event<PointerEvent>(img1, "pointerdown", (_event: Event) => {});
@@ -183,7 +183,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     Interface.GetImageSize(img2.source, (result: Vec2) => {
         img2.size.copy(result).scale(scale);
         img2.position.set(Renderer.Width - img2.size.x - offset, offset);
-        ui.add(img2);
+        ui.attach(img2);
     });
 
     Interface.Event<PointerEvent>(img2, "pointerdown", (_event: Event) => {});
@@ -194,7 +194,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     Interface.GetImageSize(img3.source, (result: Vec2) => {
         img3.size.copy(result).scale(scale);
         img3.position.set(offset, offset);
-        ui.add(img3);
+        ui.attach(img3);
     });
 
     Interface.Event<PointerEvent>(img3, "pointerdown", (_event: Event) => {});
@@ -213,7 +213,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             .scale(scale)
             .add(img1.position);
         fixedPosition.copy(btn.position);
-        ui.add(btn);
+        ui.attach(btn);
     });
 
     const down = (_event: PointerEvent) => {
@@ -235,7 +235,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     text.position.set(offset, offset);
     text.text = "Hello World";
     text.fontSize = 64 * scale;
-    ui.add(text);
+    ui.attach(text);
 
     function render(now: float): void {
         shadow.position.copy(camera.target).add(0.0, 0.0, zoom);

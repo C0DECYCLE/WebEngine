@@ -17,7 +17,7 @@ class Interface {
         document.body.append(this.root);
     }
 
-    public add(node: InterfaceNode): void {
+    public attach(node: InterfaceNode): void {
         if (this.list.has(node)) {
             throw new Error(
                 `Interface: Node already added. ${node.stringify()}`
