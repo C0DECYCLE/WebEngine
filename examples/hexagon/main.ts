@@ -161,9 +161,9 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     */
 
     const offset: float = 20;
-    const scale: float = Renderer.Height / (450 * devicePixelRatio);
+    const scale: float = Renderer.Height / 900;
 
-    const img1: InterfaceImage = new InterfaceImage("img");
+    const img1: InterfaceImage = new InterfaceImage("image1");
     img1.source = "images/test1.png";
 
     Interface.GetImageSize(img1.source, (result: Vec2) => {
@@ -177,7 +177,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     Interface.Event<PointerEvent>(img1, "pointerdown", (_event: Event) => {});
 
-    const img2: InterfaceImage = new InterfaceImage("img");
+    const img2: InterfaceImage = new InterfaceImage("image2");
     img2.source = "images/test2.png";
 
     Interface.GetImageSize(img2.source, (result: Vec2) => {
@@ -188,7 +188,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     Interface.Event<PointerEvent>(img2, "pointerdown", (_event: Event) => {});
 
-    const img3: InterfaceImage = new InterfaceImage("img");
+    const img3: InterfaceImage = new InterfaceImage("image3");
     img3.source = "images/test3.png";
 
     Interface.GetImageSize(img3.source, (result: Vec2) => {
@@ -199,7 +199,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     Interface.Event<PointerEvent>(img3, "pointerdown", (_event: Event) => {});
 
-    const btn: InterfaceImage = new InterfaceImage("img");
+    const btn: InterfaceImage = new InterfaceImage("button");
     btn.source = "images/button.png";
 
     let fixedSize: Vec2 = new Vec2();
@@ -230,6 +230,12 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     Interface.Event<PointerEvent>(btn, "pointerup", up);
     Interface.Event<PointerEvent>(btn, "pointerout", up);
     Interface.Event<PointerEvent>(btn, "pointercancel", up);
+
+    const text: InterfaceText = new InterfaceText("text");
+    text.position.set(offset, offset);
+    text.text = "Hello World";
+    text.fontSize = 64 * scale;
+    ui.add(text);
 
     function render(now: float): void {
         shadow.position.copy(camera.target).add(0.0, 0.0, zoom);
