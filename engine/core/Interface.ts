@@ -17,10 +17,6 @@ class Interface {
         document.body.append(this.root);
     }
 
-    public getInput(): HTMLDivElement {
-        return this.input;
-    }
-
     public add(node: InterfaceNode): void {
         if (this.list.has(node)) {
             throw new Error(
@@ -29,6 +25,11 @@ class Interface {
         }
         this.list.add(node);
         node.append(this.root);
+    }
+
+    /** @internal */
+    public getInput(): HTMLDivElement {
+        return this.input;
     }
 
     /** @internal */
