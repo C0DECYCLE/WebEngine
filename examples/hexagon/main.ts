@@ -20,34 +20,34 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     );
     //renderer.getStats().show();
 
-    //const ui: Interface = renderer.getInterface();
+    const ui: Interface = renderer.getInterface();
 
     const camera: Camera = renderer.getCamera();
     camera.target.set(-0.1, 0, -0.25).scale(80);
 
     const zoomSpeed: float = 0.025;
     let zoom: float = 40;
-    /*
-    Interface.Event<WheelEvent>(ui, "wheel", (event: WheelEvent) => {
+
+    ui.on("wheel", (event: any) => {
         zoom += event.deltaY * zoomSpeed;
         zoom = zoom.clamp(20, 60);
         camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
     });
-    */
+
     camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
 
     const dragSpeed: float = 0.15;
     let dragging: boolean = false;
 
-    const dragStart = (event: PointerEvent) => {
+    const dragStart = (_event: any) => {
         dragging = true;
     };
 
-    const dragStop = (event: PointerEvent) => {
+    const dragStop = (_event: any) => {
         dragging = false;
     };
 
-    const dragMove = (event: PointerEvent) => {
+    const dragMove = (event: any) => {
         if (!dragging) {
             return;
         }
@@ -60,17 +60,17 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         camera.target.z = camera.target.z.clamp(-140, 100);
         camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
     };
-    /*
-    Interface.Event<PointerEvent>(ui, "pointerdown", dragStart);
-    Interface.Event<PointerEvent>(ui, "pointermove", dragMove);
-    Interface.Event<PointerEvent>(ui, "pointerup", dragStop);
-    Interface.Event<PointerEvent>(ui, "pointerout", dragStop);
-    Interface.Event<PointerEvent>(ui, "pointercancel", dragStop);
-    */
+
+    ui.on("pointerdown", dragStart);
+    ui.on("pointermove", dragMove);
+    ui.on("pointerup", dragStop);
+    ui.on("pointerupoutside", dragStop);
+    ui.on("pointerout", dragStop);
+
     const light: Light = renderer.getLight();
     light.ambient.set(0.15, 0.05, 0.2);
     light.direction.set(1.5, -0.75, 0.25).normalize();
-    light.color.set(1.0, 0.85, 0.75);
+    light.color.set(1.0, 1.0, 1.0);
 
     const shadow: Shadow = light.setShadow(1024);
     shadow.position.set(0.15, 0, 0.3).scale(80);
@@ -152,126 +152,58 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         }
     }
 
-    /*
-    const rect: InterfaceRectangle = new InterfaceRectangle("rect");
-    rect.position.set(50, 50);
-    rect.size.set(200, 100);
-    rect.color = "#FF0000";
-    ui.add(rect);
-    */
-    /*
     const offset: float = 20;
     const scale: float = Renderer.Height / 900;
 
-    const img1: InterfaceImage = new InterfaceImage("image1");
-    img1.source = "images/test1.png";
+    const texture1: any = await PIXI.Texture.fromURL("images/test1.png");
+    const texture2: any = await PIXI.Texture.fromURL("images/test2.png");
+    const texture3: any = await PIXI.Texture.fromURL("images/test3.png");
+    const button: any = await PIXI.Texture.fromURL("images/button.png");
 
-    Interface.GetImageSize(img1.source, (result: Vec2) => {
-        img1.size.copy(result).scale(scale);
-        img1.position
-            .set(Renderer.Width as float, Renderer.Height as float)
-            .sub(img1.size)
-            .sub(offset, offset);
-        ui.attach(img1);
-    });
+    const img1 = new PIXI.Sprite(texture1);
+    img1.position.set(Renderer.Width - offset, Renderer.Height - offset);
+    img1.anchor.set(1.0, 1.0);
+    img1.scale.set(scale, scale);
+    ui.attach(img1);
 
-    Interface.Event<PointerEvent>(img1, "pointerdown", (_event: Event) => {});
+    const img2 = new PIXI.Sprite(texture2);
+    img2.position.set(Renderer.Width - offset, offset);
+    img2.anchor.set(1.0, 0.0);
+    img2.scale.set(scale, scale);
+    ui.attach(img2);
 
-    const img2: InterfaceImage = new InterfaceImage("image2");
-    img2.source = "images/test2.png";
+    const img3 = new PIXI.Sprite(texture3);
+    img3.position.set(offset, offset);
+    img3.scale.set(scale, scale);
+    ui.attach(img3);
 
-    Interface.GetImageSize(img2.source, (result: Vec2) => {
-        img2.size.copy(result).scale(scale);
-        img2.position.set(Renderer.Width - img2.size.x - offset, offset);
-        ui.attach(img2);
-    });
-
-    Interface.Event<PointerEvent>(img2, "pointerdown", (_event: Event) => {});
-
-    const img3: InterfaceImage = new InterfaceImage("image3");
-    img3.source = "images/test3.png";
-
-    Interface.GetImageSize(img3.source, (result: Vec2) => {
-        img3.size.copy(result).scale(scale);
-        img3.position.set(offset, offset);
-        ui.attach(img3);
-    });
-
-    Interface.Event<PointerEvent>(img3, "pointerdown", (_event: Event) => {});
-
-    const btn: InterfaceImage = new InterfaceImage("button");
-    btn.source = "images/button.png";
-
-    let fixedSize: Vec2 = new Vec2();
-    let fixedPosition: Vec2 = new Vec2();
-
-    Interface.GetImageSize(btn.source, (result: Vec2) => {
-        btn.size.copy(result).scale(scale);
-        fixedSize.copy(btn.size);
-        btn.position
-            .set(230 - result.x * 0.5, 100)
-            .scale(scale)
-            .add(img1.position);
-        fixedPosition.copy(btn.position);
-        ui.attach(btn);
-    });
-
-    const down = (_event: PointerEvent) => {
-        btn.size.copy(fixedSize).scale(0.8);
-        btn.position.add(fixedSize.x * 0.5 - btn.size.x * 0.5, 0);
+    const btn = new PIXI.Sprite(button);
+    btn.position.set(
+        img1.position.x - img1.width * 0.5,
+        img1.position.y - img1.height + 100 * scale
+    );
+    btn.anchor.set(0.5, 0.0);
+    btn.scale.set(scale, scale);
+    btn.eventMode = "static";
+    const down = (_event: any) => {
+        btn.scale.set(scale * 0.8, scale * 0.8);
     };
-
-    const up = (_event: PointerEvent) => {
-        btn.size.copy(fixedSize);
-        btn.position.copy(fixedPosition);
+    const up = (_event: any) => {
+        btn.scale.set(scale, scale);
     };
+    btn.on("pointerdown", down);
+    btn.on("pointerup", up);
+    btn.on("pointerout", up);
+    btn.on("pointercancel", up);
+    ui.attach(btn);
 
-    Interface.Event<PointerEvent>(btn, "pointerdown", down);
-    Interface.Event<PointerEvent>(btn, "pointerup", up);
-    Interface.Event<PointerEvent>(btn, "pointerout", up);
-    Interface.Event<PointerEvent>(btn, "pointercancel", up);
-
+    /*
     const text: InterfaceText = new InterfaceText("text");
     text.position.set(offset, offset);
     text.text = "Hello World";
     text.fontSize = 64 * scale;
     ui.attach(text);
     */
-
-    var ui = new PIXI.Renderer({
-        width: Renderer.Width,
-        height: Renderer.Height,
-        resolution: devicePixelRatio,
-        antialias: true,
-        autoDensity: false,
-        backgroundColor: "#000000",
-        backgroundAlpha: 0.0,
-        hello: false,
-        clearBeforeRender: true,
-        powerPreference: "high-performance",
-        premultipliedAlpha: false,
-        preserveDrawingBuffer: false,
-    });
-    ui.view.style.position = "absolute";
-    ui.view.style.top = "0px";
-    ui.view.style.left = "0px";
-    ui.view.style.width = "100%";
-    ui.view.style.height = "100%";
-    document.body.appendChild(ui.view);
-    log(ui);
-
-    var stage = new PIXI.Container();
-    log(stage);
-
-    var texture = await PIXI.Texture.fromURL("images/test1.png");
-    log(texture);
-
-    var bunny = new PIXI.Sprite(texture);
-    bunny.position.x = 200;
-    bunny.position.y = 150;
-    log(bunny);
-
-    stage.addChild(bunny);
 
     function render(now: float): void {
         shadow.position.copy(camera.target).add(0.0, 0.0, zoom);
@@ -281,7 +213,6 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         shadow.radius = Math.round((zoom * 2.5) / 10) * 10;
 
         renderer.render(now);
-        ui.render(stage);
 
         requestAnimationFrame(render);
     }

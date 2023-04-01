@@ -11,12 +11,14 @@ class Stats {
         ["updateThen", -1],
         ["subUpdateThen", -1],
         ["drawThen", -1],
+        ["interfaceThen", -1],
 
         ["deltaMs", 0],
         ["renderMs", 0],
         ["updateMs", 0],
         ["subUpdateMs", 0],
         ["drawMs", 0],
+        ["interfaceMs", 0],
 
         ["activeEntities", 0],
         ["shadowEntities", 0],
@@ -112,6 +114,16 @@ class Stats {
     }
 
     /** @internal */
+    public beginInterface(): void {
+        this.set("interfaceThen", performance.now());
+    }
+
+    /** @internal */
+    public endInterface(): void {
+        this.set("interfaceMs", performance.now() - this.get("interfaceThen"));
+    }
+
+    /** @internal */
     public end(now: float): void {
         this.set("deltaMs", now - this.get("then"));
         this.set("renderMs", performance.now() - this.get("renderThen"));
@@ -160,6 +172,7 @@ class Stats {
             <b>cpu frame time: ${this.get("renderMs").toFixed(2)} ms</b><br>
             |_ update: ${(this.get("updateMs") + this.get("subUpdateMs")).toFixed(2)} ms<br>
             |_ draw: ${(this.get("drawMs") - this.get("subUpdateMs")).toFixed(2)} ms<br>
+            |_ <b>interface: ${this.get("interfaceMs").toFixed(2)} ms</b><br>
             <br>
             cpu frame rate: ${(1_000 / this.get("renderMs")).toFixed(1)} fps<br>
             cpu inter time: ${(this.get("deltaMs") - this.get("renderMs")).toFixed(2)} ms<br>

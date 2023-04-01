@@ -67,6 +67,9 @@ class Renderer {
         this.stats.beginDraw();
         this.draw();
         this.stats.endDraw();
+        this.stats.beginInterface();
+        this.interface.render();
+        this.stats.endInterface();
         this.stats.end(now);
     }
 
@@ -79,6 +82,7 @@ class Renderer {
         canvas.style.left = "0px";
         canvas.style.width = "100%";
         canvas.style.height = "100%";
+        canvas.style.filter = "hue-rotate(350deg) saturate(120%)";
         document.body.appendChild(canvas);
         return canvas;
     }
@@ -171,7 +175,6 @@ class Renderer {
         if (shadow) {
             this.entityManager.shadowify(shadow);
         }
-        this.interface.update();
     }
 
     private draw(): void {

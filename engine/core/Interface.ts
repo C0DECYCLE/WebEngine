@@ -5,77 +5,56 @@
 */
 
 class Interface {
-    private readonly root: any;
-    private readonly input: any;
-    private readonly list: ObjectArray<InterfaceNode> =
-        new ObjectArray<InterfaceNode>();
+    private readonly renderer: any;
+    private readonly stage: any;
 
     public constructor() {
-        //this.root = this.createBlank();
-        //this.input = this.createBlank();
-        //this.root.append(this.input);
-        //document.body.append(this.root);
+        this.renderer = this.createRenderer();
+        this.stage = this.createStage();
     }
 
-    public attach(node: InterfaceNode): void {
-        if (this.list.has(node)) {
-            throw new Error(
-                `Interface: Node already added. ${node.stringify()}`
-            );
-        }
-        this.list.add(node);
-        node.append(this.root);
+    public attach(node: any): void {
+        this.stage.addChild(node);
+    }
+
+    public on(event: string, callback: any): void {
+        this.stage.on(event, callback);
     }
 
     /** @internal */
-    public getInput(): HTMLDivElement {
-        return this.input;
+    public render(): void {
+        this.renderer.render(this.stage);
     }
 
-    /** @internal */
-    public update(): void {
-        for (let i: int = 0; i < this.list.length; i++) {
-            this.list[i].update();
-        }
-    }
-
-    private createBlank(): HTMLDivElement {
-        const root: HTMLDivElement = document.createElement("div");
-        root.style.position = "absolute";
-        root.style.top = "0px";
-        root.style.left = "0px";
-        root.style.width = "100%";
-        root.style.height = "100%";
-        root.style.backgroundColor = "transparent";
-        return root;
-    }
-
-    public static GetImageSize(
-        source: string,
-        callback: (result: Vec2) => void
-    ): void {
-        let image: Nullable<HTMLImageElement> = new Image();
-        image.onload = (): void => {
-            callback(new Vec2(image!.naturalWidth, image!.naturalHeight));
-            image = null;
-        };
-        image.src = source;
-    }
-
-    public static Event<T extends Event>(
-        element: Interface | InterfaceNode | HTMLElement,
-        name: string,
-        callback: (event: T) => void
-    ): void {
-        if (element instanceof Interface) {
-            element = element.getInput();
-        } else if (element instanceof InterfaceNode) {
-            element = element.getElement();
-        }
-        element.addEventListener(name, (event: Event) => {
-            event.stopPropagation();
-            event.preventDefault();
-            callback(event as T);
+    private createRenderer(): any {
+        const renderer: any = new PIXI.Renderer({
+            width: Renderer.Width,
+            height: Renderer.Height,
+            resolution: devicePixelRatio,
+            antialias: true,
+            autoDensity: false,
+            backgroundColor: "#000000",
+            backgroundAlpha: 0.0,
+            hello: false,
+            clearBeforeRender: true,
+            powerPreference: "high-performance",
+            premultipliedAlpha: false,
+            preserveDrawingBuffer: false,
         });
+        renderer.view.style.position = "absolute";
+        renderer.view.style.top = "0px";
+        renderer.view.style.left = "0px";
+        renderer.view.style.width = "100%";
+        renderer.view.style.height = "100%";
+        renderer.view.style.filter = "hue-rotate(340deg) saturate(200%)";
+        document.body.appendChild(renderer.view);
+        return renderer;
+    }
+
+    private createStage(): any {
+        const stage: any = new PIXI.Container();
+        stage.eventMode = "static";
+        stage.hitArea = this.renderer.screen;
+        return stage;
     }
 }
