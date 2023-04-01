@@ -4,4 +4,4 @@
     2023
 */
 
-//declare namespace PIXI {}
+declare const PIXI: any;

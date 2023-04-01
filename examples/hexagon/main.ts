@@ -238,6 +238,41 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     ui.attach(text);
     */
 
+    var ui = new PIXI.Renderer({
+        width: Renderer.Width,
+        height: Renderer.Height,
+        resolution: devicePixelRatio,
+        antialias: true,
+        autoDensity: false,
+        backgroundColor: "#000000",
+        backgroundAlpha: 0.0,
+        hello: false,
+        clearBeforeRender: true,
+        powerPreference: "high-performance",
+        premultipliedAlpha: false,
+        preserveDrawingBuffer: false,
+    });
+    ui.view.style.position = "absolute";
+    ui.view.style.top = "0px";
+    ui.view.style.left = "0px";
+    ui.view.style.width = "100%";
+    ui.view.style.height = "100%";
+    document.body.appendChild(ui.view);
+    log(ui);
+
+    var stage = new PIXI.Container();
+    log(stage);
+
+    var texture = await PIXI.Texture.fromURL("images/test1.png");
+    log(texture);
+
+    var bunny = new PIXI.Sprite(texture);
+    bunny.position.x = 200;
+    bunny.position.y = 150;
+    log(bunny);
+
+    stage.addChild(bunny);
+
     function render(now: float): void {
         shadow.position.copy(camera.target).add(0.0, 0.0, zoom);
         shadow.position.x = Math.round(shadow.position.x / 10) * 10;
@@ -246,6 +281,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         shadow.radius = Math.round((zoom * 2.5) / 10) * 10;
 
         renderer.render(now);
+        ui.render(stage);
 
         requestAnimationFrame(render);
     }

@@ -79,7 +79,7 @@ class Renderer {
         canvas.style.left = "0px";
         canvas.style.width = "100%";
         canvas.style.height = "100%";
-        document.body.append(canvas);
+        document.body.appendChild(canvas);
         return canvas;
     }
 

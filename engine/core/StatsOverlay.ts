@@ -15,7 +15,7 @@ class StatsOverlay {
 
     /** @internal */
     public show(): void {
-        document.body.append(this.div);
+        document.body.appendChild(this.div);
     }
 
     /** @internal */
