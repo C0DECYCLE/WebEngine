@@ -5,16 +5,16 @@
 */
 
 class Interface {
-    private readonly root: HTMLDivElement;
-    private readonly input: HTMLDivElement;
+    private readonly root: any;
+    private readonly input: any;
     private readonly list: ObjectArray<InterfaceNode> =
         new ObjectArray<InterfaceNode>();
 
     public constructor() {
-        this.root = this.createBlank();
-        this.input = this.createBlank();
-        this.root.append(this.input);
-        document.body.append(this.root);
+        //this.root = this.createBlank();
+        //this.input = this.createBlank();
+        //this.root.append(this.input);
+        //document.body.append(this.root);
     }
 
     public attach(node: InterfaceNode): void {

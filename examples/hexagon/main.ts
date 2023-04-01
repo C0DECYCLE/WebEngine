@@ -20,20 +20,20 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     );
     //renderer.getStats().show();
 
-    const ui: Interface = renderer.getInterface();
+    //const ui: Interface = renderer.getInterface();
 
     const camera: Camera = renderer.getCamera();
     camera.target.set(-0.1, 0, -0.25).scale(80);
 
     const zoomSpeed: float = 0.025;
     let zoom: float = 40;
-
+    /*
     Interface.Event<WheelEvent>(ui, "wheel", (event: WheelEvent) => {
         zoom += event.deltaY * zoomSpeed;
         zoom = zoom.clamp(20, 60);
         camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
     });
-
+    */
     camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
 
     const dragSpeed: float = 0.15;
@@ -60,13 +60,13 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         camera.target.z = camera.target.z.clamp(-140, 100);
         camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
     };
-
+    /*
     Interface.Event<PointerEvent>(ui, "pointerdown", dragStart);
     Interface.Event<PointerEvent>(ui, "pointermove", dragMove);
     Interface.Event<PointerEvent>(ui, "pointerup", dragStop);
     Interface.Event<PointerEvent>(ui, "pointerout", dragStop);
     Interface.Event<PointerEvent>(ui, "pointercancel", dragStop);
-
+    */
     const light: Light = renderer.getLight();
     light.ambient.set(0.15, 0.05, 0.2);
     light.direction.set(1.5, -0.75, 0.25).normalize();
@@ -159,7 +159,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     rect.color = "#FF0000";
     ui.add(rect);
     */
-
+    /*
     const offset: float = 20;
     const scale: float = Renderer.Height / 900;
 
@@ -236,6 +236,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     text.text = "Hello World";
     text.fontSize = 64 * scale;
     ui.attach(text);
+    */
 
     function render(now: float): void {
         shadow.position.copy(camera.target).add(0.0, 0.0, zoom);
