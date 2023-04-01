@@ -197,14 +197,6 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     btn.on("pointercancel", up);
     ui.attach(btn);
 
-    /*
-    const text: InterfaceText = new InterfaceText("text");
-    text.position.set(offset, offset);
-    text.text = "Hello World";
-    text.fontSize = 64 * scale;
-    ui.attach(text);
-    */
-
     function render(now: float): void {
         shadow.position.copy(camera.target).add(0.0, 0.0, zoom);
         shadow.position.x = Math.round(shadow.position.x / 10) * 10;
