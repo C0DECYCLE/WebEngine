@@ -46,7 +46,7 @@ class Interface {
         renderer.view.style.left = "0px";
         renderer.view.style.width = "100%";
         renderer.view.style.height = "100%";
-        renderer.view.style.filter = "hue-rotate(340deg) saturate(200%)";
+        renderer.view.style.filter = "hue-rotate(340deg) saturate(120%)";
         document.body.appendChild(renderer.view);
         return renderer;
     }
