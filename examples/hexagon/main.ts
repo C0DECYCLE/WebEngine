@@ -21,6 +21,9 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     //renderer.getStats().show();
 
     const ui: Interface = renderer.getInterface();
+    const stage: any = new PIXI.Container();
+    stage.eventMode = "static";
+    stage.hitArea = ui.getRenderer().screen;
 
     const camera: Camera = renderer.getCamera();
     camera.target.set(-0.1, 0, -0.25).scale(80);
@@ -28,7 +31,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     const zoomSpeed: float = 0.025;
     let zoom: float = 40;
 
-    ui.on("wheel", (event: any) => {
+    stage.on("wheel", (event: any) => {
         zoom += event.deltaY * zoomSpeed;
         zoom = zoom.clamp(20, 60);
         camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
@@ -61,11 +64,11 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
     };
 
-    ui.on("pointerdown", dragStart);
-    ui.on("pointermove", dragMove);
-    ui.on("pointerup", dragStop);
-    ui.on("pointerupoutside", dragStop);
-    ui.on("pointerout", dragStop);
+    stage.on("pointerdown", dragStart);
+    stage.on("pointermove", dragMove);
+    stage.on("pointerup", dragStop);
+    stage.on("pointerupoutside", dragStop);
+    stage.on("pointerout", dragStop);
 
     const light: Light = renderer.getLight();
     light.ambient.set(0.15, 0.05, 0.2);
@@ -104,26 +107,21 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             field.shadow(true, true);
             field.wakeUp();
 
+            if (Math.random() > 0.7) {
+                continue;
+            }
             if (Math.random() > 0.5) {
-                for (let i: int = 0; i < 8; i++) {
-                    const tree: Entity = new Entity("tree");
-                    tree.position.copy(field.position);
-                    tree.position.x += (Math.random() * 2 - 1) * 8;
-                    tree.position.y += 0.5;
-                    tree.position.z += (Math.random() * 2 - 1) * 8;
-                    tree.rotation.y = Math.random() * 360 * toRadian;
-                    tree.attach(renderer);
-                    tree.shadow(true, true);
-                    tree.wakeUp();
-                }
+                const tree: Entity = new Entity("tree");
+                tree.position.copy(field.position);
+                if (Math.random() > 0.5) tree.rotation.y = 180 * toRadian;
+                tree.attach(renderer);
+                tree.shadow(true, true);
+                tree.wakeUp();
                 continue;
             }
             const house: Entity = new Entity("house");
             house.position.copy(field.position);
-            house.position.x += (Math.random() * 2 - 1) * 3;
-            house.position.y += 0.5;
-            house.position.z += (Math.random() * 2 - 1) * 3;
-            house.rotation.y = Math.random() * 360 * toRadian;
+            if (Math.random() > 0.5) house.rotation.y = 180 * toRadian;
             house.attach(renderer);
             house.shadow(true, true);
             house.wakeUp();
@@ -164,18 +162,18 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     img1.position.set(Renderer.Width - offset, Renderer.Height - offset);
     img1.anchor.set(1.0, 1.0);
     img1.scale.set(scale, scale);
-    ui.attach(img1);
+    stage.addChild(img1);
 
     const img2 = new PIXI.Sprite(texture2);
     img2.position.set(Renderer.Width - offset, offset);
     img2.anchor.set(1.0, 0.0);
     img2.scale.set(scale, scale);
-    ui.attach(img2);
+    stage.addChild(img2);
 
     const img3 = new PIXI.Sprite(texture3);
     img3.position.set(offset, offset);
     img3.scale.set(scale, scale);
-    ui.attach(img3);
+    stage.addChild(img3);
 
     const btn = new PIXI.Sprite(button);
     btn.position.set(
@@ -195,7 +193,9 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     btn.on("pointerup", up);
     btn.on("pointerout", up);
     btn.on("pointercancel", up);
-    ui.attach(btn);
+    stage.addChild(btn);
+
+    ui.activate(stage);
 
     function render(now: float): void {
         shadow.position.copy(camera.target).add(0.0, 0.0, zoom);

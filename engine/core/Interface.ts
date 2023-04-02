@@ -6,24 +6,26 @@
 
 class Interface {
     private readonly renderer: any;
-    private readonly stage: any;
+    private active: Nullable<any> = null;
 
     public constructor() {
         this.renderer = this.createRenderer();
-        this.stage = this.createStage();
     }
 
-    public attach(node: any): void {
-        this.stage.addChild(node);
+    public getRenderer(): any {
+        return this.renderer;
     }
 
-    public on(event: string, callback: any): void {
-        this.stage.on(event, callback);
+    public activate(stage: Nullable<any>): void {
+        this.active = stage;
     }
 
     /** @internal */
     public render(): void {
-        this.renderer.render(this.stage);
+        if (!this.active) {
+            return;
+        }
+        this.renderer.render(this.active);
     }
 
     private createRenderer(): any {
@@ -49,12 +51,5 @@ class Interface {
         renderer.view.style.filter = "hue-rotate(340deg) saturate(120%)";
         document.body.appendChild(renderer.view);
         return renderer;
-    }
-
-    private createStage(): any {
-        const stage: any = new PIXI.Container();
-        stage.eventMode = "static";
-        stage.hitArea = this.renderer.screen;
-        return stage;
     }
 }
