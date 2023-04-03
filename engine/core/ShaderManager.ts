@@ -15,6 +15,7 @@ class ShaderManager {
         "fragmentVariables",
         "fragmentMethods",
         "fragmentPre",
+        "fragmentShade",
         "fragmentPost",
     ];
 

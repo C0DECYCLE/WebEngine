@@ -15,8 +15,9 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             "models/field.obj",
             "models/water.obj",
             "models/sand.obj",
+            "models/buildable.obj",
         ],
-        ["shaders/water"]
+        ["shaders/water", "shaders/hint"]
     );
     //renderer.getStats().show();
 
@@ -90,6 +91,9 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         [0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
     ];
 
+    const buildables: Entity[] = [];
+    let isBuilding: boolean = false;
+
     for (let z: int = 0; z < map.length; z++) {
         for (let x: int = 0; x < map[0].length; x++) {
             let key;
@@ -107,10 +111,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             field.shadow(true, true);
             field.wakeUp();
 
-            if (Math.random() > 0.7) {
-                continue;
-            }
-            if (Math.random() > 0.5) {
+            if (Math.random() > 0.6) {
                 const tree: Entity = new Entity("tree");
                 tree.position.copy(field.position);
                 if (Math.random() > 0.5) tree.rotation.y = 180 * toRadian;
@@ -119,12 +120,27 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
                 tree.wakeUp();
                 continue;
             }
+
+            //if (Math.random() > 0.3) {
+
+            const buildable: Entity = new Entity("buildable");
+            buildable.position.copy(field.position);
+            buildable.attach(renderer);
+            buildable.shadow(false, false);
+            buildable.staticLod(0);
+            //buildable.wakeUp();
+            buildables.push(buildable);
+
+            //continue;
+            //}
+            /*
             const house: Entity = new Entity("house");
             house.position.copy(field.position);
             if (Math.random() > 0.5) house.rotation.y = 180 * toRadian;
             house.attach(renderer);
             house.shadow(true, true);
             house.wakeUp();
+            */
         }
     }
 
@@ -172,7 +188,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     const img3 = new PIXI.Sprite(texture3);
     img3.position.set(offset, offset);
-    img3.scale.set(scale, scale);
+    img3.scale.set(scale, scale);.
     stage.addChild(img3);
 
     const btn = new PIXI.Sprite(button);
@@ -183,16 +199,26 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     btn.anchor.set(0.5, 0.0);
     btn.scale.set(scale, scale);
     btn.eventMode = "static";
-    const down = (_event: any) => {
-        btn.scale.set(scale * 0.8, scale * 0.8);
-    };
+    const shrink = (_event: any) => btn.scale.set(scale * 0.8, scale * 0.8);
+    const expand = (_event: any) => btn.scale.set(scale, scale);
     const up = (_event: any) => {
-        btn.scale.set(scale, scale);
+        expand(_event);
+        if (!isBuilding) {
+            isBuilding = true;
+            buildables.forEach((buildable: Entity, _i: int) => {
+                buildable.wakeUp();
+            });
+        } else {
+            isBuilding = false;
+            buildables.forEach((buildable: Entity, _i: int) => {
+                buildable.sleep();
+            });
+        }
     };
-    btn.on("pointerdown", down);
+    btn.on("pointerdown", shrink);
     btn.on("pointerup", up);
-    btn.on("pointerout", up);
-    btn.on("pointercancel", up);
+    btn.on("pointerout", expand);
+    btn.on("pointercancel", expand);
     stage.addChild(btn);
 
     ui.activate(stage);

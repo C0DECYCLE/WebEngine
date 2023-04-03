@@ -17,5 +17,6 @@ void main() {
     specularIntensity = 2.0;
     alpha = 0.75;
 
+    #include fragmentShade
     #include fragmentPost
 }
