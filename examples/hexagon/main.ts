@@ -41,28 +41,56 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
 
     const dragSpeed: float = 0.15;
-    let dragging: boolean = false;
+    let isDowning: boolean = false;
+    let isPicking: boolean = false;
+    const downCoord: Vec2 = new Vec2();
+    const upCoord: Vec2 = new Vec2();
 
-    const dragStart = (_event: any) => {
-        dragging = true;
-    };
-
-    const dragStop = (_event: any) => {
-        dragging = false;
+    const dragStart = (event: any) => {
+        isDowning = true;
+        isPicking = true;
+        downCoord.copy(event.client);
     };
 
     const dragMove = (event: any) => {
-        if (!dragging) {
+        if (!isDowning) {
             return;
         }
-        camera.target.add(
-            event.movementX * dragSpeed * zoom * 0.015,
-            0.0,
-            event.movementY * dragSpeed * zoom * 0.015
+        if (isPicking) {
+            if (upCoord.copy(event.client).sub(downCoord).length() > 10.0) {
+                isPicking = false;
+            }
+        } else {
+            camera.target.add(
+                event.movementX * dragSpeed * zoom * 0.015,
+                0.0,
+                event.movementY * dragSpeed * zoom * 0.015
+            );
+            camera.target.x = camera.target.x.clamp(-80, 140);
+            camera.target.z = camera.target.z.clamp(-140, 100);
+            camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
+        }
+    };
+
+    const mouseRay = (mouseCoord: any) => {
+        const ray: Vec3 = new Vec3(
+            (2.0 * mouseCoord.x) / Renderer.Width - 1.0,
+            1.0 - (2.0 * mouseCoord.y) / Renderer.Height,
+            -1.0
         );
-        camera.target.x = camera.target.x.clamp(-80, 140);
-        camera.target.z = camera.target.z.clamp(-140, 100);
-        camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
+        ray.applyMat(camera.projection.clone().invert());
+        ray.z = -1;
+        ray.applyMat(camera.world.clone().invert());
+        ray.normalize();
+        log(ray);
+    };
+
+    const dragStop = (event: any) => {
+        isDowning = false;
+        if (isPicking) {
+            mouseRay(event.client);
+        }
+        isPicking = false;
     };
 
     stage.on("pointerdown", dragStart);
@@ -121,26 +149,24 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
                 continue;
             }
 
-            //if (Math.random() > 0.3) {
+            if (Math.random() > 0.3) {
+                const buildable: Entity = new Entity("buildable");
+                buildable.position.copy(field.position);
+                buildable.attach(renderer);
+                buildable.shadow(false, false);
+                buildable.staticLod(0);
+                //buildable.wakeUp();
+                buildables.push(buildable);
 
-            const buildable: Entity = new Entity("buildable");
-            buildable.position.copy(field.position);
-            buildable.attach(renderer);
-            buildable.shadow(false, false);
-            buildable.staticLod(0);
-            //buildable.wakeUp();
-            buildables.push(buildable);
+                continue;
+            }
 
-            //continue;
-            //}
-            /*
             const house: Entity = new Entity("house");
             house.position.copy(field.position);
             if (Math.random() > 0.5) house.rotation.y = 180 * toRadian;
             house.attach(renderer);
             house.shadow(true, true);
             house.wakeUp();
-            */
         }
     }
 
@@ -188,7 +214,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     const img3 = new PIXI.Sprite(texture3);
     img3.position.set(offset, offset);
-    img3.scale.set(scale, scale);.
+    img3.scale.set(scale, scale);
     stage.addChild(img3);
 
     const btn = new PIXI.Sprite(button);
