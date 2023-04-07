@@ -8,12 +8,13 @@ class Renderer {
     private readonly clearColor?: Vec3;
 
     private gl: WebGL2RenderingContext;
+    private stats: Stats;
     private shaderManager: ShaderManager;
     private geometryManager: GeometryManager;
     private entityManager: EntityManager;
     private camera: Camera;
     private light: Light;
-    private stats: Stats;
+    private interface: Interface;
 
     public constructor(clearColor?: Vec3, far?: float, antialiase?: boolean) {
         this.clearColor = clearColor;
@@ -25,6 +26,7 @@ class Renderer {
         this.createEntityManager();
         this.createCamera(far);
         this.createLight();
+        this.createInterface();
     }
 
     public async initialize(
@@ -35,6 +37,10 @@ class Renderer {
         await this.shaderManager.initialize(shaderUrls);
         await this.geometryManager.initialize(geometryUrls, lodMatrix);
         this.initializeContext();
+    }
+
+    public getStats(): Stats {
+        return this.stats;
     }
 
     public getEntityManager(): EntityManager {
@@ -49,6 +55,10 @@ class Renderer {
         return this.light;
     }
 
+    public getInterface(): Interface {
+        return this.interface;
+    }
+
     public render(now: float): void {
         this.stats.begin(now);
         this.stats.beginUpdate();
@@ -57,16 +67,22 @@ class Renderer {
         this.stats.beginDraw();
         this.draw();
         this.stats.endDraw();
+        this.stats.beginInterface();
+        this.interface.render();
+        this.stats.endInterface();
         this.stats.end(now);
     }
 
     private createCanvas(): HTMLCanvasElement {
         const canvas: HTMLCanvasElement = document.createElement("canvas");
-        canvas.width = document.body.clientWidth * devicePixelRatio;
-        canvas.height = document.body.clientHeight * devicePixelRatio;
+        canvas.width = Renderer.Width * devicePixelRatio;
+        canvas.height = Renderer.Height * devicePixelRatio;
+        canvas.style.position = "absolute";
+        canvas.style.top = "0px";
+        canvas.style.left = "0px";
         canvas.style.width = "100%";
         canvas.style.height = "100%";
-
+        canvas.style.filter = "hue-rotate(350deg) saturate(120%)";
         document.body.appendChild(canvas);
         return canvas;
     }
@@ -113,7 +129,6 @@ class Renderer {
 
     private createEntityManager(): void {
         this.entityManager = new EntityManager(
-            this.shaderManager,
             this.geometryManager,
             this.stats
         );
@@ -125,6 +140,10 @@ class Renderer {
 
     private createLight(): void {
         this.light = new Light(this.gl, this.camera);
+    }
+
+    private createInterface(): void {
+        this.interface = new Interface();
     }
 
     private initializeContext(): void {
@@ -208,4 +227,7 @@ class Renderer {
         )!;
         this.gl.uniform1f(loc, performance.now());
     }
+
+    public static readonly Width: int = document.body.clientWidth;
+    public static readonly Height: int = document.body.clientHeight;
 }

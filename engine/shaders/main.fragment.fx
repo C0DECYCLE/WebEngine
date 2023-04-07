@@ -13,5 +13,6 @@ precision highp float;
 
 void main() {
     #include fragmentPre
+    #include fragmentShade
     #include fragmentPost
 }

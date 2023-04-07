@@ -14,8 +14,9 @@ precision highp float;
 void main() {
     #include fragmentPre
 
-    specularIntensity = 1.0;
+    specularIntensity = 2.0;
     alpha = 0.75;
 
+    #include fragmentShade
     #include fragmentPost
 }

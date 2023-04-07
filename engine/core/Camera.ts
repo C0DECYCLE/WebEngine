@@ -10,6 +10,7 @@ class Camera {
     public readonly up: Vec3 = new Vec3(0, 1, 0);
 
     private readonly right: Vec3 = new Vec3(1, 0, 0);
+    private readonly relativeUp: Vec3 = new Vec3(0, 1, 0);
 
     private readonly fov: float;
     private readonly ratio: float;
@@ -25,6 +26,8 @@ class Camera {
     private readonly projection: Mat4 = new Mat4();
     private readonly viewProjection: Mat4 = new Mat4();
 
+    private frustum: Frustum;
+
     private readonly gl: WebGL2RenderingContext;
 
     public constructor(gl: WebGL2RenderingContext, far: float = 10_000) {
@@ -34,21 +37,24 @@ class Camera {
         this.near = 1;
         this.far = far;
         this.projection.perspective(this.fov, this.ratio, this.near, this.far);
+        this.createFrustum();
     }
 
-    public inView(
-        directionX: float,
-        directionY: float,
-        directionZ: float,
-        minimum: float
-    ): boolean {
-        return this.direction.dot(directionX, directionY, directionZ) > minimum;
+    /** @internal */
+    public inFrustum(position: Vec3, radius: float): boolean {
+        return (
+            this.inFrontOfPlane(this.frustum.left, position, radius) &&
+            this.inFrontOfPlane(this.frustum.right, position, radius) &&
+            this.inFrontOfPlane(this.frustum.top, position, radius) &&
+            this.inFrontOfPlane(this.frustum.bottom, position, radius)
+        );
     }
 
     /** @internal */
     public update(): void {
         this.computeVectors();
         this.computeMatricies();
+        this.computeFrustum();
     }
 
     /** @internal */
@@ -58,10 +64,27 @@ class Camera {
         this.bufferViewProjectionUniform(program);
     }
 
+    private createFrustum(): void {
+        this.frustum = {
+            left: this.createPlane(),
+            right: this.createPlane(),
+            top: this.createPlane(),
+            bottom: this.createPlane(),
+        } as Frustum;
+    }
+
+    private createPlane(): Plane {
+        return {
+            position: new Vec3(),
+            normal: new Vec3(),
+        } as Plane;
+    }
+
     private computeVectors(): void {
         this.direction.copy(this.target).sub(this.position).normalize();
         this.up.normalize();
-        this.right.copy(this.direction).cross(this.up);
+        this.right.copy(this.direction).cross(this.up).normalize();
+        this.relativeUp.copy(this.direction).cross(this.right).normalize();
 
         this.cameraPosition[0] = this.position.x;
         this.cameraPosition[1] = this.position.y;
@@ -78,6 +101,51 @@ class Camera {
             .copy(this.world)
             .invert()
             .multiply(this.viewProjection, this.projection);
+    }
+
+    private computeFrustum(): void {
+        const hHeight: float = this.far * Math.tan(this.fov * 0.55);
+        const hWidth: float = hHeight * this.ratio;
+
+        const right: Vec3 = this.right;
+        const rUp: Vec3 = this.relativeUp;
+        const dirFar: Vec3 = this.direction.clone().scale(this.far);
+
+        this.computePlane(this.frustum.left, right, hWidth, dirFar, rUp, -1);
+        this.computePlane(this.frustum.right, right, -hWidth, dirFar, rUp, 1);
+        this.computePlane(this.frustum.bottom, rUp, hHeight, dirFar, right, 1);
+        this.computePlane(this.frustum.top, rUp, -hHeight, dirFar, right, -1);
+    }
+
+    private computePlane(
+        plane: Plane,
+        right: Vec3,
+        half: float,
+        directionFar: Vec3,
+        up: Vec3,
+        flip: float
+    ): void {
+        plane.position.copy(this.position);
+        plane.normal
+            .copy(right)
+            .scale(half)
+            .sub(directionFar)
+            .scale(-1)
+            .normalize()
+            .cross(up)
+            .scale(flip);
+    }
+
+    private inFrontOfPlane(
+        plane: Plane,
+        position: Vec3,
+        radius: float
+    ): boolean {
+        return (
+            Vec3.Dot(plane.normal, position) -
+                Vec3.Dot(plane.normal, plane.position) >
+            -radius
+        );
     }
 
     private bufferCameraPositionUniform(program: ShaderProgram): void {

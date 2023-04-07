@@ -15,6 +15,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         [2, 0.05, 0.25] as GeometryLodConfig,
         [3, 0.01, 0.1] as GeometryLodConfig,
     ] as GeometryLodConfig[]);
+    renderer.getStats().show();
 
     const camera: Camera = renderer.getCamera();
     camera.target.set(0, 0, 0);
@@ -28,7 +29,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             .scale(20);
         suzanne.rotation.add(Math.random(), Math.random(), Math.random());
         suzanne.attach(renderer);
-        suzanne.disableViewCulling();
+        suzanne.disableFrustumCulling();
         suzanne.wakeUp();
     }
 

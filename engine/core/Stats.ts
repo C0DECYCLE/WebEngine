@@ -5,34 +5,36 @@
 */
 
 class Stats {
-    private then: float = -1;
-    private renderThen: float = -1;
-    private updateThen: float = -1;
-    private subUpdateThen: float = -1;
-    private drawThen: float = -1;
+    private readonly list: MapS<any> = new MapS<any>([
+        ["then", -1],
+        ["renderThen", -1],
+        ["updateThen", -1],
+        ["subUpdateThen", -1],
+        ["drawThen", -1],
+        ["interfaceThen", -1],
 
-    private deltaMs: float = 0;
-    private renderMs: float = 0;
-    private updateMs: float = 0;
-    private subUpdateMs: float = 0;
-    private drawMs: float = 0;
+        ["deltaMs", 0],
+        ["renderMs", 0],
+        ["updateMs", 0],
+        ["subUpdateMs", 0],
+        ["drawMs", 0],
+        ["interfaceMs", 0],
 
-    private activeEntities: int = 0;
-    private shadowEntities: int = 0;
-    private totalEntities: int = 0;
+        ["activeEntities", 0],
+        ["shadowEntities", 0],
+        ["totalEntities", 0],
 
-    private drawCalls: int = 0;
-    private shadowDrawCalls: int = 0;
-    private activeVertecies: int = 0;
-    private activeShadowVertecies: int = 0;
-    private totalVertecies: int = 0;
-    private totalShadowVertecies: int = 0;
+        ["drawCalls", 0],
+        ["shadowDrawCalls", 0],
 
-    private resolution: [int, int] = [
-        document.body.clientWidth,
-        document.body.clientHeight,
-    ];
-    private devicePixelRatio: int = devicePixelRatio;
+        ["activeVertecies", 0],
+        ["activeShadowVertecies", 0],
+        ["totalVertecies", 0],
+        ["totalShadowVertecies", 0],
+
+        ["resolution", [Renderer.Width, Renderer.Height]],
+        ["devicePixelRatio", devicePixelRatio],
+    ]);
 
     private overlay: StatsOverlay;
     private overlayUpdateCounter: int = 0;
@@ -41,105 +43,98 @@ class Stats {
         this.createOverlay();
     }
 
+    public show(): void {
+        this.overlay.show();
+    }
+
+    /** @internal */
+    public get(key: string): any {
+        return this.list.get(key);
+    }
+
+    /** @internal */
+    public set(key: string, value: any): void {
+        this.list.set(key, value);
+    }
+
+    /** @internal */
+    public add(key: string, value: any): void {
+        this.list.set(key, this.get(key) + value);
+    }
+
     /** @internal */
     public begin(now: float): void {
-        if (this.then === -1) {
-            this.then = now;
+        if (this.get("then") === -1) {
+            this.set("then", now);
         }
-        this.renderThen = performance.now();
+        this.set("renderThen", performance.now());
     }
 
     /** @internal */
     public beginUpdate(): void {
-        this.updateThen = performance.now();
-        this.activeEntities = 0;
-        this.shadowEntities = 0;
-        this.totalEntities = 0;
-    }
+        this.set("updateThen", performance.now());
 
-    /** @internal */
-    public incrementEntities(): void {
-        this.activeEntities += 1;
-    }
-
-    /** @internal */
-    public incrementShadowEntities(): void {
-        this.shadowEntities += 1;
-    }
-
-    /** @internal */
-    public setTotalEntities(n: int): void {
-        this.totalEntities = n;
+        this.set("activeEntities", 0);
+        this.set("shadowEntities", 0);
+        this.set("totalEntities", 0);
     }
 
     /** @internal */
     public endUpdate(): void {
-        this.updateMs = performance.now() - this.updateThen;
+        this.set("updateMs", performance.now() - this.get("updateThen"));
     }
 
     /** @internal */
     public beginSubUpdate(): void {
-        this.subUpdateThen = performance.now();
+        this.set("subUpdateThen", performance.now());
     }
 
     /** @internal */
     public endSubUpdate(): void {
-        this.subUpdateMs = performance.now() - this.subUpdateThen;
+        this.set("subUpdateMs", performance.now() - this.get("subUpdateThen"));
     }
 
     /** @internal */
     public beginDraw(): void {
-        this.drawThen = performance.now();
-        this.drawCalls = 0;
-        this.shadowDrawCalls = 0;
-        this.activeVertecies = 0;
-        this.activeShadowVertecies = 0;
-        this.totalVertecies = 0;
-        this.totalShadowVertecies = 0;
-    }
+        this.set("drawThen", performance.now());
 
-    /** @internal */
-    public incrementDrawCalls(vertecies: int, isShadow: boolean): void {
-        if (isShadow) {
-            return this.incrementShadowDrawCalls(vertecies);
-        }
-        this.drawCalls += 1;
-        this.activeVertecies += vertecies;
-    }
+        this.set("drawCalls", 0);
+        this.set("shadowDrawCalls", 0);
 
-    /** @internal */
-    public incrementTotalVertecies(vertecies: int, isShadow: boolean): void {
-        if (isShadow) {
-            return this.incrementTotalShadowVertecies(vertecies);
-        }
-        this.totalVertecies += vertecies;
+        this.set("activeVertecies", 0);
+        this.set("activeShadowVertecies", 0);
+
+        this.set("totalVertecies", 0);
+        this.set("totalShadowVertecies", 0);
     }
 
     /** @internal */
     public endDraw(): void {
-        this.drawMs = performance.now() - this.drawThen;
+        this.set("drawMs", performance.now() - this.get("drawThen"));
+    }
+
+    /** @internal */
+    public beginInterface(): void {
+        this.set("interfaceThen", performance.now());
+    }
+
+    /** @internal */
+    public endInterface(): void {
+        this.set("interfaceMs", performance.now() - this.get("interfaceThen"));
     }
 
     /** @internal */
     public end(now: float): void {
-        this.deltaMs = now - this.then;
-        this.then = now;
-        this.renderMs = performance.now() - this.renderThen;
+        this.set("deltaMs", now - this.get("then"));
+        this.set("renderMs", performance.now() - this.get("renderThen"));
+
+        this.set("then", now);
 
         this.updateOverlay();
     }
 
     private createOverlay(): void {
         this.overlay = new StatsOverlay();
-    }
-
-    private incrementShadowDrawCalls(vertecies: int): void {
-        this.shadowDrawCalls += 1;
-        this.activeShadowVertecies += vertecies;
-    }
-
-    private incrementTotalShadowVertecies(vertecies: int): void {
-        this.totalShadowVertecies += vertecies;
     }
 
     private updateOverlay(): void {
@@ -154,60 +149,50 @@ class Stats {
     }
 
     private stringify(): string {
+        // prettier-ignore
         return `
-            <b>frame rate: ${(1_000 / this.deltaMs).toFixed(1)} fps</b><br>
-            frame delta: ${this.deltaMs.toFixed(2)} ms<br>
+            <b>frame rate: ${(1_000 / this.get("deltaMs")).toFixed(1)} fps</b><br>
+            frame delta: ${this.get("deltaMs").toFixed(2)} ms<br>
             <br>
-            <b>entities: ${this.activeEntities.dotit()} / ${this.totalEntities.dotit()}</b><br>
-            |_ shadow: ${this.shadowEntities.dotit()} / ${this.totalEntities.dotit()}<br>
+            <b>entities: ${this.get("activeEntities").dotit()} / ${this.get("totalEntities").dotit()}</b><br>
+            |_ shadow: ${this.get("shadowEntities").dotit()} / ${this.get("totalEntities").dotit()}<br>
             <br>
             ${this.stringifyCpu()}
             <br>
             ${this.stringifyGpu()}
             <br>
-            resolution: ${this.resolution[0]} px x ${this.resolution[1]} px<br>
-            device pixel ratio: ${this.devicePixelRatio}<br>
+            resolution: ${this.get("resolution")[0]} px x ${this.get("resolution")[1]} px<br>
+            device pixel ratio: ${this.get("devicePixelRatio")}<br>
         `;
     }
 
     private stringifyCpu(): string {
+        // prettier-ignore
         return `
-            <b>cpu frame time: ${this.renderMs.toFixed(2)} ms</b><br>
-            |_ update: ${(this.updateMs + this.subUpdateMs).toFixed(2)} ms<br>
-            |_ draw: ${(this.drawMs - this.subUpdateMs).toFixed(2)} ms<br>
+            <b>cpu frame time: ${this.get("renderMs").toFixed(2)} ms</b><br>
+            |_ update: ${(this.get("updateMs") + this.get("subUpdateMs")).toFixed(2)} ms<br>
+            |_ draw: ${(this.get("drawMs") - this.get("subUpdateMs")).toFixed(2)} ms<br>
+            |_ <b>interface: ${this.get("interfaceMs").toFixed(2)} ms</b><br>
             <br>
-            cpu frame rate: ${(1_000 / this.renderMs).toFixed(1)} fps<br>
-            cpu inter time: ${(this.deltaMs - this.renderMs).toFixed(2)} ms<br>
+            cpu frame rate: ${(1_000 / this.get("renderMs")).toFixed(1)} fps<br>
+            cpu inter time: ${(this.get("deltaMs") - this.get("renderMs")).toFixed(2)} ms<br>
         `;
     }
 
     private stringifyGpu(): string {
+        // prettier-ignore
         return `
-            <b>gpu draw calls: ${this.drawCalls + this.shadowDrawCalls}</b><br>
-            |_ main: ${this.drawCalls}<br>
-            |_ shadow: ${this.shadowDrawCalls}<br>
+            <b>gpu draw calls: ${this.get("drawCalls") + this.get("shadowDrawCalls")}</b><br>
+            |_ main: ${this.get("drawCalls")}<br>
+            |_ shadow: ${this.get("shadowDrawCalls")}<br>
             <br>
-            <b>gpu vertecies: ${(
-                this.activeVertecies + this.activeShadowVertecies
-            ).dotit()} / ${(
-            this.totalVertecies + this.totalShadowVertecies
-        ).dotit()}</b><br>
-            |_ main: ${this.activeVertecies.dotit()} / ${this.totalVertecies.dotit()}<br>
-            |_ shadow: ${this.activeShadowVertecies.dotit()} / ${this.totalShadowVertecies.dotit()}<br>
+            <b>gpu vertecies: ${(this.get("activeVertecies") + this.get("activeShadowVertecies")).dotit()} / ${(this.get("totalVertecies") + this.get("totalShadowVertecies")).dotit()}</b><br>
+            |_ main: ${this.get("activeVertecies").dotit()} / ${this.get("totalVertecies").dotit()}<br>
+            |_ shadow: ${this.get("activeShadowVertecies").dotit()} / ${this.get("totalShadowVertecies").dotit()}<br>
             <br>
-            <b>gpu faces: ${(
-                this.activeVertecies / 3 +
-                this.activeShadowVertecies / 3
-            ).dotit()} / ${(
-            this.totalVertecies / 3 +
-            this.totalShadowVertecies / 3
-        ).dotit()}</b><br>
-            |_ main: ${(this.activeVertecies / 3).dotit()} / ${(
-            this.totalVertecies / 3
-        ).dotit()}<br>
-            |_ shadow: ${(this.activeShadowVertecies / 3).dotit()} / ${(
-            this.totalShadowVertecies / 3
-        ).dotit()}<br>
+            <b>gpu faces: ${(this.get("activeVertecies") / 3 + this.get("activeShadowVertecies") / 3).dotit()} / ${(this.get("totalVertecies") / 3 + this.get("totalShadowVertecies") / 3).dotit()}</b><br>
+            |_ main: ${(this.get("activeVertecies") / 3).dotit()} / ${(this.get("totalVertecies") / 3).dotit()}<br>
+            |_ shadow: ${(this.get("activeShadowVertecies") / 3).dotit()} / ${(this.get("totalShadowVertecies") / 3).dotit()}<br>
         `;
     }
 }

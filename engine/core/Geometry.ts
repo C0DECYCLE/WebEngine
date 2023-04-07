@@ -50,12 +50,10 @@ class Geometry {
         this.lods.forEach((lod: GeometryLod, _level: int) =>
             lod.draw(isShadow)
         );
-        this.geometryManager
-            .getStats()
-            .incrementTotalVertecies(
-                this.data.lods[0].count * this.instanceCount,
-                isShadow
-            );
+        this.registerStats(
+            isShadow,
+            this.data.lods[0].count * this.instanceCount
+        );
         this.instanceCount = 0;
     }
 
@@ -67,6 +65,14 @@ class Geometry {
 
     private createLod(dataLod: GeometryDataLod): void {
         this.lods.set(dataLod.level, new GeometryLod(this.gl, dataLod, this));
+    }
+
+    private registerStats(isShadow: boolean, n: int): void {
+        if (isShadow) {
+            this.geometryManager.getStats().add("totalShadowVertecies", n);
+        } else {
+            this.geometryManager.getStats().add("totalVertecies", n);
+        }
     }
 
     public static readonly LodMatrix: GeometryLodConfig[] = [

@@ -4,4 +4,4 @@
     2023
 */
 
-fragColor = vec4(finalColor * alpha, alpha);
+declare const PIXI: any;
