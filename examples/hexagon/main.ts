@@ -72,17 +72,39 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         }
     };
 
+    const buildables: ObjectArray<Entity> = new ObjectArray<Entity>();
+    let isBuilding: boolean = false;
+
     const mouseRay = (mouseCoord: any) => {
-        const ray: Vec3 = new Vec3(
-            (2.0 * mouseCoord.x) / Renderer.Width - 1.0,
-            1.0 - (2.0 * mouseCoord.y) / Renderer.Height,
-            -1.0
-        );
-        ray.applyMat(camera.projection.clone().invert());
-        ray.z = -1;
-        ray.applyMat(camera.world.clone().invert());
-        ray.normalize();
-        log(ray);
+        if (!isBuilding) {
+            return;
+        }
+        for (let i: int = 0; i < buildables.length; i++) {
+            const clipPotential: Vec3 = buildables[i].position
+                .clone()
+                .sub(camera.position)
+                .applyMat(camera.viewProjection);
+            const screenPotential: Vec2 = new Vec2(
+                (clipPotential.x * 0.5 + 0.5) * Renderer.Width,
+                (-clipPotential.y * 0.5 + 0.5) * Renderer.Height
+            );
+            const distance: float = screenPotential
+                .clone()
+                .sub(mouseCoord.x, mouseCoord.y)
+                .length();
+            const inverseSize: float = 1.0 - (clipPotential.z * 0.5 + 0.5);
+            if (distance < 200.0 * inverseSize) {
+                const house: Entity = new Entity("house");
+                house.position.copy(buildables[i].position);
+                if (Math.random() > 0.5) house.rotation.y = 180 * toRadian;
+                house.attach(renderer);
+                house.shadow(true, true);
+                house.wakeUp();
+
+                buildables[i].sleep();
+                buildables.delete(buildables[i]);
+            }
+        }
     };
 
     const dragStop = (event: any) => {
@@ -119,9 +141,6 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         [0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
     ];
 
-    const buildables: Entity[] = [];
-    let isBuilding: boolean = false;
-
     for (let z: int = 0; z < map.length; z++) {
         for (let x: int = 0; x < map[0].length; x++) {
             let key;
@@ -149,15 +168,14 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
                 continue;
             }
 
-            if (Math.random() > 0.3) {
+            if (Math.random() > 0.0) {
                 const buildable: Entity = new Entity("buildable");
                 buildable.position.copy(field.position);
                 buildable.attach(renderer);
                 buildable.shadow(false, false);
                 buildable.staticLod(0);
                 //buildable.wakeUp();
-                buildables.push(buildable);
-
+                buildables.add(buildable);
                 continue;
             }
 
@@ -231,14 +249,14 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         expand(_event);
         if (!isBuilding) {
             isBuilding = true;
-            buildables.forEach((buildable: Entity, _i: int) => {
-                buildable.wakeUp();
-            });
+            for (let i: int = 0; i < buildables.length; i++) {
+                buildables[i].wakeUp();
+            }
         } else {
             isBuilding = false;
-            buildables.forEach((buildable: Entity, _i: int) => {
-                buildable.sleep();
-            });
+            for (let i: int = 0; i < buildables.length; i++) {
+                buildables[i].sleep();
+            }
         }
     };
     btn.on("pointerdown", shrink);
