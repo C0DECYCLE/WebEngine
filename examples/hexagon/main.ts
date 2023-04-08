@@ -26,6 +26,11 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     stage.eventMode = "static";
     stage.hitArea = ui.getRenderer().screen;
 
+    const cameraTilt: float = 37.5 * toRadian;
+    const cameraDirection: Vec3 = new Vec3(0.0, 0.0, -1.0)
+        .applyMat(new Mat4().rotateX(cameraTilt))
+        .scale(2.0);
+
     const camera: Camera = renderer.getCamera();
     camera.target.set(-0.1, 0, -0.25).scale(80);
 
@@ -35,10 +40,10 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     stage.on("wheel", (event: any) => {
         zoom += event.deltaY * zoomSpeed;
         zoom = zoom.clamp(20, 60);
-        camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
+        camera.position.copy(cameraDirection).scale(zoom).add(camera.target);
     });
 
-    camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
+    camera.position.copy(cameraDirection).scale(zoom).add(camera.target);
 
     const dragSpeed: float = 0.15;
     let isDowning: boolean = false;
@@ -68,7 +73,10 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             );
             camera.target.x = camera.target.x.clamp(-80, 140);
             camera.target.z = camera.target.z.clamp(-140, 100);
-            camera.position.set(0, 1.25, -1.0).scale(zoom).add(camera.target);
+            camera.position
+                .copy(cameraDirection)
+                .scale(zoom)
+                .add(camera.target);
         }
     };
 
@@ -79,6 +87,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         if (!isBuilding) {
             return;
         }
+
         for (let i: int = 0; i < buildables.length; i++) {
             const clipPotential: Vec3 = buildables[i].position
                 .clone()
@@ -105,6 +114,40 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
                 buildables.delete(buildables[i]);
             }
         }
+
+        /*
+        const ray: Vec3 = new Vec3(
+            2.0 * (mouseCoord.x / Renderer.Width) - 1.0,
+            2.0 * (mouseCoord.y / Renderer.Height) - 1.0,
+            -1.0
+        )
+            .normalize()
+            .applyMat(camera.projection.clone().invert())
+            .applyMat(new Mat4().rotateX(cameraTilt));
+
+        const up: Vec3 = new Vec3(0.0, 1.0, 0.0);
+        const t: float = -Vec3.Dot(camera.position, up) / Vec3.Dot(ray, up);
+
+        const hit: Vec3 = ray.clone().scale(t).add(camera.position);
+
+        for (let i: int = 0; i < buildables.length; i++) {
+            const distance: float = buildables[i].position
+                .clone()
+                .sub(hit)
+                .length();
+            if (distance < 10) {
+                const house: Entity = new Entity("house");
+                house.position.copy(buildables[i].position);
+                if (Math.random() > 0.5) house.rotation.y = 180 * toRadian;
+                house.attach(renderer);
+                house.shadow(true, true);
+                house.wakeUp();
+
+                buildables[i].sleep();
+                buildables.delete(buildables[i]);
+            }
+        }
+        */
     };
 
     const dragStop = (event: any) => {
@@ -222,18 +265,18 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     img1.position.set(Renderer.Width - offset, Renderer.Height - offset);
     img1.anchor.set(1.0, 1.0);
     img1.scale.set(scale, scale);
-    stage.addChild(img1);
+    //stage.addChild(img1);
 
     const img2 = new PIXI.Sprite(texture2);
     img2.position.set(Renderer.Width - offset, offset);
     img2.anchor.set(1.0, 0.0);
     img2.scale.set(scale, scale);
-    stage.addChild(img2);
+    //stage.addChild(img2);
 
     const img3 = new PIXI.Sprite(texture3);
     img3.position.set(offset, offset);
     img3.scale.set(scale, scale);
-    stage.addChild(img3);
+    //stage.addChild(img3);
 
     const btn = new PIXI.Sprite(button);
     btn.position.set(
