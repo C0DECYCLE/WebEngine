@@ -32,6 +32,7 @@ class Renderer {
         this.createCamera(far);
         this.createLight();
         this.createInterface();
+        this.initializeContext();
     }
 
     public async initialize(
@@ -41,7 +42,6 @@ class Renderer {
     ): Promise<void> {
         await this.shaderManager.initialize(shaderUrls);
         await this.geometryManager.initialize(geometryUrls, lodMatrix);
-        this.initializeContext();
     }
 
     public getStats(): Stats {
@@ -75,6 +75,9 @@ class Renderer {
         this.stats.beginInterface();
         this.interface.render();
         this.stats.endInterface();
+        this.stats.beginTween();
+        TWEEN.update(now);
+        this.stats.endTween();
         this.stats.end(now);
     }
 

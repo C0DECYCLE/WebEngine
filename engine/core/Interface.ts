@@ -40,7 +40,7 @@ class Interface {
             hello: false,
             clearBeforeRender: true,
             powerPreference: "high-performance",
-            premultipliedAlpha: false,
+            premultipliedAlpha: true,
             preserveDrawingBuffer: false,
         });
         renderer.view.style.position = "absolute";
