@@ -265,18 +265,18 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     img1.position.set(Renderer.Width - offset, Renderer.Height - offset);
     img1.anchor.set(1.0, 1.0);
     img1.scale.set(scale, scale);
-    //stage.addChild(img1);
+    stage.addChild(img1);
 
     const img2 = new PIXI.Sprite(texture2);
     img2.position.set(Renderer.Width - offset, offset);
     img2.anchor.set(1.0, 0.0);
     img2.scale.set(scale, scale);
-    //stage.addChild(img2);
+    stage.addChild(img2);
 
     const img3 = new PIXI.Sprite(texture3);
     img3.position.set(offset, offset);
     img3.scale.set(scale, scale);
-    //stage.addChild(img3);
+    stage.addChild(img3);
 
     const btn = new PIXI.Sprite(button);
     btn.position.set(

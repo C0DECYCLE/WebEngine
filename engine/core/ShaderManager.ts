@@ -27,8 +27,11 @@ class ShaderManager {
 
     private readonly gl: WebGL2RenderingContext;
 
-    public constructor(gl: WebGL2RenderingContext) {
+    public constructor(gl: WebGL2RenderingContext, root?: string) {
         this.gl = gl;
+        if (root) {
+            this.rootPath = `${root}${this.rootPath}`;
+        }
     }
 
     /** @internal */

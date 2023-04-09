@@ -24,11 +24,15 @@ class GeometryManager {
     public constructor(
         gl: WebGL2RenderingContext,
         shaderManager: ShaderManager,
-        stats: Stats
+        stats: Stats,
+        root?: string
     ) {
         this.gl = gl;
         this.shaderManager = shaderManager;
         this.stats = stats;
+        if (root) {
+            this.rootPath = `${root}${this.rootPath}`;
+        }
     }
 
     /** @internal */

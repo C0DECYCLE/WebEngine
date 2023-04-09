@@ -16,13 +16,18 @@ class Renderer {
     private light: Light;
     private interface: Interface;
 
-    public constructor(clearColor?: Vec3, far?: float, antialiase?: boolean) {
+    public constructor(
+        clearColor?: Vec3,
+        far?: float,
+        antialiase?: boolean,
+        root?: string
+    ) {
         this.clearColor = clearColor;
 
         this.createContext(this.createCanvas(), antialiase);
         this.createStats();
-        this.createShaderManager();
-        this.createGeometryManager();
+        this.createShaderManager(root);
+        this.createGeometryManager(root);
         this.createEntityManager();
         this.createCamera(far);
         this.createLight();
@@ -115,15 +120,16 @@ class Renderer {
         this.stats = new Stats();
     }
 
-    private createShaderManager(): void {
-        this.shaderManager = new ShaderManager(this.gl);
+    private createShaderManager(root?: string): void {
+        this.shaderManager = new ShaderManager(this.gl, root);
     }
 
-    private createGeometryManager(): void {
+    private createGeometryManager(root?: string): void {
         this.geometryManager = new GeometryManager(
             this.gl,
             this.shaderManager,
-            this.stats
+            this.stats,
+            root
         );
     }
 
