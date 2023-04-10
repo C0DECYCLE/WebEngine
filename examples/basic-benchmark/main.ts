@@ -4,10 +4,10 @@
     2023
 */
 
-var renderer: Renderer;
+var renderer: WebEngine.Renderer;
 
 window.addEventListener("compile", async (_event: Event): Promise<void> => {
-    renderer = new Renderer(new Vec3(0.9, 0.9, 0.9));
+    renderer = new WebEngine.Renderer(new Vec3(0.9, 0.9, 0.9));
     await renderer.initialize([], [], [
         //level, coverage minimum, simplify percentage
         [0, 0.25, 1.0] as GeometryLodConfig,
@@ -17,11 +17,11 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     ] as GeometryLodConfig[]);
     renderer.getStats().show();
 
-    const camera: Camera = renderer.getCamera();
+    const camera: WebEngine.Camera = renderer.getCamera();
     camera.target.set(0, 0, 0);
 
     for (let i: int = 0; i < 50_000; i++) {
-        const suzanne: Entity = new Entity("suzanne");
+        const suzanne: WebEngine.Entity = new WebEngine.Entity("suzanne");
         suzanne.position
             .set(Math.random(), Math.random(), Math.random())
             .scale(2)
@@ -33,7 +33,9 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         suzanne.wakeUp();
     }
 
-    const list: ObjectArray<Entity> = renderer.getEntityManager().getList();
+    const list: ObjectArray<WebEngine.Entity> = renderer
+        .getEntityManager()
+        .getList();
     const speed: float = 0.01;
 
     function render(now: float): void {

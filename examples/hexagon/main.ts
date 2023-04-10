@@ -4,10 +4,10 @@
     2023
 */
 
-var renderer: Renderer;
+var renderer: WebEngine.Renderer;
 
 window.addEventListener("compile", async (_event: Event): Promise<void> => {
-    renderer = new Renderer(new Vec3(0.9, 0.9, 0.9));
+    renderer = new WebEngine.Renderer(new Vec3(0.9, 0.9, 0.9));
     await renderer.initialize(
         [
             "models/tree.obj",
@@ -21,7 +21,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     );
     //renderer.getStats().show();
 
-    const ui: Interface = renderer.getInterface();
+    const ui: WebEngine.Interface = renderer.getInterface();
     const stage: PIXI.Container = new PIXI.Container();
     stage.eventMode = "static";
     stage.hitArea = ui.getRenderer().screen;
@@ -31,7 +31,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         .applyMat(new Mat4().rotateX(cameraTilt))
         .scale(2.0);
 
-    const camera: Camera = renderer.getCamera();
+    const camera: WebEngine.Camera = renderer.getCamera();
     camera.target.set(-0.1, 0, -0.25).scale(80);
 
     const zoomSpeed: float = 0.025;
@@ -85,7 +85,8 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         }
     };
 
-    const buildables: ObjectArray<Entity> = new ObjectArray<Entity>();
+    const buildables: ObjectArray<WebEngine.Entity> =
+        new ObjectArray<WebEngine.Entity>();
     let isBuilding: boolean = false;
 
     const mouseRay = (mouseCoord: PIXI.Point) => {
@@ -100,8 +101,8 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
                 //@ts-ignore
                 .applyMat(camera.viewProjection);
             const screenPotential: Vec2 = new Vec2(
-                (clipPotential.x * 0.5 + 0.5) * Renderer.Width,
-                (-clipPotential.y * 0.5 + 0.5) * Renderer.Height
+                (clipPotential.x * 0.5 + 0.5) * WebEngine.Renderer.Width,
+                (-clipPotential.y * 0.5 + 0.5) * WebEngine.Renderer.Height
             );
             const distance: float = screenPotential
                 .clone()
@@ -109,7 +110,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
                 .length();
             const inverseSize: float = 1.0 - (clipPotential.z * 0.5 + 0.5);
             if (distance < 200.0 * inverseSize) {
-                const house: Entity = new Entity("house");
+                const house: WebEngine.Entity = new WebEngine.Entity("house");
                 house.position.copy(buildables[i].position);
                 if (Math.random() > 0.5) house.rotation.y = 180 * toRadian;
                 house.attach(renderer);
@@ -170,12 +171,12 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     stage.on("pointerupoutside", dragStop);
     stage.on("pointerout", dragStop);
 
-    const light: Light = renderer.getLight();
+    const light: WebEngine.Light = renderer.getLight();
     light.ambient.set(0.15, 0.05, 0.2);
     light.direction.set(1.5, -0.75, 0.25).normalize();
     light.color.set(1.0, 1.0, 1.0);
 
-    const shadow: Shadow = light.setShadow(1024);
+    const shadow: WebEngine.Shadow = light.setShadow(1024);
     shadow.position.set(0.15, 0, 0.3).scale(80);
     shadow.radius = 85;
     shadow.bias = 0.001;
@@ -197,7 +198,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             if (!key) {
                 continue;
             }
-            const field: Entity = new Entity(key);
+            const field: WebEngine.Entity = new WebEngine.Entity(key);
             field.position.set(-x * 14.9, 0, -z * 17.4);
             field.position.z -= x % 2 == 0 ? 0 : 8.65;
             field.position.x += map[0].length * 0.5 * 14.9;
@@ -208,7 +209,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             field.wakeUp();
 
             if (Math.random() > 0.6) {
-                const tree: Entity = new Entity("tree");
+                const tree: WebEngine.Entity = new WebEngine.Entity("tree");
                 tree.position.copy(field.position);
                 if (Math.random() > 0.5) tree.rotation.y = 180 * toRadian;
                 tree.attach(renderer);
@@ -218,7 +219,9 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             }
 
             if (Math.random() > 0.0) {
-                const buildable: Entity = new Entity("buildable");
+                const buildable: WebEngine.Entity = new WebEngine.Entity(
+                    "buildable"
+                );
                 buildable.position.copy(field.position);
                 buildable.attach(renderer);
                 buildable.shadow(false, false);
@@ -228,7 +231,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
                 continue;
             }
 
-            const house: Entity = new Entity("house");
+            const house: WebEngine.Entity = new WebEngine.Entity("house");
             house.position.copy(field.position);
             if (Math.random() > 0.5) house.rotation.y = 180 * toRadian;
             house.attach(renderer);
@@ -239,7 +242,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
 
     for (let z: int = 0; z < 8; z++) {
         for (let x: int = 0; x < 10; x++) {
-            const water: Entity = new Entity("water");
+            const water: WebEngine.Entity = new WebEngine.Entity("water");
             water.position.set(-x * 60, -2.0, -z * 60);
             water.position.x += 5 * 60;
             water.position.z += 4 * 60;
@@ -249,7 +252,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             water.shadow(false, true);
             water.wakeUp();
 
-            const sand: Entity = new Entity("sand");
+            const sand: WebEngine.Entity = new WebEngine.Entity("sand");
             sand.position.set(-x * 60, 0.0, -z * 60);
             sand.position.x += 5 * 60;
             sand.position.z += 4 * 60;
@@ -260,7 +263,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     }
 
     const offset: float = 20;
-    const scale: float = Renderer.Height / 900;
+    const scale: float = WebEngine.Renderer.Height / 900;
 
     const texture1: PIXI.Texture = await PIXI.Texture.fromURL(
         "images/test1.png"
@@ -276,13 +279,16 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     );
 
     const img1: PIXI.Sprite = new PIXI.Sprite(texture1);
-    img1.position.set(Renderer.Width - offset, Renderer.Height - offset);
+    img1.position.set(
+        WebEngine.Renderer.Width - offset,
+        WebEngine.Renderer.Height - offset
+    );
     img1.anchor.set(1.0, 1.0);
     img1.scale.set(scale, scale);
     stage.addChild(img1);
 
     const img2: PIXI.Sprite = new PIXI.Sprite(texture2);
-    img2.position.set(Renderer.Width - offset, offset);
+    img2.position.set(WebEngine.Renderer.Width - offset, offset);
     img2.anchor.set(1.0, 0.0);
     img2.scale.set(scale, scale);
     stage.addChild(img2);
