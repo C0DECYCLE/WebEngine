@@ -5,7 +5,7 @@
 */
 
 class ShaderManager {
-    public readonly rootPath: string = "/engine/shaders/";
+    public readonly rootPath: string = "/base/shaders/";
     public readonly names: string[] = ["main", "shadow"];
     public readonly includes: string[] = [
         "vertexVariables",
