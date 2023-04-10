@@ -35,11 +35,14 @@ namespace WebEngine {
             ["totalVertecies", 0],
             ["totalShadowVertecies", 0],
 
-            ["resolution", [Renderer.Width, Renderer.Height]],
+            [
+                "resolution",
+                [WebEngine.Renderer.Width, WebEngine.Renderer.Height],
+            ],
             ["devicePixelRatio", devicePixelRatio],
         ]);
 
-        private overlay: StatsOverlay;
+        private overlay: WebEngine.StatsOverlay;
         private overlayUpdateCounter: int = 0;
 
         public constructor() {
@@ -153,7 +156,7 @@ namespace WebEngine {
         }
 
         private createOverlay(): void {
-            this.overlay = new StatsOverlay();
+            this.overlay = new WebEngine.StatsOverlay();
         }
 
         private updateOverlay(): void {

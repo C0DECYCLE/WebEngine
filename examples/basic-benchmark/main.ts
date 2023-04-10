@@ -10,11 +10,11 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     renderer = new WebEngine.Renderer(new Vec3(0.9, 0.9, 0.9));
     await renderer.initialize([], [], [
         //level, coverage minimum, simplify percentage
-        [0, 0.25, 1.0] as GeometryLodConfig,
-        [1, 0.1, 0.5] as GeometryLodConfig,
-        [2, 0.05, 0.25] as GeometryLodConfig,
-        [3, 0.01, 0.1] as GeometryLodConfig,
-    ] as GeometryLodConfig[]);
+        [0, 0.25, 1.0] as WebEngine.GeometryLodConfig,
+        [1, 0.1, 0.5] as WebEngine.GeometryLodConfig,
+        [2, 0.05, 0.25] as WebEngine.GeometryLodConfig,
+        [3, 0.01, 0.1] as WebEngine.GeometryLodConfig,
+    ] as WebEngine.GeometryLodConfig[]);
     renderer.getStats().show();
 
     const camera: WebEngine.Camera = renderer.getCamera();

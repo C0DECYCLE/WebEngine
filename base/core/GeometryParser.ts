@@ -8,30 +8,35 @@ namespace WebEngine {
     export class GeometryParser {
         public static Obj(
             raw: string,
-            lodMatrix: GeometryLodConfig[] = Geometry.LodMatrix
-        ): GeometryData {
-            const result: GeometryData = {} as GeometryData;
+            lodMatrix: WebEngine.GeometryLodConfig[] = WebEngine.Geometry
+                .LodMatrix
+        ): WebEngine.GeometryData {
+            const result: WebEngine.GeometryData = {} as WebEngine.GeometryData;
             result.lods = [];
 
             const vertecies: float[] = [];
             const colors: float[] = [];
-            GeometryParser.UnpackData(raw, vertecies, colors, result);
+            WebEngine.GeometryParser.UnpackData(raw, vertecies, colors, result);
 
             const baseVertecies: Float32Array = new Float32Array(vertecies);
             const baseColors: Float32Array = new Float32Array(colors);
-            const wrap: GeometryWrapData = GeometryWrapper.Wrap({
-                positions: baseVertecies,
-                colors: baseColors,
-            } as GeometryUnwrapData);
+            const wrap: WebEngine.GeometryWrapData =
+                WebEngine.GeometryWrapper.Wrap({
+                    positions: baseVertecies,
+                    colors: baseColors,
+                } as WebEngine.GeometryUnwrapData);
 
-            result.bounds = GeometryHelper.ComputeBounds(baseVertecies);
+            result.bounds =
+                WebEngine.GeometryHelper.ComputeBounds(baseVertecies);
 
             for (let i: int = 0; i < lodMatrix.length; i++) {
-                const config: GeometryLodConfig = lodMatrix[i];
+                const config: WebEngine.GeometryLodConfig = lodMatrix[i];
                 if (result.lods[config[0]]) {
-                    warn("GeometryParser: Duplicate lod levels on geometry.");
+                    warn(
+                        "WebEngine.GeometryParser: Duplicate lod levels on geometry."
+                    );
                 }
-                result.lods[config[0]] = GeometryGenerator.Lod(
+                result.lods[config[0]] = WebEngine.GeometryGenerator.Lod(
                     config,
                     baseVertecies,
                     baseColors,
@@ -45,13 +50,13 @@ namespace WebEngine {
             raw: string,
             vertecies: float[],
             colors: float[],
-            result: GeometryData
+            result: WebEngine.GeometryData
         ) {
-            const polygons: GeometryPolygon[] = [[0, 0, 0, 0, 0, 0]];
+            const polygons: WebEngine.GeometryPolygon[] = [[0, 0, 0, 0, 0, 0]];
             const keywordRE: RegExp = /(\w*)(?: )*(.*)/;
             const lines: string[] = raw.split("\n");
             for (let i = 0; i < lines.length; ++i) {
-                GeometryParser.ParseLine(
+                WebEngine.GeometryParser.ParseLine(
                     keywordRE,
                     lines[i].trim(),
                     polygons,
@@ -65,10 +70,10 @@ namespace WebEngine {
         private static ParseLine(
             keywordRE: RegExp,
             line: string,
-            polygons: GeometryPolygon[],
+            polygons: WebEngine.GeometryPolygon[],
             vertecies: float[],
             colors: float[],
-            result: GeometryData
+            result: WebEngine.GeometryData
         ): void {
             if (line === "" || line.startsWith("#")) {
                 return;
@@ -79,7 +84,7 @@ namespace WebEngine {
             }
             const [, keyword, _unparsedArgs] = m;
             const parts: string[] = line.split(/\s+/).slice(1);
-            GeometryParser.ParseKeyword(
+            WebEngine.GeometryParser.ParseKeyword(
                 keyword,
                 parts,
                 polygons,
@@ -92,17 +97,17 @@ namespace WebEngine {
         private static ParseKeyword(
             keyword: string,
             parts: string[],
-            polygons: GeometryPolygon[],
+            polygons: WebEngine.GeometryPolygon[],
             vertecies: float[],
             colors: float[],
-            result: GeometryData
+            result: WebEngine.GeometryData
         ): void {
             if (keyword === "o") {
-                GeometryParser.ParseKeywordO(parts, result);
+                WebEngine.GeometryParser.ParseKeywordO(parts, result);
             } else if (keyword === "v") {
-                GeometryParser.ParseKeywordV(parts, polygons);
+                WebEngine.GeometryParser.ParseKeywordV(parts, polygons);
             } else if (keyword === "f") {
-                GeometryParser.ParseKeywordF(
+                WebEngine.GeometryParser.ParseKeywordF(
                     parts,
                     polygons,
                     vertecies,
@@ -113,11 +118,11 @@ namespace WebEngine {
 
         private static ParseKeywordO(
             parts: string[],
-            result: GeometryData
+            result: WebEngine.GeometryData
         ): void {
             if (result.name) {
                 throw new Error(
-                    `GeometryParser: Obj file with multiple objects.`
+                    `WebEngine.GeometryParser: Obj file with multiple objects.`
                 );
             }
             parts = parts[0].split("_");
@@ -128,11 +133,11 @@ namespace WebEngine {
 
         private static ParseKeywordV(
             parts: string[],
-            polygons: GeometryPolygon[]
+            polygons: WebEngine.GeometryPolygon[]
         ): void {
             if (parts.length < 3) {
                 throw new Error(
-                    `GeometryParser: Obj file missing vertex part.`
+                    `WebEngine.GeometryParser: Obj file missing vertex part.`
                 );
             }
             polygons.push([
@@ -142,31 +147,31 @@ namespace WebEngine {
                 parseFloat(parts[3]) || -1,
                 parseFloat(parts[4]) || -1,
                 parseFloat(parts[5]) || -1,
-            ] as GeometryPolygon);
+            ] as WebEngine.GeometryPolygon);
         }
 
         private static ParseKeywordF(
             parts: string[],
-            polygons: GeometryPolygon[],
+            polygons: WebEngine.GeometryPolygon[],
             vertecies: float[],
             colors: float[]
         ): void {
             const a: int = parseInt(parts[0]);
             const b: int = parseInt(parts[1]);
             const c: int = parseInt(parts[2]);
-            GeometryParser.RegisterIndexedVertex(
+            WebEngine.GeometryParser.RegisterIndexedVertex(
                 a,
                 polygons,
                 vertecies,
                 colors
             );
-            GeometryParser.RegisterIndexedVertex(
+            WebEngine.GeometryParser.RegisterIndexedVertex(
                 b,
                 polygons,
                 vertecies,
                 colors
             );
-            GeometryParser.RegisterIndexedVertex(
+            WebEngine.GeometryParser.RegisterIndexedVertex(
                 c,
                 polygons,
                 vertecies,
@@ -176,7 +181,7 @@ namespace WebEngine {
 
         private static RegisterIndexedVertex(
             index: int,
-            polygons: GeometryPolygon[],
+            polygons: WebEngine.GeometryPolygon[],
             vertecies: float[],
             colors: float[]
         ): void {

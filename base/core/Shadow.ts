@@ -29,11 +29,11 @@ namespace WebEngine {
 
         private readonly gl: WebGL2RenderingContext;
 
-        private readonly camera: Camera;
+        private readonly camera: WebEngine.Camera;
 
         public constructor(
             gl: WebGL2RenderingContext,
-            camera: Camera,
+            camera: WebEngine.Camera,
             size: int
         ) {
             this.gl = gl;
@@ -64,12 +64,12 @@ namespace WebEngine {
         }
 
         /** @internal */
-        public bufferShadowUniforms(program: ShaderProgram): void {
+        public bufferShadowUniforms(program: WebEngine.ShaderProgram): void {
             this.bufferViewProjectionUniform(program);
         }
 
         /** @internal */
-        public bufferMainUniforms(program: ShaderProgram): void {
+        public bufferMainUniforms(program: WebEngine.ShaderProgram): void {
             this.bufferWorldUniform(program);
             this.bufferMapUniform(program);
             this.bufferBiasUniform(program);
@@ -81,7 +81,9 @@ namespace WebEngine {
             const depthTexture: Nullable<WebGLTexture> =
                 this.gl.createTexture();
             if (!depthTexture) {
-                throw new Error("Shadow: Creating depth texture failed.");
+                throw new Error(
+                    "WebEngine.Shadow: Creating depth texture failed."
+                );
             }
             this.depthTexture = depthTexture;
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.depthTexture);
@@ -132,7 +134,9 @@ namespace WebEngine {
             const depthFrameBuffer: Nullable<WebGLFramebuffer> =
                 this.gl.createFramebuffer();
             if (!depthFrameBuffer) {
-                throw new Error("Shadow: Creating depth frame buffer failed.");
+                throw new Error(
+                    "WebEngine.Shadow: Creating depth frame buffer failed."
+                );
             }
             this.depthFrameBuffer = depthFrameBuffer;
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.depthFrameBuffer);
@@ -180,46 +184,48 @@ namespace WebEngine {
                 .multiply(this.viewProjection);
         }
 
-        private bufferViewProjectionUniform(program: ShaderProgram): void {
+        private bufferViewProjectionUniform(
+            program: WebEngine.ShaderProgram
+        ): void {
             const loc: WebGLUniformLocation = program.uniformLocations.get(
-                ShaderVariables.VIEWPROJECTION
+                WebEngine.ShaderVariables.VIEWPROJECTION
             )!;
             this.gl.uniformMatrix4fv(loc, false, this.viewProjection.values);
         }
 
-        private bufferWorldUniform(program: ShaderProgram): void {
+        private bufferWorldUniform(program: WebEngine.ShaderProgram): void {
             const loc: WebGLUniformLocation = program.uniformLocations.get(
-                ShaderVariables.SHADOWPROJECTION
+                WebEngine.ShaderVariables.SHADOWPROJECTION
             )!;
             this.gl.uniformMatrix4fv(loc, false, this.shadowProjection.values);
         }
 
-        private bufferMapUniform(program: ShaderProgram): void {
+        private bufferMapUniform(program: WebEngine.ShaderProgram): void {
             const loc: WebGLUniformLocation = program.uniformLocations.get(
-                ShaderVariables.SHADOWMAP
+                WebEngine.ShaderVariables.SHADOWMAP
             )!;
             this.gl.activeTexture(this.gl.TEXTURE0);
             this.gl.bindTexture(this.gl.TEXTURE_2D, this.depthTexture);
             this.gl.uniform1i(loc, 0);
         }
 
-        private bufferBiasUniform(program: ShaderProgram): void {
+        private bufferBiasUniform(program: WebEngine.ShaderProgram): void {
             const loc: WebGLUniformLocation = program.uniformLocations.get(
-                ShaderVariables.SHADOWBIAS
+                WebEngine.ShaderVariables.SHADOWBIAS
             )!;
             this.gl.uniform1f(loc, this.bias);
         }
 
-        private bufferOpacityUniform(program: ShaderProgram): void {
+        private bufferOpacityUniform(program: WebEngine.ShaderProgram): void {
             const loc: WebGLUniformLocation = program.uniformLocations.get(
-                ShaderVariables.SHADOWOPACITY
+                WebEngine.ShaderVariables.SHADOWOPACITY
             )!;
             this.gl.uniform1f(loc, this.opcaity);
         }
 
-        private bufferMapSizeUniform(program: ShaderProgram): void {
+        private bufferMapSizeUniform(program: WebEngine.ShaderProgram): void {
             const loc: WebGLUniformLocation = program.uniformLocations.get(
-                ShaderVariables.SHADOWMAPSIZE
+                WebEngine.ShaderVariables.SHADOWMAPSIZE
             )!;
             this.gl.uniform1f(loc, this.size);
         }

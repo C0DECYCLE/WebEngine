@@ -6,7 +6,9 @@
 
 namespace WebEngine {
     export class GeometryHelper {
-        public static ComputeBounds(positions: Float32Array): GeometryBounds {
+        public static ComputeBounds(
+            positions: Float32Array
+        ): WebEngine.GeometryBounds {
             const min: Vec3 = new Vec3();
             const max: Vec3 = new Vec3();
             for (let i: int = 0; i < positions.length / 3; i++) {
@@ -15,19 +17,19 @@ namespace WebEngine {
                     positions[i * 3 + 1],
                     positions[i * 3 + 2]
                 );
-                GeometryHelper.MinBound(min, position);
-                GeometryHelper.MaxBound(max, position);
+                WebEngine.GeometryHelper.MinBound(min, position);
+                WebEngine.GeometryHelper.MaxBound(max, position);
             }
             return {
                 min: min,
                 max: max,
                 size: max.clone().sub(min).length(),
-            } as GeometryBounds;
+            } as WebEngine.GeometryBounds;
         }
 
         public static UnifyColors(
             colors: Float32Array,
-            color: GeometryColor
+            color: WebEngine.GeometryColor
         ): void {
             for (let i = 0; i < colors.length / 3; i++) {
                 colors[i * 3] = color[0];
@@ -39,23 +41,26 @@ namespace WebEngine {
         public static FlattenColors(colors: Float32Array): Float32Array {
             for (let i: int = 0; i < colors.length / (3 * 3); i++) {
                 //@ts-ignore
-                const face: GeometryFace<GeometryColor> = [];
+                const face: WebEngine.GeometryFace<WebEngine.GeometryColor> =
+                    [];
                 for (let j: int = 0; j < 3; j++) {
                     face[j] = [
                         colors[i * (3 * 3) + 3 * j + 0],
                         colors[i * (3 * 3) + 3 * j + 1],
                         colors[i * (3 * 3) + 3 * j + 2],
-                    ] as GeometryColor;
+                    ] as WebEngine.GeometryColor;
                 }
-                if (!GeometryHelper.EqualFace(face)) {
-                    GeometryHelper.FlattenFace(colors, face, i);
+                if (!WebEngine.GeometryHelper.EqualFace(face)) {
+                    WebEngine.GeometryHelper.FlattenFace(colors, face, i);
                 }
             }
             return colors;
         }
 
         public static EqualFace(
-            face: GeometryFace<GeometryPosition | GeometryColor>
+            face: WebEngine.GeometryFace<
+                WebEngine.GeometryPosition | WebEngine.GeometryColor
+            >
         ): boolean {
             const x: boolean =
                 face[0][0] === face[1][0] && face[0][0] === face[2][0];
@@ -68,11 +73,11 @@ namespace WebEngine {
 
         private static FlattenFace(
             data: Float32Array,
-            face: GeometryFace<GeometryColor>,
+            face: WebEngine.GeometryFace<WebEngine.GeometryColor>,
             offset: int
         ): void {
-            const provoking: GeometryColor = face.sort(
-                (a: GeometryColor, b: GeometryColor) =>
+            const provoking: WebEngine.GeometryColor = face.sort(
+                (a: WebEngine.GeometryColor, b: WebEngine.GeometryColor) =>
                     a[0] + a[1] + a[2] - (b[0] + b[1] + b[2])
             )[0];
             for (let i: int = 0; i < 3; i++) {

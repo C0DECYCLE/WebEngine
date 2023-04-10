@@ -8,50 +8,57 @@ type WebGLInstanceUniformLocation = int;
 
 type WebGLAttributeLocation = int;
 
-type GeometryPosition = [float, float, float];
+namespace WebEngine {
+    export type GeometryPosition = [float, float, float];
 
-type GeometryColor = [float, float, float];
+    export type GeometryColor = [float, float, float];
 
-type GeometryPolygon = [float, float, float, float, float, float];
+    export type GeometryPolygon = [float, float, float, float, float, float];
 
-type GeometryFace<
-    T = int | float | GeometryPosition | GeometryColor | GeometryPolygon
-> = [T, T, T];
+    export type GeometryFace<
+        T =
+            | int
+            | float
+            | WebEngine.GeometryPosition
+            | WebEngine.GeometryColor
+            | WebEngine.GeometryPolygon
+    > = [T, T, T];
 
-type GeometryCell = GeometryFace<int>;
+    export type GeometryCell = WebEngine.GeometryFace<int>;
 
-type GeometryLodConfig = [int, float, float];
+    export type GeometryLodConfig = [int, float, float];
 
-type GeometryWrapData = {
-    positions: GeometryPosition[];
-    colors: GeometryColor[];
-    cells: GeometryCell[];
-};
+    export type GeometryWrapData = {
+        positions: WebEngine.GeometryPosition[];
+        colors: WebEngine.GeometryColor[];
+        cells: WebEngine.GeometryCell[];
+    };
 
-type GeometryUnwrapData = {
-    positions: Float32Array;
-    colors: Float32Array;
-};
+    export type GeometryUnwrapData = {
+        positions: Float32Array;
+        colors: Float32Array;
+    };
 
-type GeometryBounds = {
-    min: Vec3;
-    max: Vec3;
-    size: float;
-};
+    export type GeometryBounds = {
+        min: Vec3;
+        max: Vec3;
+        size: float;
+    };
 
-type GeometryDataLod = {
-    level: int;
-    minimum: float;
-    vertecies: Float32Array;
-    colors: Float32Array;
-    count: int;
-    percentage: float;
-};
+    export type GeometryDataLod = {
+        level: int;
+        minimum: float;
+        vertecies: Float32Array;
+        colors: Float32Array;
+        count: int;
+        percentage: float;
+    };
 
-type GeometryData = {
-    name: string;
-    shader: string;
-    capacity: int;
-    lods: GeometryDataLod[];
-    bounds: GeometryBounds;
-};
+    export type GeometryData = {
+        name: string;
+        shader: string;
+        capacity: int;
+        lods: WebEngine.GeometryDataLod[];
+        bounds: WebEngine.GeometryBounds;
+    };
+}

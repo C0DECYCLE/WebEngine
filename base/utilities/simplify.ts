@@ -1,9 +1,9 @@
 // @ts-nocheck
 
 let simplify: (
-    data: GeometryWrapData,
+    data: WebEngine.GeometryWrapData,
     threshold?: float
-) => (targetCount: int) => GeometryWrapData;
+) => (targetCount: int) => WebEngine.GeometryWrapData;
 
 (function () {
     /////////////////////HELPERS/////////////////////

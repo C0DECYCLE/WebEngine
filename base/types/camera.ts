@@ -4,16 +4,18 @@
     2023
 */
 
-type Plane = {
-    position: Vec3;
-    normal: Vec3;
-};
+namespace WebEngine {
+    export type Plane = {
+        position: Vec3;
+        normal: Vec3;
+    };
 
-type Frustum = {
-    top: Plane;
-    bottom: Plane;
-    right: Plane;
-    left: Plane;
-    far: Plane;
-    near: Plane;
-};
+    export type Frustum = {
+        top: WebEngine.Plane;
+        bottom: WebEngine.Plane;
+        right: WebEngine.Plane;
+        left: WebEngine.Plane;
+        far: WebEngine.Plane;
+        near: WebEngine.Plane;
+    };
+}

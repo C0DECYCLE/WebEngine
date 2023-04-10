@@ -14,8 +14,8 @@ namespace WebEngine {
 
         private readonly world: Mat4 = new Mat4();
 
-        private camera: Nullable<Camera> = null;
-        private entityManager: Nullable<EntityManager> = null;
+        private camera: Nullable<WebEngine.Camera> = null;
+        private entityManager: Nullable<WebEngine.EntityManager> = null;
         private isAwake: boolean = false;
         private isRendering: boolean = false;
 
@@ -40,7 +40,7 @@ namespace WebEngine {
             this.geometryName = geometryName;
         }
 
-        public attach(renderer: Renderer): void {
+        public attach(renderer: WebEngine.Renderer): void {
             this.camera = renderer.getCamera();
             this.entityManager = renderer.getEntityManager();
             this.entityManager.attach(this);
@@ -53,7 +53,7 @@ namespace WebEngine {
         public staticLod(lod: int): void {
             if (lod === -1) {
                 return warn(
-                    `Entity: Static lod -1 not allowed. ${this.stringifyInfo()}`
+                    `WebEngine.Entity: Static lod -1 not allowed. ${this.stringifyInfo()}`
                 );
             }
             this.targetLod = lod;
@@ -84,7 +84,7 @@ namespace WebEngine {
             this.preventUnattached();
             if (this.isAwake === true) {
                 return warn(
-                    `Entity: Entity already awake. ${this.stringifyInfo()}`
+                    `WebEngine.Entity: Entity already awake. ${this.stringifyInfo()}`
                 );
             }
             this.entityManager!.wakeUp(this);
@@ -98,7 +98,7 @@ namespace WebEngine {
             this.preventUnattached();
             if (this.isAwake === false) {
                 return warn(
-                    `Entity: Entity already awake. ${this.stringifyInfo()}`
+                    `WebEngine.Entity: Entity already awake. ${this.stringifyInfo()}`
                 );
             }
             this.entityManager!.sleep(this);
@@ -109,11 +109,11 @@ namespace WebEngine {
         }
 
         public stringifyInfo(): string {
-            return `(Geometry: ${this.geometryName}, Id: ${this.id})`;
+            return `(WebEngine.Geometry: ${this.geometryName}, Id: ${this.id})`;
         }
 
         /** @internal */
-        public prepare(geometry: Geometry): boolean {
+        public prepare(geometry: WebEngine.Geometry): boolean {
             this.computeTranslation();
             if (!this.computeInView(geometry)) {
                 return (this.isRendering = false);
@@ -128,14 +128,17 @@ namespace WebEngine {
                 this.world.values[14]
             );
             this.passInstanceSubUniform(
-                ShaderVariables.SHADOWRECEIVE,
+                WebEngine.ShaderVariables.SHADOWRECEIVE,
                 this.isShadowReceiving
             );
             return (this.isRendering = true);
         }
 
         /** @internal */
-        public shadowify(geometry: Geometry, shadow: Shadow): boolean {
+        public shadowify(
+            geometry: WebEngine.Geometry,
+            shadow: WebEngine.Shadow
+        ): boolean {
             if (!this.isRendering) {
                 return false;
             }
@@ -152,7 +155,7 @@ namespace WebEngine {
         }
 
         /** @internal */
-        public store(geometry: Geometry): void {
+        public store(geometry: WebEngine.Geometry): void {
             if (!this.isRendering) {
                 return;
             }
@@ -174,7 +177,7 @@ namespace WebEngine {
             );
         }
 
-        private computeInView(geometry: Geometry): boolean {
+        private computeInView(geometry: WebEngine.Geometry): boolean {
             if (!this.frustumCull) {
                 return true;
             }
@@ -184,7 +187,7 @@ namespace WebEngine {
             );
         }
 
-        private selectLod(data: GeometryData): void {
+        private selectLod(data: WebEngine.GeometryData): void {
             this.tempLod = this.targetLod;
             if (this.tempLod !== -1) {
                 return;
@@ -197,13 +200,16 @@ namespace WebEngine {
         }
 
         private computeCoverage(
-            bounds: GeometryBounds,
+            bounds: WebEngine.GeometryBounds,
             distance: float
         ): float {
             return bounds.size / (distance + bounds.size);
         }
 
-        private computeLod(levels: GeometryDataLod[], coverage: float): int {
+        private computeLod(
+            levels: WebEngine.GeometryDataLod[],
+            coverage: float
+        ): int {
             for (let i: int = 0; i < levels.length; i++) {
                 if (this.inLevelCoverage(levels, i, coverage)) {
                     return i;
@@ -213,7 +219,7 @@ namespace WebEngine {
         }
 
         private inLevelCoverage(
-            levels: GeometryDataLod[],
+            levels: WebEngine.GeometryDataLod[],
             i: int,
             coverage: float
         ): boolean {
@@ -238,13 +244,16 @@ namespace WebEngine {
         }
 
         private passInstanceSubUniform(
-            row: ShaderVariables,
+            row: WebEngine.ShaderVariables,
             value: float | boolean
         ): void {
             this.world.values[parseInt(row) * 4 + 3] = +value;
         }
 
-        private shadowCull(geometry: Geometry, shadow: Shadow): boolean {
+        private shadowCull(
+            geometry: WebEngine.Geometry,
+            shadow: WebEngine.Shadow
+        ): boolean {
             if (!this.doShadowCulling) {
                 return false;
             }
@@ -259,7 +268,7 @@ namespace WebEngine {
         private preventUnattached(): void {
             if (!this.entityManager) {
                 throw new Error(
-                    `Entity: Entity not attached. ${this.stringifyInfo()}`
+                    `WebEngine.Entity: Entity not attached. ${this.stringifyInfo()}`
                 );
             }
         }

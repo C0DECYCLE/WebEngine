@@ -6,23 +6,23 @@
 
 namespace WebEngine {
     export class Geometry {
-        public readonly data: GeometryData;
-        public readonly program: ShaderProgram;
-        public readonly geometryManager: GeometryManager;
+        public readonly data: WebEngine.GeometryData;
+        public readonly program: WebEngine.ShaderProgram;
+        public readonly geometryManager: WebEngine.GeometryManager;
 
         private readonly gl: WebGL2RenderingContext;
-        private readonly lods: Map<int, GeometryLod> = new Map<
+        private readonly lods: Map<int, WebEngine.GeometryLod> = new Map<
             int,
-            GeometryLod
+            WebEngine.GeometryLod
         >();
 
         private instanceCount: int = 0;
 
         public constructor(
             gl: WebGL2RenderingContext,
-            data: GeometryData,
-            program: ShaderProgram,
-            geometryManager: GeometryManager
+            data: WebEngine.GeometryData,
+            program: WebEngine.ShaderProgram,
+            geometryManager: WebEngine.GeometryManager
         ) {
             this.gl = gl;
             this.data = data;
@@ -42,7 +42,7 @@ namespace WebEngine {
             }
             if (!this.lods.has(lod)) {
                 return warn(
-                    `Geometry: Lod level not available on geometry. (${this.data.name}, ${lod})`
+                    `WebEngine.Geometry: Lod level not available on geometry. (${this.data.name}, ${lod})`
                 );
             }
             this.lods.get(lod)?.storeInstance(mat);
@@ -51,7 +51,7 @@ namespace WebEngine {
 
         /** @internal */
         public draw(isShadow: boolean): void {
-            this.lods.forEach((lod: GeometryLod, _level: int) =>
+            this.lods.forEach((lod: WebEngine.GeometryLod, _level: int) =>
                 lod.draw(isShadow)
             );
             this.registerStats(
@@ -62,15 +62,16 @@ namespace WebEngine {
         }
 
         private create(): void {
-            this.data.lods.forEach((dataLod: GeometryDataLod, _i: int) =>
-                this.createLod(dataLod)
+            this.data.lods.forEach(
+                (dataLod: WebEngine.GeometryDataLod, _i: int) =>
+                    this.createLod(dataLod)
             );
         }
 
-        private createLod(dataLod: GeometryDataLod): void {
+        private createLod(dataLod: WebEngine.GeometryDataLod): void {
             this.lods.set(
                 dataLod.level,
-                new GeometryLod(this.gl, dataLod, this)
+                new WebEngine.GeometryLod(this.gl, dataLod, this)
             );
         }
 
@@ -82,12 +83,12 @@ namespace WebEngine {
             }
         }
 
-        public static readonly LodMatrix: GeometryLodConfig[] = [
+        public static readonly LodMatrix: WebEngine.GeometryLodConfig[] = [
             //level, coverage minimum, simplify percentage
-            [0, 0.25, 1.0] as GeometryLodConfig,
-            [1, 0.1, 0.75 /*0.5*/] as GeometryLodConfig,
-            [2, 0.05, 0.5 /*0.25*/] as GeometryLodConfig,
-            [3, 0.01, 0.25 /*0.1*/] as GeometryLodConfig,
+            [0, 0.25, 1.0] as WebEngine.GeometryLodConfig,
+            [1, 0.1, 0.75 /*0.5*/] as WebEngine.GeometryLodConfig,
+            [2, 0.05, 0.5 /*0.25*/] as WebEngine.GeometryLodConfig,
+            [3, 0.01, 0.25 /*0.1*/] as WebEngine.GeometryLodConfig,
         ];
     }
 }

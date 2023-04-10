@@ -6,46 +6,50 @@
 
 namespace WebEngine {
     export class EntityManager {
-        private readonly list: ObjectArray<Entity> = new ObjectArray<Entity>();
-        private readonly renderList: ObjectArray<Entity> =
-            new ObjectArray<Entity>();
-        private readonly shadowList: ObjectArray<Entity> =
-            new ObjectArray<Entity>();
+        private readonly list: ObjectArray<WebEngine.Entity> =
+            new ObjectArray<WebEngine.Entity>();
+        private readonly renderList: ObjectArray<WebEngine.Entity> =
+            new ObjectArray<WebEngine.Entity>();
+        private readonly shadowList: ObjectArray<WebEngine.Entity> =
+            new ObjectArray<WebEngine.Entity>();
 
-        private readonly geometryManager: GeometryManager;
-        private readonly stats: Stats;
+        private readonly geometryManager: WebEngine.GeometryManager;
+        private readonly stats: WebEngine.Stats;
 
-        public constructor(geometryManager: GeometryManager, stats: Stats) {
+        public constructor(
+            geometryManager: WebEngine.GeometryManager,
+            stats: WebEngine.Stats
+        ) {
             this.geometryManager = geometryManager;
             this.stats = stats;
         }
 
-        public getList(): ObjectArray<Entity> {
+        public getList(): ObjectArray<WebEngine.Entity> {
             return this.list;
         }
 
         /** @internal */
-        public attach(entity: Entity): void {
+        public attach(entity: WebEngine.Entity): void {
             if (!this.geometryManager.list.has(entity.geometryName)) {
                 throw new Error(
-                    `EntityManager: Geometry name unknown. ${entity.stringifyInfo()}`
+                    `WebEngine.EntityManager: Geometry name unknown. ${entity.stringifyInfo()}`
                 );
             }
             this.list.add(entity);
         }
 
         /** @internal */
-        public wakeUp(entity: Entity): void {
+        public wakeUp(entity: WebEngine.Entity): void {
             this.renderList.add(entity);
         }
 
         /** @internal */
-        public sleep(entity: Entity): void {
+        public sleep(entity: WebEngine.Entity): void {
             this.renderList.delete(entity);
         }
 
         /** @internal */
-        public shadow(entity: Entity, value: boolean): void {
+        public shadow(entity: WebEngine.Entity, value: boolean): void {
             if (value) {
                 this.shadowList.add(entity);
                 return;
@@ -70,7 +74,7 @@ namespace WebEngine {
         }
 
         /** @internal */
-        public shadowify(shadow: Shadow): void {
+        public shadowify(shadow: WebEngine.Shadow): void {
             for (let i: int = 0; i < this.shadowList.length; i++) {
                 if (
                     this.shadowList[i].shadowify(
@@ -102,7 +106,7 @@ namespace WebEngine {
             equipShader?: (name: string) => void
         ): void {
             this.geometryManager.list.forEach(
-                (geometry: Geometry, _name: string) => {
+                (geometry: WebEngine.Geometry, _name: string) => {
                     if (!isShadow && equipShader) {
                         equipShader(geometry.data.shader);
                     }

@@ -27,7 +27,7 @@ namespace WebEngine {
         private readonly projection: Mat4 = new Mat4();
         private readonly viewProjection: Mat4 = new Mat4();
 
-        private frustum: Frustum;
+        private frustum: WebEngine.Frustum;
 
         private readonly gl: WebGL2RenderingContext;
 
@@ -64,7 +64,7 @@ namespace WebEngine {
         }
 
         /** @internal */
-        public bufferMainUniforms(program: ShaderProgram): void {
+        public bufferMainUniforms(program: WebEngine.ShaderProgram): void {
             this.bufferCameraPositionUniform(program);
             this.bufferCameraDirectionUniform(program);
             this.bufferViewProjectionUniform(program);
@@ -76,14 +76,14 @@ namespace WebEngine {
                 right: this.createPlane(),
                 top: this.createPlane(),
                 bottom: this.createPlane(),
-            } as Frustum;
+            } as WebEngine.Frustum;
         }
 
-        private createPlane(): Plane {
+        private createPlane(): WebEngine.Plane {
             return {
                 position: new Vec3(),
                 normal: new Vec3(),
-            } as Plane;
+            } as WebEngine.Plane;
         }
 
         private computeVectors(): void {
@@ -116,43 +116,16 @@ namespace WebEngine {
             const right: Vec3 = this.right;
             const rUp: Vec3 = this.relativeUp;
             const dirFar: Vec3 = this.direction.clone().scale(this.far);
+            const fr: WebEngine.Frustum = this.frustum;
 
-            this.computePlane(
-                this.frustum.left,
-                right,
-                hWidth,
-                dirFar,
-                rUp,
-                -1
-            );
-            this.computePlane(
-                this.frustum.right,
-                right,
-                -hWidth,
-                dirFar,
-                rUp,
-                1
-            );
-            this.computePlane(
-                this.frustum.bottom,
-                rUp,
-                hHeight,
-                dirFar,
-                right,
-                1
-            );
-            this.computePlane(
-                this.frustum.top,
-                rUp,
-                -hHeight,
-                dirFar,
-                right,
-                -1
-            );
+            this.computePlane(fr.left, right, hWidth, dirFar, rUp, -1);
+            this.computePlane(fr.right, right, -hWidth, dirFar, rUp, 1);
+            this.computePlane(fr.bottom, rUp, hHeight, dirFar, right, 1);
+            this.computePlane(fr.top, rUp, -hHeight, dirFar, right, -1);
         }
 
         private computePlane(
-            plane: Plane,
+            plane: WebEngine.Plane,
             right: Vec3,
             half: float,
             directionFar: Vec3,
@@ -171,7 +144,7 @@ namespace WebEngine {
         }
 
         private inFrontOfPlane(
-            plane: Plane,
+            plane: WebEngine.Plane,
             position: Vec3,
             radius: float
         ): boolean {
@@ -182,23 +155,29 @@ namespace WebEngine {
             );
         }
 
-        private bufferCameraPositionUniform(program: ShaderProgram): void {
+        private bufferCameraPositionUniform(
+            program: WebEngine.ShaderProgram
+        ): void {
             const loc: WebGLUniformLocation = program.uniformLocations.get(
-                ShaderVariables.CAMERAPOSITION
+                WebEngine.ShaderVariables.CAMERAPOSITION
             )!;
             this.gl.uniform3fv(loc, this.cameraPosition);
         }
 
-        private bufferCameraDirectionUniform(program: ShaderProgram): void {
+        private bufferCameraDirectionUniform(
+            program: WebEngine.ShaderProgram
+        ): void {
             const loc: WebGLUniformLocation = program.uniformLocations.get(
-                ShaderVariables.CAMERADIRECTION
+                WebEngine.ShaderVariables.CAMERADIRECTION
             )!;
             this.gl.uniform3fv(loc, this.cameraDirection);
         }
 
-        private bufferViewProjectionUniform(program: ShaderProgram): void {
+        private bufferViewProjectionUniform(
+            program: WebEngine.ShaderProgram
+        ): void {
             const loc: WebGLUniformLocation = program.uniformLocations.get(
-                ShaderVariables.VIEWPROJECTION
+                WebEngine.ShaderVariables.VIEWPROJECTION
             )!;
             this.gl.uniformMatrix4fv(loc, false, this.viewProjection.values);
         }

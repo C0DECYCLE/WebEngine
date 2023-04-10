@@ -15,17 +15,18 @@ namespace WebEngine {
             "suzanne",
         ];
 
-        public readonly datas: MapS<GeometryData> = new MapS<GeometryData>();
-        public list: MapS<Geometry> = new MapS<Geometry>();
+        public readonly datas: MapS<WebEngine.GeometryData> =
+            new MapS<WebEngine.GeometryData>();
+        public list: MapS<WebEngine.Geometry> = new MapS<WebEngine.Geometry>();
 
         private readonly gl: WebGL2RenderingContext;
-        private readonly shaderManager: ShaderManager;
-        private readonly stats: Stats;
+        private readonly shaderManager: WebEngine.ShaderManager;
+        private readonly stats: WebEngine.Stats;
 
         public constructor(
             gl: WebGL2RenderingContext,
-            shaderManager: ShaderManager,
-            stats: Stats,
+            shaderManager: WebEngine.ShaderManager,
+            stats: WebEngine.Stats,
             root?: string
         ) {
             this.gl = gl;
@@ -37,14 +38,14 @@ namespace WebEngine {
         }
 
         /** @internal */
-        public getStats(): Stats {
+        public getStats(): WebEngine.Stats {
             return this.stats;
         }
 
         /** @internal */
         public async initialize(
             urls: string[],
-            lodMatrix: GeometryLodConfig[]
+            lodMatrix: WebEngine.GeometryLodConfig[]
         ): Promise<void> {
             await this.fetchObjFiles(urls, lodMatrix);
             this.createGeometries();
@@ -52,7 +53,7 @@ namespace WebEngine {
 
         private async fetchObjFiles(
             urls: string[],
-            lodMatrix: GeometryLodConfig[]
+            lodMatrix: WebEngine.GeometryLodConfig[]
         ): Promise<void> {
             await Promise.all(
                 this.objFileUrls(urls).map((fileUrl: string) =>
@@ -72,17 +73,17 @@ namespace WebEngine {
 
         private fetchObjFile(
             fileUrl: string,
-            lodMatrix: GeometryLodConfig[]
+            lodMatrix: WebEngine.GeometryLodConfig[]
         ): Promise<void | Response> {
             return fetch(fileUrl).then(async (response: Response) => {
                 const fileName: string = this.getNameFromFileUrl(fileUrl);
-                const data: GeometryData = this.parseObjData(
+                const data: WebEngine.GeometryData = this.parseObjData(
                     await response.text(),
                     lodMatrix
                 );
                 if (this.datas.has(fileName)) {
                     throw new Error(
-                        "GeometryManager: Duplicate geometry name."
+                        "WebEngine.GeometryManager: Duplicate geometry name."
                     );
                 }
                 this.datas.set(fileName, data);
@@ -91,12 +92,15 @@ namespace WebEngine {
 
         private parseObjData(
             data: string,
-            lodMatrix: GeometryLodConfig[]
-        ): GeometryData {
-            const result: GeometryData = GeometryParser.Obj(data, lodMatrix);
+            lodMatrix: WebEngine.GeometryLodConfig[]
+        ): WebEngine.GeometryData {
+            const result: WebEngine.GeometryData = WebEngine.GeometryParser.Obj(
+                data,
+                lodMatrix
+            );
             if (!this.shaderManager.names.includes(result.shader)) {
                 throw new Error(
-                    `GeometryManager: Shader unknown. (${result.shader})`
+                    `WebEngine.GeometryManager: Shader unknown. (${result.shader})`
                 );
             }
             return result;
@@ -107,12 +111,15 @@ namespace WebEngine {
         }
 
         private createGeometries(): void {
-            this.datas.forEach((data: GeometryData, name: string) =>
+            this.datas.forEach((data: WebEngine.GeometryData, name: string) =>
                 this.list.set(name, this.createGeometry(data))
             );
             this.list = new Map(
                 [...this.list].sort(
-                    (a: [string, Geometry], b: [string, Geometry]) => {
+                    (
+                        a: [string, WebEngine.Geometry],
+                        b: [string, WebEngine.Geometry]
+                    ) => {
                         const shaderA: string = a[1].data.shader;
                         const shaderB: string = b[1].data.shader;
                         return shaderA < shaderB
@@ -125,11 +132,12 @@ namespace WebEngine {
             );
         }
 
-        private createGeometry(data: GeometryData): Geometry {
-            const program: ShaderProgram = this.shaderManager.programs.get(
-                data.shader
-            )!;
-            return new Geometry(this.gl, data, program, this);
+        private createGeometry(
+            data: WebEngine.GeometryData
+        ): WebEngine.Geometry {
+            const program: WebEngine.ShaderProgram =
+                this.shaderManager.programs.get(data.shader)!;
+            return new WebEngine.Geometry(this.gl, data, program, this);
         }
     }
 }

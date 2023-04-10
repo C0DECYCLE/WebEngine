@@ -21,11 +21,12 @@ namespace WebEngine {
         ];
 
         public readonly includeSources: MapS<string> = new MapS<string>();
-        public readonly sources: MapS<ShaderSourcePair> =
-            new MapS<ShaderSourcePair>();
-        public readonly pairs: MapS<ShaderPair> = new MapS<ShaderPair>();
-        public readonly programs: MapS<ShaderProgram> =
-            new MapS<ShaderProgram>();
+        public readonly sources: MapS<WebEngine.ShaderSourcePair> =
+            new MapS<WebEngine.ShaderSourcePair>();
+        public readonly pairs: MapS<WebEngine.ShaderPair> =
+            new MapS<WebEngine.ShaderPair>();
+        public readonly programs: MapS<WebEngine.ShaderProgram> =
+            new MapS<WebEngine.ShaderProgram>();
 
         private readonly gl: WebGL2RenderingContext;
 
@@ -45,11 +46,13 @@ namespace WebEngine {
         }
 
         /** @internal */
-        public use(name: string): ShaderProgram {
-            const program: Nullable<ShaderProgram> =
+        public use(name: string): WebEngine.ShaderProgram {
+            const program: Nullable<WebEngine.ShaderProgram> =
                 this.programs.get(name) || null;
             if (!program) {
-                throw new Error("ShaderManager: Try to use unkown program.");
+                throw new Error(
+                    "WebEngine.ShaderManager: Try to use unkown program."
+                );
             }
             this.gl.useProgram(program.program);
             return program;
@@ -102,14 +105,14 @@ namespace WebEngine {
             const shaderSourceUrls: string[] = [];
             this.names.forEach((name, _i: int) =>
                 shaderSourceUrls.push(
-                    `${this.rootPath}${name}.${ShaderTypes.VERTEX}.fx`,
-                    `${this.rootPath}${name}.${ShaderTypes.FRAGMENT}.fx`
+                    `${this.rootPath}${name}.${WebEngine.ShaderTypes.VERTEX}.fx`,
+                    `${this.rootPath}${name}.${WebEngine.ShaderTypes.FRAGMENT}.fx`
                 )
             );
             urls.forEach((url, _i: int) => {
                 shaderSourceUrls.push(
-                    `${url}.${ShaderTypes.VERTEX}.fx`,
-                    `${url}.${ShaderTypes.FRAGMENT}.fx`
+                    `${url}.${WebEngine.ShaderTypes.VERTEX}.fx`,
+                    `${url}.${WebEngine.ShaderTypes.FRAGMENT}.fx`
                 );
                 this.names.push(url.split("/").at(-1)!);
             });
@@ -120,11 +123,11 @@ namespace WebEngine {
             sourceUrl: string
         ): Promise<void | Response> {
             return fetch(sourceUrl).then(async (response: Response) => {
-                const shaderSourceInfo: Nullable<ShaderSourceInfo> =
+                const shaderSourceInfo: Nullable<WebEngine.ShaderSourceInfo> =
                     this.getShaderSourceInfo(sourceUrl);
                 if (!shaderSourceInfo) {
                     throw new Error(
-                        "ShaderManager: Fetching ShaderInfo failed."
+                        "WebEngine.ShaderManager: Fetching ShaderInfo failed."
                     );
                 }
                 this.storeShaderSource(shaderSourceInfo, await response.text());
@@ -133,7 +136,7 @@ namespace WebEngine {
 
         private getShaderSourceInfo(
             sourceUrl: string
-        ): Nullable<ShaderSourceInfo> {
+        ): Nullable<WebEngine.ShaderSourceInfo> {
             const fileInfo: Nullable<string[]> =
                 sourceUrl.split("/").at(-1)?.split(".") || null;
             if (!fileInfo) {
@@ -142,22 +145,22 @@ namespace WebEngine {
             return {
                 name: fileInfo[0],
                 type:
-                    fileInfo[1] === ShaderTypes.VERTEX
-                        ? ShaderTypes.VERTEX
-                        : ShaderTypes.FRAGMENT,
-            } as ShaderSourceInfo;
+                    fileInfo[1] === WebEngine.ShaderTypes.VERTEX
+                        ? WebEngine.ShaderTypes.VERTEX
+                        : WebEngine.ShaderTypes.FRAGMENT,
+            } as WebEngine.ShaderSourceInfo;
         }
 
         private storeShaderSource(
-            shaderSourceInfo: ShaderSourceInfo,
+            shaderSourceInfo: WebEngine.ShaderSourceInfo,
             source: string
         ): void {
-            const sourcePair: ShaderSourcePair =
+            const sourcePair: WebEngine.ShaderSourcePair =
                 this.sources.get(shaderSourceInfo.name) ||
                 ({
-                    [ShaderTypes.VERTEX]: "",
-                    [ShaderTypes.FRAGMENT]: "",
-                } as ShaderSourcePair);
+                    [WebEngine.ShaderTypes.VERTEX]: "",
+                    [WebEngine.ShaderTypes.FRAGMENT]: "",
+                } as WebEngine.ShaderSourcePair);
             sourcePair[shaderSourceInfo.type] = this.preProcessSource(source);
             this.sources.set(shaderSourceInfo.name, sourcePair);
         }
@@ -172,7 +175,7 @@ namespace WebEngine {
                         .trim();
                     if (!this.includeSources.has(include)) {
                         throw new Error(
-                            `ShaderManager: Include unknown. (${include})`
+                            `WebEngine.ShaderManager: Include unknown. (${include})`
                         );
                     }
                     const includeSource: string =
@@ -185,62 +188,65 @@ namespace WebEngine {
 
         private createShaders(): void {
             this.sources.forEach(
-                (sourcePair: ShaderSourcePair, name: string) => {
+                (sourcePair: WebEngine.ShaderSourcePair, name: string) => {
                     if (this.pairs.has(name)) {
                         throw new Error(
-                            "ShaderManager: Duplicate shader name."
+                            "WebEngine.ShaderManager: Duplicate shader name."
                         );
                     }
                     this.pairs.set(name, {
-                        [ShaderTypes.VERTEX]: this.createShader(
-                            ShaderTypes.VERTEX,
-                            sourcePair[ShaderTypes.VERTEX]
+                        [WebEngine.ShaderTypes.VERTEX]: this.createShader(
+                            WebEngine.ShaderTypes.VERTEX,
+                            sourcePair[WebEngine.ShaderTypes.VERTEX]
                         )!,
-                        [ShaderTypes.FRAGMENT]: this.createShader(
-                            ShaderTypes.FRAGMENT,
-                            sourcePair[ShaderTypes.FRAGMENT]
+                        [WebEngine.ShaderTypes.FRAGMENT]: this.createShader(
+                            WebEngine.ShaderTypes.FRAGMENT,
+                            sourcePair[WebEngine.ShaderTypes.FRAGMENT]
                         )!,
-                    } as ShaderPair);
+                    } as WebEngine.ShaderPair);
                 }
             );
         }
 
         private createPrograms(): void {
-            this.pairs.forEach((pair: ShaderPair, name: string) =>
+            this.pairs.forEach((pair: WebEngine.ShaderPair, name: string) =>
                 this.programs.set(name, this.createShaderProgram(name, pair))
             );
         }
 
         private createShaderProgram(
             name: string,
-            pair: ShaderPair
-        ): ShaderProgram {
-            const result: ShaderProgram = {} as ShaderProgram;
+            pair: WebEngine.ShaderPair
+        ): WebEngine.ShaderProgram {
+            const result: WebEngine.ShaderProgram =
+                {} as WebEngine.ShaderProgram;
             result.program = this.createProgram(
-                pair[ShaderTypes.VERTEX],
-                pair[ShaderTypes.FRAGMENT]
+                pair[WebEngine.ShaderTypes.VERTEX],
+                pair[WebEngine.ShaderTypes.FRAGMENT]
             )!;
             result.uniformLocations =
-                new ShaderVariableMap<WebGLUniformLocation>();
+                new WebEngine.ShaderVariableMap<WebGLUniformLocation>();
             result.instanceUniformLocations =
-                new ShaderVariableMap<WebGLInstanceUniformLocation>();
+                new WebEngine.ShaderVariableMap<WebGLInstanceUniformLocation>();
             result.attributeLocations =
-                new ShaderVariableMap<WebGLAttributeLocation>();
+                new WebEngine.ShaderVariableMap<WebGLAttributeLocation>();
             this.registerLocations(result, name === "shadow");
             return result;
         }
 
         private createShader(
-            type: ShaderTypes,
+            type: WebEngine.ShaderTypes,
             source: string
         ): Nullable<WebGLShader> {
             const shader: Nullable<WebGLShader> = this.gl.createShader(
-                type === ShaderTypes.VERTEX
+                type === WebEngine.ShaderTypes.VERTEX
                     ? this.gl.VERTEX_SHADER
                     : this.gl.FRAGMENT_SHADER
             );
             if (!shader) {
-                throw new Error("ShaderManager: Shader creation failed.");
+                throw new Error(
+                    "WebEngine.ShaderManager: Shader creation failed."
+                );
             }
             this.gl.shaderSource(shader, source);
             this.gl.compileShader(shader);
@@ -255,7 +261,7 @@ namespace WebEngine {
                 this.gl.getShaderInfoLog(shader);
             this.gl.deleteShader(shader);
             throw new Error(
-                `ShaderManager: Shader compilation failed. (${shaderInfoLog})`
+                `WebEngine.ShaderManager: Shader compilation failed. (${shaderInfoLog})`
             );
         }
 
@@ -265,7 +271,9 @@ namespace WebEngine {
         ): Nullable<WebGLProgram> {
             const program: Nullable<WebGLProgram> = this.gl.createProgram();
             if (!program) {
-                throw new Error("ShaderManager: Program creation failed.");
+                throw new Error(
+                    "WebEngine.ShaderManager: Program creation failed."
+                );
             }
             this.gl.attachShader(program, vertexShader);
             this.gl.attachShader(program, fragmentShader);
@@ -281,50 +289,50 @@ namespace WebEngine {
                 this.gl.getProgramInfoLog(program);
             this.gl.deleteProgram(program);
             throw new Error(
-                `ShaderManager: Program creation failed. (${programInfoLog})`
+                `WebEngine.ShaderManager: Program creation failed. (${programInfoLog})`
             );
         }
 
         private registerLocations(
-            shaderProgram: ShaderProgram,
+            shaderProgram: WebEngine.ShaderProgram,
             ignore: boolean = false
         ): void {
             this.registerUniformLocations(shaderProgram, ignore, [
-                ShaderVariables.TIME,
-                ShaderVariables.CAMERAPOSITION,
-                ShaderVariables.CAMERADIRECTION,
-                ShaderVariables.VIEWPROJECTION,
-                ShaderVariables.SHADOWPROJECTION,
-                ShaderVariables.AMBIENTCOLOR,
-                ShaderVariables.LIGHTDIRECTION,
-                ShaderVariables.LIGHTCOLOR,
-                ShaderVariables.SHADOWMAP,
-                ShaderVariables.SHADOWBIAS,
-                ShaderVariables.SHADOWOPACITY,
-                ShaderVariables.SHADOWMAPSIZE,
+                WebEngine.ShaderVariables.TIME,
+                WebEngine.ShaderVariables.CAMERAPOSITION,
+                WebEngine.ShaderVariables.CAMERADIRECTION,
+                WebEngine.ShaderVariables.VIEWPROJECTION,
+                WebEngine.ShaderVariables.SHADOWPROJECTION,
+                WebEngine.ShaderVariables.AMBIENTCOLOR,
+                WebEngine.ShaderVariables.LIGHTDIRECTION,
+                WebEngine.ShaderVariables.LIGHTCOLOR,
+                WebEngine.ShaderVariables.SHADOWMAP,
+                WebEngine.ShaderVariables.SHADOWBIAS,
+                WebEngine.ShaderVariables.SHADOWOPACITY,
+                WebEngine.ShaderVariables.SHADOWMAPSIZE,
             ]);
             this.registerInstanceUniformLocations(shaderProgram, ignore, [
-                ShaderVariables.OBJECTWORLD,
+                WebEngine.ShaderVariables.OBJECTWORLD,
             ]);
             this.registerAttributeLocations(shaderProgram, ignore, [
-                ShaderVariables.VERTEXPOSITION,
-                ShaderVariables.VERTEXCOLOR,
+                WebEngine.ShaderVariables.VERTEXPOSITION,
+                WebEngine.ShaderVariables.VERTEXCOLOR,
             ]);
         }
 
         private registerUniformLocations(
-            shaderProgram: ShaderProgram,
+            shaderProgram: WebEngine.ShaderProgram,
             ignore: boolean = false,
-            names: ShaderVariables[]
+            names: WebEngine.ShaderVariables[]
         ): void {
-            names.forEach((name: ShaderVariables, _i: int) =>
+            names.forEach((name: WebEngine.ShaderVariables, _i: int) =>
                 this.registerUniformLocation(shaderProgram, name, ignore)
             );
         }
 
         private registerUniformLocation(
-            shaderProgram: ShaderProgram,
-            name: ShaderVariables,
+            shaderProgram: WebEngine.ShaderProgram,
+            name: WebEngine.ShaderVariables,
             ignore: boolean = false
         ): void {
             const uniformLocation: Nullable<WebGLUniformLocation> =
@@ -334,18 +342,18 @@ namespace WebEngine {
             }
             if (!uniformLocation) {
                 throw new Error(
-                    `ShaderManager: Fetching uniform location failed. (${name})`
+                    `WebEngine.ShaderManager: Fetching uniform location failed. (${name})`
                 );
             }
             shaderProgram.uniformLocations.set(name, uniformLocation);
         }
 
         private registerInstanceUniformLocations(
-            shaderProgram: ShaderProgram,
+            shaderProgram: WebEngine.ShaderProgram,
             ignore: boolean = false,
-            names: ShaderVariables[]
+            names: WebEngine.ShaderVariables[]
         ): void {
-            names.forEach((name: ShaderVariables, _i: int) =>
+            names.forEach((name: WebEngine.ShaderVariables, _i: int) =>
                 this.registerInstanceUniformLocation(
                     shaderProgram,
                     name,
@@ -355,8 +363,8 @@ namespace WebEngine {
         }
 
         private registerInstanceUniformLocation(
-            shaderProgram: ShaderProgram,
-            name: ShaderVariables,
+            shaderProgram: WebEngine.ShaderProgram,
+            name: WebEngine.ShaderVariables,
             ignore: boolean = false
         ): void {
             const instanceUniformLocation: WebGLInstanceUniformLocation =
@@ -366,7 +374,7 @@ namespace WebEngine {
             }
             if (instanceUniformLocation === -1) {
                 throw new Error(
-                    `ShaderManager: Fetching instance uniform location failed. (${name})`
+                    `WebEngine.ShaderManager: Fetching instance uniform location failed. (${name})`
                 );
             }
             shaderProgram.instanceUniformLocations.set(
@@ -376,18 +384,18 @@ namespace WebEngine {
         }
 
         private registerAttributeLocations(
-            shaderProgram: ShaderProgram,
+            shaderProgram: WebEngine.ShaderProgram,
             ignore: boolean = false,
-            names: ShaderVariables[]
+            names: WebEngine.ShaderVariables[]
         ): void {
-            names.forEach((name: ShaderVariables, _i: int) =>
+            names.forEach((name: WebEngine.ShaderVariables, _i: int) =>
                 this.registerAttributeLocation(shaderProgram, name, ignore)
             );
         }
 
         private registerAttributeLocation(
-            shaderProgram: ShaderProgram,
-            name: ShaderVariables,
+            shaderProgram: WebEngine.ShaderProgram,
+            name: WebEngine.ShaderVariables,
             ignore: boolean = false
         ): void {
             const attributeLocation: WebGLAttributeLocation =
@@ -397,7 +405,7 @@ namespace WebEngine {
             }
             if (attributeLocation === -1) {
                 throw new Error(
-                    `ShaderManager: Fetching attribute location failed. (${name})`
+                    `WebEngine.ShaderManager: Fetching attribute location failed. (${name})`
                 );
             }
             shaderProgram.attributeLocations.set(name, attributeLocation);

@@ -9,13 +9,13 @@ namespace WebEngine {
         private readonly clearColor?: Vec3;
 
         private gl: WebGL2RenderingContext;
-        private stats: Stats;
-        private shaderManager: ShaderManager;
-        private geometryManager: GeometryManager;
-        private entityManager: EntityManager;
-        private camera: Camera;
-        private light: Light;
-        private interface: Interface;
+        private stats: WebEngine.Stats;
+        private shaderManager: WebEngine.ShaderManager;
+        private geometryManager: WebEngine.GeometryManager;
+        private entityManager: WebEngine.EntityManager;
+        private camera: WebEngine.Camera;
+        private light: WebEngine.Light;
+        private interface: WebEngine.Interface;
 
         public constructor(
             clearColor?: Vec3,
@@ -39,29 +39,30 @@ namespace WebEngine {
         public async initialize(
             geometryUrls: string[] = [],
             shaderUrls: string[] = [],
-            lodMatrix: GeometryLodConfig[] = Geometry.LodMatrix
+            lodMatrix: WebEngine.GeometryLodConfig[] = WebEngine.Geometry
+                .LodMatrix
         ): Promise<void> {
             await this.shaderManager.initialize(shaderUrls);
             await this.geometryManager.initialize(geometryUrls, lodMatrix);
         }
 
-        public getStats(): Stats {
+        public getStats(): WebEngine.Stats {
             return this.stats;
         }
 
-        public getEntityManager(): EntityManager {
+        public getEntityManager(): WebEngine.EntityManager {
             return this.entityManager;
         }
 
-        public getCamera(): Camera {
+        public getCamera(): WebEngine.Camera {
             return this.camera;
         }
 
-        public getLight(): Light {
+        public getLight(): WebEngine.Light {
             return this.light;
         }
 
-        public getInterface(): Interface {
+        public getInterface(): WebEngine.Interface {
             return this.interface;
         }
 
@@ -84,8 +85,8 @@ namespace WebEngine {
 
         private createCanvas(): HTMLCanvasElement {
             const canvas: HTMLCanvasElement = document.createElement("canvas");
-            canvas.width = Renderer.Width * devicePixelRatio;
-            canvas.height = Renderer.Height * devicePixelRatio;
+            canvas.width = WebEngine.Renderer.Width * devicePixelRatio;
+            canvas.height = WebEngine.Renderer.Height * devicePixelRatio;
             canvas.style.position = "absolute";
             canvas.style.top = "0px";
             canvas.style.left = "0px";
@@ -115,21 +116,23 @@ namespace WebEngine {
                 } as WebGLContextAttributes
             );
             if (!context) {
-                throw new Error("Renderer: Get WebGL2RenderingContext failed.");
+                throw new Error(
+                    "WebEngine.Renderer: Get WebGL2RenderingContext failed."
+                );
             }
             this.gl = context;
         }
 
         private createStats(): void {
-            this.stats = new Stats();
+            this.stats = new WebEngine.Stats();
         }
 
         private createShaderManager(root?: string): void {
-            this.shaderManager = new ShaderManager(this.gl, root);
+            this.shaderManager = new WebEngine.ShaderManager(this.gl, root);
         }
 
         private createGeometryManager(root?: string): void {
-            this.geometryManager = new GeometryManager(
+            this.geometryManager = new WebEngine.GeometryManager(
                 this.gl,
                 this.shaderManager,
                 this.stats,
@@ -138,22 +141,22 @@ namespace WebEngine {
         }
 
         private createEntityManager(): void {
-            this.entityManager = new EntityManager(
+            this.entityManager = new WebEngine.EntityManager(
                 this.geometryManager,
                 this.stats
             );
         }
 
         private createCamera(far?: float): void {
-            this.camera = new Camera(this.gl, far);
+            this.camera = new WebEngine.Camera(this.gl, far);
         }
 
         private createLight(): void {
-            this.light = new Light(this.gl, this.camera);
+            this.light = new WebEngine.Light(this.gl, this.camera);
         }
 
         private createInterface(): void {
-            this.interface = new Interface();
+            this.interface = new WebEngine.Interface();
         }
 
         private initializeContext(): void {
@@ -202,7 +205,7 @@ namespace WebEngine {
             }
             shadow.beginFrameBuffer();
 
-            const shadowProgram: ShaderProgram =
+            const shadowProgram: WebEngine.ShaderProgram =
                 this.shaderManager.use("shadow");
 
             shadow.bufferShadowUniforms(shadowProgram);
@@ -226,15 +229,16 @@ namespace WebEngine {
         }
 
         private mainEquipShader(name: string): void {
-            const program: ShaderProgram = this.shaderManager.use(name);
+            const program: WebEngine.ShaderProgram =
+                this.shaderManager.use(name);
             this.bufferMainTime(program);
             this.camera.bufferMainUniforms(program);
             this.light.bufferMainUniforms(program);
         }
 
-        private bufferMainTime(program: ShaderProgram): void {
+        private bufferMainTime(program: WebEngine.ShaderProgram): void {
             const loc: WebGLUniformLocation = program.uniformLocations.get(
-                ShaderVariables.TIME
+                WebEngine.ShaderVariables.TIME
             )!;
             this.gl.uniform1f(loc, performance.now());
         }

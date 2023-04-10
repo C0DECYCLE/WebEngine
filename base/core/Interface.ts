@@ -31,8 +31,8 @@ namespace WebEngine {
 
         private createRenderer(): PIXI.Renderer {
             const renderer: PIXI.Renderer = new PIXI.Renderer({
-                width: Renderer.Width,
-                height: Renderer.Height,
+                width: WebEngine.Renderer.Width,
+                height: WebEngine.Renderer.Height,
                 resolution: devicePixelRatio,
                 antialias: true,
                 autoDensity: false,
