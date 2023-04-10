@@ -5,18 +5,18 @@
 */
 
 class Interface {
-    private readonly renderer: any;
-    private active: Nullable<any> = null;
+    private readonly renderer: PIXI.Renderer;
+    private active: Nullable<PIXI.Container> = null;
 
     public constructor() {
         this.renderer = this.createRenderer();
     }
 
-    public getRenderer(): any {
+    public getRenderer(): PIXI.Renderer {
         return this.renderer;
     }
 
-    public activate(stage: Nullable<any>): void {
+    public activate(stage: Nullable<PIXI.Container>): void {
         this.active = stage;
     }
 
@@ -28,8 +28,8 @@ class Interface {
         this.renderer.render(this.active);
     }
 
-    private createRenderer(): any {
-        const renderer: any = new PIXI.Renderer({
+    private createRenderer(): PIXI.Renderer {
+        const renderer: PIXI.Renderer = new PIXI.Renderer({
             width: Renderer.Width,
             height: Renderer.Height,
             resolution: devicePixelRatio,

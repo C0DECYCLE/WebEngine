@@ -22,7 +22,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     //renderer.getStats().show();
 
     const ui: Interface = renderer.getInterface();
-    const stage: any = new PIXI.Container();
+    const stage: PIXI.Container = new PIXI.Container();
     stage.eventMode = "static";
     stage.hitArea = ui.getRenderer().screen;
 
@@ -37,7 +37,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     const zoomSpeed: float = 0.025;
     let zoom: float = 40;
 
-    stage.on("wheel", (event: any) => {
+    stage.on("wheel", (event: PIXI.Event) => {
         zoom += event.deltaY * zoomSpeed;
         zoom = zoom.clamp(20, 60);
         camera.position.copy(cameraDirection).scale(zoom).add(camera.target);
@@ -51,18 +51,23 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     const downCoord: Vec2 = new Vec2();
     const upCoord: Vec2 = new Vec2();
 
-    const dragStart = (event: any) => {
+    const dragStart = (event: PIXI.Event) => {
         isDowning = true;
         isPicking = true;
-        downCoord.copy(event.client);
+        downCoord.set(event.client.x, event.client.y);
     };
 
-    const dragMove = (event: any) => {
+    const dragMove = (event: PIXI.Event) => {
         if (!isDowning) {
             return;
         }
         if (isPicking) {
-            if (upCoord.copy(event.client).sub(downCoord).length() > 10.0) {
+            if (
+                upCoord
+                    .set(event.client.x, event.client.y)
+                    .sub(downCoord)
+                    .length() > 10.0
+            ) {
                 isPicking = false;
             }
         } else {
@@ -83,7 +88,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     const buildables: ObjectArray<Entity> = new ObjectArray<Entity>();
     let isBuilding: boolean = false;
 
-    const mouseRay = (mouseCoord: any) => {
+    const mouseRay = (mouseCoord: PIXI.Point) => {
         if (!isBuilding) {
             return;
         }
@@ -92,6 +97,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
             const clipPotential: Vec3 = buildables[i].position
                 .clone()
                 .sub(camera.position)
+                //@ts-ignore
                 .applyMat(camera.viewProjection);
             const screenPotential: Vec2 = new Vec2(
                 (clipPotential.x * 0.5 + 0.5) * Renderer.Width,
@@ -150,7 +156,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         */
     };
 
-    const dragStop = (event: any) => {
+    const dragStop = (event: PIXI.Event) => {
         isDowning = false;
         if (isPicking) {
             mouseRay(event.client);
@@ -256,29 +262,37 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     const offset: float = 20;
     const scale: float = Renderer.Height / 900;
 
-    const texture1: any = await PIXI.Texture.fromURL("images/test1.png");
-    const texture2: any = await PIXI.Texture.fromURL("images/test2.png");
-    const texture3: any = await PIXI.Texture.fromURL("images/test3.png");
-    const button: any = await PIXI.Texture.fromURL("images/button.png");
+    const texture1: PIXI.Texture = await PIXI.Texture.fromURL(
+        "images/test1.png"
+    );
+    const texture2: PIXI.Texture = await PIXI.Texture.fromURL(
+        "images/test2.png"
+    );
+    const texture3: PIXI.Texture = await PIXI.Texture.fromURL(
+        "images/test3.png"
+    );
+    const button: PIXI.Texture = await PIXI.Texture.fromURL(
+        "images/button.png"
+    );
 
-    const img1 = new PIXI.Sprite(texture1);
+    const img1: PIXI.Sprite = new PIXI.Sprite(texture1);
     img1.position.set(Renderer.Width - offset, Renderer.Height - offset);
     img1.anchor.set(1.0, 1.0);
     img1.scale.set(scale, scale);
     stage.addChild(img1);
 
-    const img2 = new PIXI.Sprite(texture2);
+    const img2: PIXI.Sprite = new PIXI.Sprite(texture2);
     img2.position.set(Renderer.Width - offset, offset);
     img2.anchor.set(1.0, 0.0);
     img2.scale.set(scale, scale);
     stage.addChild(img2);
 
-    const img3 = new PIXI.Sprite(texture3);
+    const img3: PIXI.Sprite = new PIXI.Sprite(texture3);
     img3.position.set(offset, offset);
     img3.scale.set(scale, scale);
     stage.addChild(img3);
 
-    const btn = new PIXI.Sprite(button);
+    const btn: PIXI.Sprite = new PIXI.Sprite(button);
     btn.position.set(
         img1.position.x - img1.width * 0.5,
         img1.position.y - img1.height + 100 * scale
@@ -286,9 +300,10 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     btn.anchor.set(0.5, 0.0);
     btn.scale.set(scale, scale);
     btn.eventMode = "static";
-    const shrink = (_event: any) => btn.scale.set(scale * 0.8, scale * 0.8);
-    const expand = (_event: any) => btn.scale.set(scale, scale);
-    const up = (_event: any) => {
+    const shrink = (_event: PIXI.Event) =>
+        btn.scale.set(scale * 0.8, scale * 0.8);
+    const expand = (_event: PIXI.Event) => btn.scale.set(scale, scale);
+    const up = (_event: PIXI.Event) => {
         expand(_event);
         if (!isBuilding) {
             isBuilding = true;
