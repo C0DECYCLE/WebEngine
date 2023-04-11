@@ -16,7 +16,6 @@ declare namespace PIXI {
         width: number;
         height: number;
         children: PIXI.DisplayObject[];
-        on(event: string, fn: (event: PIXI.Event) => void): void;
         addChild<T extends PIXI.DisplayObject>(...children: T[]): void;
     }
 
@@ -53,6 +52,7 @@ declare namespace PIXI {
     class DisplayObject {
         eventMode: string;
         hitArea: PIXI.Rectangle;
+        on(event: string, fn: (event: PIXI.Event) => void): void;
         position: PIXI.Point;
         anchor: PIXI.Point;
         scale: PIXI.Point;
@@ -61,5 +61,15 @@ declare namespace PIXI {
 
     class Sprite extends PIXI.Container {
         constructor(texture?: PIXI.Texture);
+    }
+
+    class TextStyle {
+        constructor(style: Object);
+    }
+
+    class Text extends PIXI.Sprite {
+        constructor(text?: string, style?: PIXI.TextStyle);
+        style: PIXI.TextStyle;
+        text: string;
     }
 }
