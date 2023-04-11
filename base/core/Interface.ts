@@ -7,10 +7,12 @@
 namespace WebEngine {
     export class Interface {
         private readonly renderer: PIXI.Renderer;
+        private readonly empty: PIXI.Container;
         private active: Nullable<PIXI.Container> = null;
 
         public constructor() {
             this.renderer = this.createRenderer();
+            this.empty = new PIXI.Container();
         }
 
         public getRenderer(): PIXI.Renderer {
@@ -24,6 +26,7 @@ namespace WebEngine {
         /** @internal */
         public render(): void {
             if (!this.active) {
+                this.renderer.render(this.empty);
                 return;
             }
             this.renderer.render(this.active);
