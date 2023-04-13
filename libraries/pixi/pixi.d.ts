@@ -39,7 +39,8 @@ declare namespace PIXI {
         x: number;
         y: number;
         set(x?: number, y?: number): void;
-        copy(point: PIXI.Point): void;
+        copyFrom(point: PIXI.Point): void;
+        copyTo(point: PIXI.Point): void;
         clone(): PIXI.Point;
         equals(point: PIXI.Point): boolean;
     }
@@ -62,6 +63,8 @@ declare namespace PIXI {
 
     class Sprite extends PIXI.Container {
         constructor(texture?: PIXI.Texture);
+        tint: number;
+        texture?: PIXI.Texture;
     }
 
     class TextStyle {
