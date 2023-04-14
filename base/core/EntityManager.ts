@@ -39,6 +39,11 @@ namespace WebEngine {
         }
 
         /** @internal */
+        public detach(entity: WebEngine.Entity): void {
+            this.list.delete(entity);
+        }
+
+        /** @internal */
         public wakeUp(entity: WebEngine.Entity): void {
             this.renderList.add(entity);
         }

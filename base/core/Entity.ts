@@ -46,6 +46,13 @@ namespace WebEngine {
             this.entityManager.attach(this);
         }
 
+        public detach(): void {
+            this.preventUnattached();
+            this.entityManager!.detach(this);
+            this.entityManager = null;
+            this.camera = null;
+        }
+
         public disableFrustumCulling(): void {
             this.frustumCull = false;
         }
@@ -106,6 +113,11 @@ namespace WebEngine {
             if (this.isShadowCasting) {
                 this.entityManager!.shadow(this, false);
             }
+        }
+
+        public destroy(): void {
+            this.sleep();
+            this.detach();
         }
 
         public stringifyInfo(): string {
