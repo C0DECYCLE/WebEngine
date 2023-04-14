@@ -195,6 +195,14 @@ class Vec3 {
         return new Vec3(this.x, this.y, this.z);
     }
 
+    public toJSON(): Object {
+        return {
+            x: this.x,
+            y: this.y,
+            z: this.z,
+        };
+    }
+
     public static Cache: Vec3 = new Vec3();
 
     public static Dot(a: Vec3, b: Vec3): float {

@@ -138,6 +138,13 @@ class Vec2 {
         return new Vec2(this.x, this.y);
     }
 
+    public toJSON(): Object {
+        return {
+            x: this.x,
+            y: this.y,
+        };
+    }
+
     public static Cache: Vec2 = new Vec2();
 
     public static Dot(a: Vec2, b: Vec2): float {

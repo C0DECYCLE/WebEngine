@@ -101,5 +101,14 @@ class Vec4 {
         return new Vec4(this.x, this.y, this.z, this.w);
     }
 
+    public toJSON(): Object {
+        return {
+            x: this.x,
+            y: this.y,
+            z: this.z,
+            w: this.w,
+        };
+    }
+
     public static Cache: Vec4 = new Vec4();
 }
