@@ -27,6 +27,7 @@ interface Number {
 interface String {
     firstLetterUppercase(): string;
     replaceAt(index: int, replacement: string): string;
+    hexToRGB(): Vec3;
 }
 
 interface Array<T> {

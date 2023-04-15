@@ -46,6 +46,10 @@ namespace WebEngine {
             await this.geometryManager.initialize(geometryUrls, lodMatrix);
         }
 
+        public getCanvas(): HTMLCanvasElement {
+            return this.gl.canvas as HTMLCanvasElement;
+        }
+
         public getStats(): WebEngine.Stats {
             return this.stats;
         }
@@ -92,7 +96,6 @@ namespace WebEngine {
             canvas.style.left = "0px";
             canvas.style.width = "100%";
             canvas.style.height = "100%";
-            canvas.style.filter = "hue-rotate(350deg) saturate(120%)";
             document.body.appendChild(canvas);
             return canvas;
         }

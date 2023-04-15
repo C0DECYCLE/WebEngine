@@ -47,6 +47,19 @@ String.prototype.replaceAt = function (
     );
 };
 
+String.prototype.hexToRGB = function (): Vec3 {
+    const result: Nullable<RegExpExecArray> =
+        /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(this.toString());
+    if (result === null) {
+        throw new Error("String: Cannot convert hex to rgb.");
+    }
+    return new Vec3(
+        parseInt(result[1], 16) / 256,
+        parseInt(result[2], 16) / 256,
+        parseInt(result[3], 16) / 256
+    );
+};
+
 Array.prototype.clear = function (): void {
     this.length = 0;
 };

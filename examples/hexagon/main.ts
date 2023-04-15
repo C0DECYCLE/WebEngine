@@ -20,8 +20,11 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
         ["shaders/water", "shaders/hint"]
     );
     //renderer.getStats().show();
+    renderer.getCanvas().style.filter = "hue-rotate(350deg) saturate(120%)";
 
     const ui: WebEngine.Interface = renderer.getInterface();
+    ui.getRenderer().view.style.filter = "hue-rotate(340deg) saturate(120%)";
+
     const stage: PIXI.Container = new PIXI.Container();
     stage.eventMode = "static";
     stage.hitArea = ui.getRenderer().screen;
