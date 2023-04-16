@@ -29,7 +29,7 @@ namespace WebEngine {
             div.style.position = "absolute";
             div.style.top = "0px";
             div.style.right = "0px";
-            div.style.minWidth = "40vh";
+            div.style.minWidth = "30vh";
             div.style.backgroundColor = "#000000";
             div.style.opacity = "0.75";
             return div;
@@ -40,7 +40,7 @@ namespace WebEngine {
             p.style.margin = "2vh";
             p.style.color = "#FFFFFF";
             p.style.fontFamily = "system-ui";
-            p.style.fontSize = "1.8vh";
+            p.style.fontSize = "1.2vh";
             div.append(p);
             return p;
         }
