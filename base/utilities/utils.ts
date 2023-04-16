@@ -60,6 +60,10 @@ String.prototype.hexToRGB = function (): Vec3 {
     );
 };
 
+Array.prototype.count = function (target: any): int {
+    return this.filter((x: any) => x === target).length;
+};
+
 Array.prototype.clear = function (): void {
     this.length = 0;
 };

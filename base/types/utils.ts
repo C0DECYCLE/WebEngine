@@ -31,5 +31,6 @@ interface String {
 }
 
 interface Array<T> {
+    count(target: any): int;
     clear(): void;
 }
