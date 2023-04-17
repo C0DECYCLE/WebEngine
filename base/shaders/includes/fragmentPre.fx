@@ -5,6 +5,7 @@
 */
 
 vec3 faceNormal = getFaceNormal(finalVertexPosition);
+vec3 color = finalVertexColor;
 vec3 finalColor = faceNormal * 0.5 + 0.5;
 
 float specularPower = 1.0;

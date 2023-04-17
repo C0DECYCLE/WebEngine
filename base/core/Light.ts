@@ -9,6 +9,7 @@ namespace WebEngine {
         public readonly ambient: Vec3 = new Vec3(0, 0, 0);
         public readonly direction: Vec3 = new Vec3(0, -1, 0);
         public readonly color: Vec3 = new Vec3(1, 1, 1);
+        public intensity: float = 1.0;
 
         private readonly ambientColor: Float32Array = new Float32Array(3);
         private readonly lightDirection: Float32Array = new Float32Array(3);
@@ -68,9 +69,9 @@ namespace WebEngine {
             this.ambientColor[1] = this.ambient.y;
             this.ambientColor[2] = this.ambient.z;
 
-            this.lightDirection[0] = this.direction.x;
-            this.lightDirection[1] = this.direction.y;
-            this.lightDirection[2] = this.direction.z;
+            this.lightDirection[0] = this.direction.x * this.intensity;
+            this.lightDirection[1] = this.direction.y * this.intensity;
+            this.lightDirection[2] = this.direction.z * this.intensity;
 
             this.lightColor[0] = this.color.x;
             this.lightColor[1] = this.color.y;
