@@ -52,8 +52,10 @@ declare namespace PIXI {
     }
 
     class DisplayObject {
+        visible: boolean;
         eventMode: string;
         hitArea: PIXI.Rectangle;
+        interactiveChildren: boolean;
         on(event: string, fn: (event: PIXI.Event) => void): void;
         position: PIXI.Point;
         anchor: PIXI.Point;

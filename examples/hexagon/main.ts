@@ -26,6 +26,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     ui.getRenderer().view.style.filter = "hue-rotate(340deg) saturate(120%)";
 
     const stage: PIXI.Container = new PIXI.Container();
+    stage.visible = true;
     stage.eventMode = "static";
     stage.hitArea = ui.getRenderer().screen;
 
@@ -332,7 +333,7 @@ window.addEventListener("compile", async (_event: Event): Promise<void> => {
     btn.on("pointercancel", expand);
     stage.addChild(btn);
 
-    ui.activate(stage);
+    ui.register(stage);
 
     function render(now: float): void {
         shadow.position.copy(camera.target).add(0.0, 0.0, zoom);

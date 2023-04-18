@@ -7,29 +7,24 @@
 namespace WebEngine {
     export class Interface {
         private readonly renderer: PIXI.Renderer;
-        private readonly empty: PIXI.Container;
-        private active: Nullable<PIXI.Container> = null;
+        private readonly main: PIXI.Container;
 
         public constructor() {
             this.renderer = this.createRenderer();
-            this.empty = new PIXI.Container();
+            this.main = new PIXI.Container();
         }
 
         public getRenderer(): PIXI.Renderer {
             return this.renderer;
         }
 
-        public activate(stage: Nullable<PIXI.Container>): void {
-            this.active = stage;
+        public register(stage: PIXI.Container): void {
+            this.main.addChild(stage);
         }
 
         /** @internal */
         public render(): void {
-            if (!this.active) {
-                this.renderer.render(this.empty);
-                return;
-            }
-            this.renderer.render(this.active);
+            this.renderer.render(this.main);
         }
 
         private createRenderer(): PIXI.Renderer {
