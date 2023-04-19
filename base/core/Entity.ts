@@ -96,9 +96,9 @@ namespace WebEngine {
         public wakeUp(): void {
             this.preventUnattached();
             if (this.isAwake === true) {
-                return warn(
+                return /*warn(
                     `WebEngine.Entity: Entity already awake. ${this.stringifyInfo()}`
-                );
+                )*/;
             }
             this.entityManager!.wakeUp(this);
             this.isAwake = true;
@@ -110,9 +110,9 @@ namespace WebEngine {
         public sleep(): void {
             this.preventUnattached();
             if (this.isAwake === false) {
-                return warn(
+                return /*warn(
                     `WebEngine.Entity: Entity already awake. ${this.stringifyInfo()}`
-                );
+                )*/;
             }
             this.entityManager!.sleep(this);
             this.isAwake = false;
