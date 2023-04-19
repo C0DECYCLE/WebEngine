@@ -28,6 +28,8 @@ namespace WebEngine {
         VERTEXCOLOR = "vertexColor",
     }
 
+    export type InstanceSubUniform = float | boolean;
+
     export enum ShaderTypes {
         VERTEX = "vertex",
         FRAGMENT = "fragment",

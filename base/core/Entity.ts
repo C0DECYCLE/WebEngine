@@ -12,6 +12,12 @@ namespace WebEngine {
         public readonly position: Vec3 = new Vec3(0, 0, 0);
         public readonly rotation: Vec3 = new Vec3(0, 0, 0);
 
+        public customInstanceSubUniforms: [
+            WebEngine.InstanceSubUniform,
+            WebEngine.InstanceSubUniform,
+            WebEngine.InstanceSubUniform
+        ] = [0.0, 0.0, 0.0];
+
         private readonly world: Mat4 = new Mat4();
 
         private camera: Nullable<WebEngine.Camera> = null;
@@ -143,6 +149,9 @@ namespace WebEngine {
                 WebEngine.ShaderVariables.SHADOWRECEIVE,
                 this.isShadowReceiving
             );
+            this.passInstanceSubUniform("1", this.customInstanceSubUniforms[0]);
+            this.passInstanceSubUniform("2", this.customInstanceSubUniforms[1]);
+            this.passInstanceSubUniform("3", this.customInstanceSubUniforms[2]);
             return (this.isRendering = true);
         }
 
@@ -256,8 +265,8 @@ namespace WebEngine {
         }
 
         private passInstanceSubUniform(
-            row: WebEngine.ShaderVariables,
-            value: float | boolean
+            row: WebEngine.ShaderVariables | string,
+            value: WebEngine.InstanceSubUniform
         ): void {
             this.world.values[parseInt(row) * 4 + 3] = +value;
         }
