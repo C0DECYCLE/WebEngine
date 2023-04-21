@@ -5,7 +5,7 @@
 */
 
 namespace WebEngine {
-    export class Entity {
+    export class Entity implements Destroyable {
         public readonly id: uuid = UUIDv4();
         public readonly geometryName: string;
 

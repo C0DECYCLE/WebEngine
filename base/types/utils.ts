@@ -34,3 +34,7 @@ interface Array<T> {
     count(target: any): int;
     clear(): void;
 }
+
+interface Destroyable {
+    destroy(): void;
+}
