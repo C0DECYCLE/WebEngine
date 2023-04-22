@@ -25,6 +25,7 @@ declare namespace PIXI {
         y: number;
         width: number;
         height: number;
+        constructor(x?: number, y?: number, width?: number, height?: height);
     }
 
     class Event {
