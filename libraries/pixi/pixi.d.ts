@@ -49,6 +49,7 @@ declare namespace PIXI {
         static async fromURL(string): Promise<PIXI.Texture>;
         width: number;
         height: number;
+        textureCacheIds: string[];
     }
 
     class DisplayObject {
@@ -58,13 +59,15 @@ declare namespace PIXI {
         interactiveChildren: boolean;
         on(event: string, fn: (event: PIXI.Event) => void): void;
         position: PIXI.Point;
-        anchor: PIXI.Point;
+        pivot: PIXI.Point;
         scale: PIXI.Point;
         alpha: number;
+        rotation: number;
     }
 
     class Sprite extends PIXI.Container {
         constructor(texture?: PIXI.Texture);
+        anchor: PIXI.Point;
         tint: number;
         texture?: PIXI.Texture;
     }
@@ -77,5 +80,11 @@ declare namespace PIXI {
         constructor(text?: string, style?: PIXI.TextStyle);
         style: PIXI.TextStyle;
         text: string;
+    }
+
+    class Graphics extends PIXI.Container {
+        beginFill(color: string): void;
+        drawRect(x: number, y: number, width: number, height: number): void;
+        endFill(): void;
     }
 }

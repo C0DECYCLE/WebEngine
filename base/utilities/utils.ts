@@ -60,6 +60,10 @@ String.prototype.hexToRGB = function (): Vec3 {
     );
 };
 
+String.prototype.toHexadecimal = function (): number {
+    return Number(`0x${this.split("#")[1]}`);
+};
+
 Array.prototype.count = function (target: any): int {
     return this.filter((x: any) => x === target).length;
 };
