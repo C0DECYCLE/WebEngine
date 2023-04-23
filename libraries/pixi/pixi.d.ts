@@ -21,11 +21,11 @@ declare namespace PIXI {
     }
 
     class Rectangle {
+        constructor(x?: number, y?: number, width?: number, height?: height);
         x: number;
         y: number;
         width: number;
         height: number;
-        constructor(x?: number, y?: number, width?: number, height?: height);
     }
 
     class Event {
@@ -75,6 +75,9 @@ declare namespace PIXI {
 
     class TextStyle {
         constructor(style: Object);
+        fill: string;
+        fontFamily: string;
+        fontSize: number;
     }
 
     class Text extends PIXI.Sprite {
@@ -85,7 +88,11 @@ declare namespace PIXI {
 
     class Graphics extends PIXI.Container {
         beginFill(color: string): void;
-        drawRect(x: number, y: number, width: number, height: number): void;
         endFill(): void;
+        drawRect(x: number, y: number, width: number, height: number): void;
+        drawPolygon(path: number[]): void;
+        lineStyle(width: number, color: string): void;
+        moveTo(x: number, y: number): void;
+        lineTo(x: number, y: number): void;
     }
 }
