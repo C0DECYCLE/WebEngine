@@ -64,6 +64,7 @@ declare namespace PIXI {
         scale: PIXI.Point;
         alpha: number;
         rotation: number;
+        mask: PIXI.Container;
     }
 
     class Sprite extends PIXI.Container {
