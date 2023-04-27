@@ -17,6 +17,7 @@ declare namespace PIXI {
         height: number;
         children: PIXI.DisplayObject[];
         addChild<T extends PIXI.DisplayObject>(...children: T[]): void;
+        removeChild<T extends PIXI.DisplayObject>(...children: T[]): void;
         destroy(options?: Object | boolean): void;
     }
 
@@ -57,6 +58,7 @@ declare namespace PIXI {
         visible: boolean;
         eventMode: string;
         hitArea: PIXI.Rectangle;
+        parent: PIXI.Container;
         interactiveChildren: boolean;
         on(event: string, fn: (event: PIXI.Event) => void): void;
         position: PIXI.Point;
