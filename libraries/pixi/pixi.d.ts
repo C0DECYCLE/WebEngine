@@ -34,6 +34,9 @@ declare namespace PIXI {
         client: PIXI.Point;
         movementX: number;
         movementY: number;
+        timeStamp: number;
+        pageX: number;
+        pageY: number;
     }
 
     class Point {
