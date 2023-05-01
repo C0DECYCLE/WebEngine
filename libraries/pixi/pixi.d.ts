@@ -93,7 +93,7 @@ declare namespace PIXI {
     }
 
     class Graphics extends PIXI.Container {
-        beginFill(color: string, alpha: number): void;
+        beginFill(color: string, alpha?: number): void;
         endFill(): void;
         drawRect(x: number, y: number, width: number, height: number): void;
         drawPolygon(path: number[]): void;
