@@ -18,6 +18,21 @@ function UUIDv4(): uuid {
     );
 }
 
+function applyMixins(baseClass: any, extendedClasses: any[]): void {
+    extendedClasses.forEach((extendedClass) => {
+        Object.getOwnPropertyNames(extendedClass.prototype).forEach((name) => {
+            Object.defineProperty(
+                baseClass.prototype,
+                name,
+                Object.getOwnPropertyDescriptor(
+                    extendedClass.prototype,
+                    name
+                ) || Object.create(null)
+            );
+        });
+    });
+}
+
 Number.prototype.between = function (a: int | float, b: int | float): boolean {
     return this.valueOf() > Math.min(a, b) && this.valueOf() < Math.max(a, b);
 };
