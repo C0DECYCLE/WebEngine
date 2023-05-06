@@ -18,6 +18,7 @@ declare namespace PIXI {
         children: PIXI.DisplayObject[];
         addChild<T extends PIXI.DisplayObject>(...children: T[]): void;
         removeChild<T extends PIXI.DisplayObject>(...children: T[]): void;
+        destroyed: boolean;
         destroy(options?: Object | boolean): void;
     }
 
