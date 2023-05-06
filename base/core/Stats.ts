@@ -53,6 +53,10 @@ namespace WebEngine {
             this.overlay.show();
         }
 
+        public getDeltaTime(): float {
+            return this.get("deltaMs");
+        }
+
         /** @internal */
         public get(key: string): any {
             return this.list.get(key);
