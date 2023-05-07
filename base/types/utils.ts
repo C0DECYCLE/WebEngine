@@ -16,6 +16,8 @@ type Undefinable<T> = T | undefined;
 
 type EmptyCallback = () => void;
 
+type Modify<T, R> = Omit<T, keyof R> & R;
+
 class MapS<T> extends Map<string, T> {}
 
 interface Number {
