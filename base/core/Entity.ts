@@ -213,6 +213,10 @@ namespace WebEngine {
             if (this.tempLod !== -1) {
                 return;
             }
+            if (data.lods.length === 1) {
+                this.tempLod = 0;
+                return;
+            }
             this.tempCoverage = this.computeCoverage(
                 data.bounds,
                 this.tempDistance
