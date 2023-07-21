@@ -9,6 +9,14 @@ const PHI: float = (1.0 + 5.0 ** 0.5) / 2.0;
 const toAngle: float = 180 / Math.PI;
 const toRadian: float = Math.PI / 180;
 
+function normalizeRadian(value: float): float {
+    value = value % (2.0 * Math.PI);
+    if (value < 0) {
+        value += 2.0 * Math.PI;
+    }
+    return value;
+}
+
 function UUIDv4(): uuid {
     return `${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`.replace(/[018]/g, (c: any) =>
         (
