@@ -20,6 +20,11 @@ namespace WebEngine {
         }
 
         /** @internal */
+        public hide(): void {
+            document.body.removeChild(this.div);
+        }
+
+        /** @internal */
         public update(text: string): void {
             this.p.innerHTML = text;
         }
