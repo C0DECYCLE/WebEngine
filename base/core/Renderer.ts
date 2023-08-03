@@ -21,7 +21,8 @@ namespace WebEngine {
             clearColor?: Vec3,
             far?: float,
             antialiase?: boolean,
-            root?: string
+            root?: string,
+            frustumRadiusScale?: float
         ) {
             this.clearColor = clearColor;
 
@@ -30,7 +31,7 @@ namespace WebEngine {
             this.createShaderManager(root);
             this.createGeometryManager(root);
             this.createEntityManager();
-            this.createCamera(far);
+            this.createCamera(far, frustumRadiusScale);
             this.createLight();
             this.createInterface();
             this.initializeContext();
@@ -150,8 +151,12 @@ namespace WebEngine {
             );
         }
 
-        private createCamera(far?: float): void {
-            this.camera = new WebEngine.Camera(this.gl, far);
+        private createCamera(far?: float, frustumRadiusScale?: float): void {
+            this.camera = new WebEngine.Camera(
+                this.gl,
+                far,
+                frustumRadiusScale
+            );
         }
 
         private createLight(): void {

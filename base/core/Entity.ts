@@ -204,7 +204,7 @@ namespace WebEngine {
             }
             return this.camera!.inFrustum(
                 this.position,
-                geometry.data.bounds.size * 1.5
+                geometry.data.bounds.size
             );
         }
 

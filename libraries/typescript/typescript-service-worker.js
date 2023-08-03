@@ -15,7 +15,7 @@ function load(sourceUrl) {
     xhr.overrideMimeType && xhr.overrideMimeType("text/plain");
     xhr.send(null);
 
-    return xhr.status == 200 ? xhr.responseText : "";
+    return xhr.responseText;
 }
 
 function init(data) {

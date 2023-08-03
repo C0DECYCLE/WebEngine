@@ -28,10 +28,15 @@ namespace WebEngine {
         private readonly viewProjection: Mat4 = new Mat4();
 
         private frustum: WebEngine.Frustum;
+        private readonly frustumRadiusScale: float;
 
         private readonly gl: WebGL2RenderingContext;
 
-        public constructor(gl: WebGL2RenderingContext, far: float = 10_000) {
+        public constructor(
+            gl: WebGL2RenderingContext,
+            far: float = 10_000,
+            frustumRadiusScale: float = 1.5
+        ) {
             this.gl = gl;
             this.fov = 60 * toRadian;
             this.ratio = this.gl.canvas.width / this.gl.canvas.height;
@@ -44,10 +49,12 @@ namespace WebEngine {
                 this.far
             );
             this.createFrustum();
+            this.frustumRadiusScale = frustumRadiusScale;
         }
 
         /** @internal */
         public inFrustum(position: Vec3, radius: float): boolean {
+            radius *= this.frustumRadiusScale;
             return (
                 this.inFrontOfPlane(this.frustum.left, position, radius) &&
                 this.inFrontOfPlane(this.frustum.right, position, radius) &&
