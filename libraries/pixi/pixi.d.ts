@@ -31,6 +31,7 @@ declare namespace PIXI {
     }
 
     class Event {
+        pointerId: number;
         deltaY: number;
         client: PIXI.Point;
         movementX: number;
