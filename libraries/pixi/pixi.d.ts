@@ -88,6 +88,22 @@ declare namespace PIXI {
         fontSize: number;
     }
 
+    class TextMetrics {
+        static measureText(
+            text: string,
+            style: PIXI.TextStyle
+        ): PIXI.TextMetrics;
+        constructor();
+        text: string;
+        style: PIXI.TextStyle;
+        width: float;
+        height: float;
+        lines: float[];
+        lineWidths: float[];
+        lineHeight: float;
+        maxLineWidth: float;
+    }
+
     class Text extends PIXI.Sprite {
         constructor(text?: string, style?: PIXI.TextStyle);
         style: PIXI.TextStyle;
