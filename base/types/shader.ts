@@ -26,6 +26,15 @@ namespace WebEngine {
         //attributes
         VERTEXPOSITION = "vertexPosition",
         VERTEXCOLOR = "vertexColor",
+        //depth of field uniforms
+        FOCUSDISTANCE = "focusDistance",
+        BLURCOEFFICIENT = "blurCoefficient",
+        PPM = "PPM",
+        DEPTHRANGE = "depthRange",
+        RESOLUTION = "resolution",
+        TEXELOFFSET = "texelOffset",
+        COLOR = "color",
+        DEPTH = "depth",
     }
 
     export type InstanceSubUniform = float | boolean;

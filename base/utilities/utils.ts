@@ -41,6 +41,10 @@ function applyMixins(baseClass: any, extendedClasses: any[]): void {
     });
 }
 
+function lerp(a: float, b: float, t: float): float {
+    return a + (b - a) * t;
+}
+
 Number.prototype.between = function (a: int | float, b: int | float): boolean {
     return this.valueOf() > Math.min(a, b) && this.valueOf() < Math.max(a, b);
 };

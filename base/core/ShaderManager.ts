@@ -7,7 +7,7 @@
 namespace WebEngine {
     export class ShaderManager {
         public readonly rootPath: string = "/base/shaders/";
-        public readonly names: string[] = ["main", "shadow"];
+        public readonly names: string[] = ["main", "shadow", "depthoffield"];
         public readonly includes: string[] = [
             "vertexVariables",
             "vertexMethods",
@@ -230,7 +230,10 @@ namespace WebEngine {
                 new WebEngine.ShaderVariableMap<WebGLInstanceUniformLocation>();
             result.attributeLocations =
                 new WebEngine.ShaderVariableMap<WebGLAttributeLocation>();
-            this.registerLocations(result, name === "shadow");
+            this.registerLocations(
+                result,
+                name === "shadow" || name === "depthoffield"
+            );
             return result;
         }
 
@@ -311,6 +314,18 @@ namespace WebEngine {
                 WebEngine.ShaderVariables.SHADOWOPACITY,
                 WebEngine.ShaderVariables.SHADOWMAPSIZE,
             ]);
+            if (ignore) {
+                this.registerUniformLocations(shaderProgram, ignore, [
+                    WebEngine.ShaderVariables.FOCUSDISTANCE,
+                    WebEngine.ShaderVariables.BLURCOEFFICIENT,
+                    WebEngine.ShaderVariables.PPM,
+                    WebEngine.ShaderVariables.DEPTHRANGE,
+                    WebEngine.ShaderVariables.RESOLUTION,
+                    WebEngine.ShaderVariables.TEXELOFFSET,
+                    WebEngine.ShaderVariables.COLOR,
+                    WebEngine.ShaderVariables.DEPTH,
+                ]);
+            }
             this.registerInstanceUniformLocations(shaderProgram, ignore, [
                 WebEngine.ShaderVariables.OBJECTWORLD,
             ]);

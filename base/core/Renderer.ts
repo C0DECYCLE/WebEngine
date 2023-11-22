@@ -16,6 +16,7 @@ namespace WebEngine {
         private camera: WebEngine.Camera;
         private light: WebEngine.Light;
         private interface: WebEngine.Interface;
+        private depthOfField: Nullable<WebEngine.DepthOfField> = null;
 
         public constructor(
             clearColor?: Vec3,
@@ -69,6 +70,19 @@ namespace WebEngine {
 
         public getInterface(): WebEngine.Interface {
             return this.interface;
+        }
+
+        public getDepthOfField(): Nullable<WebEngine.DepthOfField> {
+            return this.depthOfField;
+        }
+
+        public activateDepthOfField(): WebEngine.DepthOfField {
+            this.depthOfField = new WebEngine.DepthOfField(
+                this.gl,
+                this.shaderManager.programs.get("depthoffield")!,
+                this.camera
+            );
+            return this.depthOfField;
         }
 
         public render(now: float): void {
@@ -224,6 +238,10 @@ namespace WebEngine {
         }
 
         private drawMain(): void {
+            if (this.depthOfField) {
+                this.depthOfField.preMainDraw();
+            }
+
             this.clearContext();
 
             let current: string = "";
@@ -234,6 +252,10 @@ namespace WebEngine {
                     current = name;
                 }
             });
+
+            if (this.depthOfField) {
+                this.depthOfField.postMainDraw();
+            }
         }
 
         private mainEquipShader(name: string): void {

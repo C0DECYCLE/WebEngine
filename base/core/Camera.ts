@@ -15,8 +15,8 @@ namespace WebEngine {
 
         private readonly fov: float;
         private readonly ratio: float;
-        private readonly near: float;
-        private readonly far: float;
+        public readonly near: float;
+        public readonly far: float;
 
         private readonly origin: Vec3 = new Vec3(0, 0, 0);
         private readonly direction: Vec3 = new Vec3(0, 0, -1);
