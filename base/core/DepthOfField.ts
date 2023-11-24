@@ -8,7 +8,7 @@ namespace WebEngine {
     export class DepthOfField {
         public FOCAL_LENGTH: float = 10.0;
         public FOCUS_DISTANCE: float = 80.0;
-        public FSTOP: float = 2.8;
+        public FSTOP: float = 6.0;
 
         private MAGNIFICATION: float;
         private BLUR_COEFFICIENT: float;
